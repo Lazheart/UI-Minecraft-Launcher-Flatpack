@@ -4,12 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# EGUI estable compatible con Rust 1.72
 egui = "=0.27.2"
 eframe = "=0.27.2"
 ecolor = "=0.27.2"
 egui_extras = "=0.20.0"
 rfd = "=0.10.0"
 directories = "5"
+
+# Forzar dependencias antiguas compatibles con 1.72
+zerotrie = "=0.1.3"
+zerovec = "=0.10.4"
 
 [source.crates-io]
 replace-with = "vendored-sources"
