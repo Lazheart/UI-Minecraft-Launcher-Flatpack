@@ -2181,6 +2181,7 @@ dependencies = [
  "icu_properties_data 1.3.0",
  "icu_provider 1.3.0",
  "rfd",
+ "writeable 0.5.5",
  "zerotrie 0.1.3",
  "zerovec 0.10.4",
 ]
