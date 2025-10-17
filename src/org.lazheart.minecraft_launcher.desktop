@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Minecraft Bedrock Launcher
+Comment=Lanzador de Minecraft Bedrock Edition (Flatpak)
+Exec=wrapper.sh
+Icon=org.lazheart.minecraft-launcher
+Terminal=false
+Categories=Game;Qt;
+StartupNotify=true
+Keywords=Minecraft;Bedrock;Launcher;KDE;Qt;
