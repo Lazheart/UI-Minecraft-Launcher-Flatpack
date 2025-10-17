@@ -2,55 +2,39 @@
 <component type="desktop-application">
   <id>org.lazheart.minecraft-launcher</id>
   <name>Minecraft Bedrock Launcher</name>
-  <summary>Lanzador no oficial para Minecraft Bedrock Edition en Linux</summary>
+  <summary>Lanzador no oficial de Minecraft Bedrock Edition en Linux</summary>
 
   <description>
     <p>
-      Launcher no oficial para Minecraft Bedrock Edition que permite extraer APKs,
-      gestionar versiones y ejecutar el cliente de forma nativa en Linux.
+      Launcher no oficial para Minecraft Bedrock Edition que permite instalar , jugar y manejar disintintas versiones del juego en sistemas Linux de manera sencilla.
     </p>
+
   </description>
 
-  <!-- 🧾 Licencia SPDX válida -->
-  <project_license>MIT</project_license>
+  <!-- licencia obligatoria -->
+  <metadata_license>MIT</metadata_license>
 
-  <!-- 👤 Nombre del desarrollador o grupo -->
+  <!-- Información del desarrollador -->
   <developer_name>Lazheart</developer_name>
 
-  <!-- 📦 Archivo .desktop asociado -->
+  <!-- Archivo .desktop asociado -->
   <launchable type="desktop-id">org.lazheart.minecraft-launcher.desktop</launchable>
 
-  <!-- ⚙️ Binario que provee -->
+  <!-- Binario que provee -->
   <provides>
     <binary>minecraft-launcher</binary>
   </provides>
 
-  <!-- 🌍 Página principal -->
-  <url type="homepage">https://github.com/Lazheart/UI-Bedrock</url>
+  <!-- Página principal del proyecto -->
+  <url type="homepage">https://github.com/Lazheart/Minecraft-Launcher-Bedrock-in-FlatPack</url>
 
-  <!-- 🕒 Historial de versiones -->
-  <releases>
-    <release version="1.0.0" date="2025-10-17">
-      <description>
-        <p>Primera versión del launcher Flatpak con soporte completo para interfaz Python (customtkinter).</p>
-      </description>
-    </release>
-  </releases>
-
-  <!-- 🖼️ Iconos incluidos -->
+  <!-- Iconos incluidos -->
   <icon type="stock">org.lazheart.minecraft-launcher</icon>
 
-  <!-- 🏷️ Categorías del menú -->
+  <!-- Categorías para el menú de aplicaciones -->
   <categories>
     <category>Game</category>
     <category>Utility</category>
   </categories>
 
-  <!-- 🌐 Idiomas (opcional) -->
-  <translation type="gettext">org.lazheart.minecraft-launcher</translation>
-
-  <!-- 🧠 Requiere entorno gráfico -->
-  <requires>
-    <display_length>long</display_length>
-  </requires>
 </component>
