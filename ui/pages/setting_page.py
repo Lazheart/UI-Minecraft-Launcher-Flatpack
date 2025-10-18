@@ -18,7 +18,7 @@ class SettingPage(ctk.CTkFrame):
 
         # Escalado
         ctk.CTkLabel(self, text="Escala de la interfaz:", **LABEL_STYLE).pack(pady=5)
-        self.scale_slider = ctk.CTkSlider(self, from_=0.7, to=1.5, number_of_steps=8, command=self.change_scale)
+        self.scale_slider = ctk.CTkSlider(self, from_=1, to=2, number_of_steps=8, command=self.change_scale)
         self.scale_slider.set(1.0)
         self.scale_slider.pack(pady=5)
 

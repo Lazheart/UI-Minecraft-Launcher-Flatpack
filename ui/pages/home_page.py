@@ -1,7 +1,7 @@
 import customtkinter as ctk
-from ui.theme.colors import COLORS
+# from ui.theme.colors import COLORS
 from ui.theme.styles import BUTTON_STYLE, LABEL_STYLE, FRAME_STYLE
-from ui.utils.backend import install_apk, get_versions, launch_version
+from ui.utils.backend import extract_apk, get_versions, run_game
 
 class HomePage(ctk.CTkFrame):
     """Página principal: instalación y lanzamiento del juego."""
@@ -53,12 +53,13 @@ class HomePage(ctk.CTkFrame):
             from tkinter import messagebox
             messagebox.showwarning("Campos vacíos", "Debes seleccionar un APK y asignar un nombre.")
             return
-        ok = install_apk(apk, name)
+        ok = extract_apk(apk, name)
         if ok:
             from tkinter import messagebox
             messagebox.showinfo("Instalado", f"Versión '{name}' instalada correctamente.")
             self.refresh_versions()
         else:
+            from tkinter import messagebox
             messagebox.showerror("Error", "No se pudo instalar el APK.")
 
     def refresh_versions(self):
@@ -68,4 +69,4 @@ class HomePage(ctk.CTkFrame):
     def play_selected(self):
         version = self.selected_version.get()
         if version and version != "<Sin versiones>":
-            launch_version(version)
+            run_game(version)
