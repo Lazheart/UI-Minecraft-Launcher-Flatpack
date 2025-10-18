@@ -8,7 +8,9 @@ class AboutPage(ctk.CTkFrame):
     def __init__(self, parent, app):
         super().__init__(parent, **FRAME_STYLE)
 
-        ctk.CTkLabel(self, text="Acerca del Launcher", **LABEL_STYLE, font=("Arial", 18, "bold")).pack(pady=10)
+        title_style = LABEL_STYLE.copy()
+        title_style["font"] = ("Arial", 18, "bold")
+        ctk.CTkLabel(self, text="Acerca del Launcher", **title_style).pack(pady=10)
         ctk.CTkLabel(
             self,
             text=(

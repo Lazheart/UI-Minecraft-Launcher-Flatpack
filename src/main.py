@@ -38,18 +38,26 @@ def ensure_environment():
 
 def check_backend():
     """
-    Comprueba si el ejecutable backend existe y es ejecutable.
+    Comprueba si los ejecutables backend existen y son ejecutables.
     Si no, muestra una advertencia en consola.
     """
-    backend = paths.BACKEND_EXECUTABLE
-    if not os.path.exists(backend):
-        print(f"[ADVERTENCIA] No se encontró el backend: {backend}")
-        print("El juego no podrá lanzarse hasta que se instale correctamente.")
+    from ui.utils.paths import MCPELAUNCHER_EXTRACT, MCPELAUNCHER_CLIENT
+    
+    extract_ok = os.path.exists(MCPELAUNCHER_EXTRACT) and os.access(MCPELAUNCHER_EXTRACT, os.X_OK)
+    client_ok = os.path.exists(MCPELAUNCHER_CLIENT) and os.access(MCPELAUNCHER_CLIENT, os.X_OK)
+    
+    if not extract_ok:
+        print(f"[ADVERTENCIA] No se encontró mcpelauncher-extract: {MCPELAUNCHER_EXTRACT}")
+    if not client_ok:
+        print(f"[ADVERTENCIA] No se encontró mcpelauncher-client: {MCPELAUNCHER_CLIENT}")
+    
+    if not extract_ok or not client_ok:
+        print("El juego no podrá lanzarse hasta que se instalen correctamente los backends.")
         return False
-    if not os.access(backend, os.X_OK):
-        print(f"[ADVERTENCIA] El backend existe pero no es ejecutable: {backend}")
-        return False
-    print("[OK] Backend detectado:", backend)
+    
+    print("[OK] Backends detectados:")
+    print(f"  - mcpelauncher-extract: {MCPELAUNCHER_EXTRACT}")
+    print(f"  - mcpelauncher-client: {MCPELAUNCHER_CLIENT}")
     return True
 
 

@@ -19,12 +19,7 @@ COLORS = {
     "success": "#22C55E",
     "warning": "#EAB308",
     "error": "#EF4444",
-
-    "bg_primary": "#1e1e1e",
-    "bg_secondary": "#2a2a2a",
-    "text_primary": "#ffffff",
-    "text_secondary": "#b3b3b3",
-    "accent": "#00b0f0",
-    "accent_hover": "#008acb",
+    
+    # Bordes
     "border": "#3a3a3a",
 }

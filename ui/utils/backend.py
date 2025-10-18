@@ -2,11 +2,11 @@ import os
 import subprocess
 import shutil
 from tkinter import messagebox
+from .paths import VERSIONS_DIR, MCPELAUNCHER_EXTRACT, MCPELAUNCHER_CLIENT, IS_FLATPAK
 
-HOME = os.path.expanduser("~")
-VERSIONS_DIR = os.path.join(HOME, ".local/share/mcpelauncher/versions")
-PROFILES_DIR = os.path.join(HOME, ".local/share/mcpelauncher/profiles")
-SHORTCUTS_DIR = os.path.join(HOME, ".local/share/applications/minecraft_egui")
+# Directorios para perfiles y shortcuts
+PROFILES_DIR = os.path.join(os.path.dirname(VERSIONS_DIR), "profiles")
+SHORTCUTS_DIR = os.path.join(os.path.dirname(VERSIONS_DIR), "shortcuts")
 
 os.makedirs(VERSIONS_DIR, exist_ok=True)
 os.makedirs(PROFILES_DIR, exist_ok=True)
@@ -32,7 +32,9 @@ def extract_apk(apk_path, name):
 
     target = os.path.join(VERSIONS_DIR, name)
     os.makedirs(target, exist_ok=True)
-    result = subprocess.run(["mcpelauncher-extract", apk_path, target])
+    
+    # Usar la ruta correcta del ejecutable
+    result = subprocess.run([MCPELAUNCHER_EXTRACT, apk_path, target])
 
     if result.returncode == 0:
         messagebox.showinfo("Éxito", f"Versión '{name}' instalada.")
@@ -54,7 +56,7 @@ def delete_version(version_path, delete_profile=True):
 
 def run_game(version_path, use_nvidia=False, use_zink=False, use_shared=False, use_mangohud=False):
     """Ejecuta el cliente con las opciones seleccionadas."""
-    cmd = ["mcpelauncher-client", "-dg", version_path]
+    cmd = [MCPELAUNCHER_CLIENT, "-dg", version_path]
     if not use_shared:
         cmd += ["-dd", version_path.replace("/versions/", "/profiles/")]
 

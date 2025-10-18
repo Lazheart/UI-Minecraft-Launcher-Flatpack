@@ -34,7 +34,7 @@ class LauncherApp(ctk.CTk):
         self.navbar.grid(row=0, column=0, sticky="ew")
 
         # 📄 Frame central (contenido)
-        self.container = ctk.CTkFrame(self, fg_color=COLORS["bg"])
+        self.container = ctk.CTkFrame(self, fg_color=COLORS["bg_primary"])
         self.container.grid(row=1, column=0, sticky="nsew")
 
         # 📜 Footer (abajo)

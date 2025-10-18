@@ -36,7 +36,5 @@ def set_styles():
     ctk.set_widget_scaling(1.0)  # Escala de widgets
     ctk.set_window_scaling(1.0)  # Escala de ventana
     
-    # Aquí puedes aplicar los estilos predeterminados a tus widgets
-    ctk.CTkButton.configure(**BUTTON_STYLE)
-    ctk.CTkFrame.configure(**FRAME_STYLE)
-    ctk.CTkLabel.configure(**LABEL_STYLE)
+    # Los estilos se aplican individualmente a cada widget
+    # No se pueden configurar globalmente en CustomTkinter

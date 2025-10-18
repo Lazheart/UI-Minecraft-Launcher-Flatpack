@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from ui.theme import BUTTON_STYLE
+from ui.theme.styles import BUTTON_STYLE
 
 class LauncherButton(ctk.CTkButton):
     """
