@@ -5,3 +5,4 @@ from ui.theme.styles import (
     FRAME_STYLE,
     LABEL_STYLE
 )
+from .colors import COLORS
