@@ -13,19 +13,8 @@ export LD_LIBRARY_PATH="$APP_DIR/lib:$LD_LIBRARY_PATH"
 export PYTHONPATH="$APP_DIR:$PYTHONPATH"
 
 # Variables para GUI (importante para que la UI se muestre)
-export QT_QPA_PLATFORM="wayland;xcb"
-export QTWEBENGINE_CHROMIUM_FLAGS="--no-sandbox"
 export DISPLAY="${DISPLAY:-:0}"
 
-# 🧩 Añadido: Variables de teclado y EGLUT para evitar "UNKNOWN KEY"
-export XKB_DEFAULT_LAYOUT=${XKB_DEFAULT_LAYOUT:-us}
-export XKB_DEFAULT_MODEL=${XKB_DEFAULT_MODEL:-pc105}
-export XKB_DEFAULT_OPTIONS=${XKB_DEFAULT_OPTIONS:-grp:alt_shift_toggle}
-export EGL_PLATFORM=${EGL_PLATFORM:-x11}  # fuerza EGLUT a usar X11
-
-# 🧩 Añadido: fallback por si no hay variables X11 / Wayland
-export XAUTHORITY="${XAUTHORITY:-${HOME}/.Xauthority}"
-export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
 
 # Logs para depuración (útil para debuggear problemas)
 LOG_FILE="$HOME/.minecraft-launcher-flatpak.log"
@@ -34,7 +23,6 @@ echo "[$(date)] Wrapper iniciado - FLATPAK_ID: $FLATPAK_ID" >> "$LOG_FILE"
 echo "[Wrapper] Iniciando Minecraft Bedrock Launcher..."
 echo "[Wrapper] APP_DIR: $APP_DIR"
 echo "[Wrapper] BIN_DIR: $BIN_DIR"
-echo "[Wrapper] Teclado configurado: layout=$XKB_DEFAULT_LAYOUT, model=$XKB_DEFAULT_MODEL"
 
 # Verificar si el launcher Python existe
 if [ -f "$PYTHON_LAUNCHER" ]; then
