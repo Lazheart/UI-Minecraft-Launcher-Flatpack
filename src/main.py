@@ -8,9 +8,21 @@ import subprocess
 IS_FLATPAK = os.environ.get("FLATPAK_ID") is not None
 
 # Ajustar sys.path para importar el módulo de UI desde /app o desde desarrollo
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if BASE_DIR not in sys.path:
+if IS_FLATPAK:
+    # En Flatpak, el código está en /app
+    BASE_DIR = "/app"
     sys.path.insert(0, BASE_DIR)
+else:
+    # En desarrollo, usar el directorio padre
+    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    if BASE_DIR not in sys.path:
+        sys.path.insert(0, BASE_DIR)
+
+# Solo mostrar debug en desarrollo
+if not IS_FLATPAK:
+    print(f"[Launcher] BASE_DIR: {BASE_DIR}")
+    print(f"[Launcher] IS_FLATPAK: {IS_FLATPAK}")
+    print(f"[Launcher] sys.path: {sys.path[:3]}...")  # Solo mostrar los primeros 3
 
 from ui.app import LauncherApp
 from ui.utils import paths
