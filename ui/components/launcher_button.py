@@ -15,9 +15,4 @@ class LauncherButton(ctk.CTkButton):
 
         # Si se pasa un ícono, lo configuramos
         if icon_path:
-            try:
-                from PIL import Image, ImageTk
-                image = ctk.CTkImage(light_image=Image.open(icon_path), size=(24, 24))
-                self.configure(image=image, compound="left")
-            except Exception as e:
-                print(f"[LauncherButton] No se pudo cargar el icono: {e}")
+            print(f"[LauncherButton] Funcionalidad de iconos no disponible (Pillow no instalado)")
