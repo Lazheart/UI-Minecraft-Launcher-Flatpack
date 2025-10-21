@@ -23,7 +23,7 @@ LOG_FILE="$HOME/.minecraft-launcher-flatpak.log"
     echo "[$(date)] ======================================="
     echo "[Wrapper] Iniciando Minecraft Bedrock Launcher..."
     export XKB_CONFIG_ROOT="/app/share/X11/xkb"
-    # export EGLUT_NO_WARNINGS=1
+    export EGLUT_NO_WARNINGS=1
     echo "[Wrapper] APP_DIR: $APP_DIR"
     echo "[Wrapper] BIN_DIR: $BIN_DIR"
     echo "[Wrapper] DATA_DIR: $DATA_DIR"
