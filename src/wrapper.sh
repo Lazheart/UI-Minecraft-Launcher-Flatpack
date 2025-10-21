@@ -2,6 +2,7 @@
 set -e
 
 # === Minecraft Bedrock Launcher - Flatpak Wrapper ===
+export XKB_CONFIG_ROOT="/app/share/X11/xkb"
 
 # 📦 Directorios base dentro del sandbox Flatpak
 APP_DIR="/app"
@@ -21,6 +22,8 @@ LOG_FILE="$HOME/.minecraft-launcher-flatpak.log"
 {
     echo "[$(date)] ======================================="
     echo "[Wrapper] Iniciando Minecraft Bedrock Launcher..."
+    export XKB_CONFIG_ROOT="/app/share/X11/xkb"
+    # export EGLUT_NO_WARNINGS=1
     echo "[Wrapper] APP_DIR: $APP_DIR"
     echo "[Wrapper] BIN_DIR: $BIN_DIR"
     echo "[Wrapper] DATA_DIR: $DATA_DIR"
@@ -71,8 +74,8 @@ else
 
     {
         echo "[Error] ❌ No se encontró ningún binario ejecutable"
-        echo "[Error] PYTHON_LAUNCHER: $PYTHON_LAUNCHER"
         echo "[Error] CLIENT_BIN: $CLIENT_BIN"
+        echo "[Error] PYTHON_LAUNCHER: $PYTHON_LAUNCHER"
         echo "[Error] Contenido de $BIN_DIR:"
         ls -la "$BIN_DIR" 2>/dev/null
         echo "[Error] Contenido de $APP_DIR:"
