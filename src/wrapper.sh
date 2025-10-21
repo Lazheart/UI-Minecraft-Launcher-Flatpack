@@ -2,85 +2,54 @@
 set -e
 
 # === Minecraft Bedrock Launcher - Flatpak Wrapper ===
-export XKB_CONFIG_ROOT="/app/share/X11/xkb"
 
 # 📦 Directorios base dentro del sandbox Flatpak
 APP_DIR="/app"
 BIN_DIR="$APP_DIR/bin"
 PYTHON_LAUNCHER="$BIN_DIR/minecraft-launcher-ui"
 CLIENT_BIN="$BIN_DIR/mcpelauncher-client"
-
-# 📁 Directorio de datos del usuario (XDG)
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.var/app/org.lazheart.minecraft-launcher/data}"
 
-# 🧠 Variables de entorno mínimas necesarias
+# 🧠 Variables de entorno necesarias
 export PATH="$BIN_DIR:$PATH"
 export PYTHONPATH="$APP_DIR/share/minecraft-launcher:$APP_DIR:$PYTHONPATH"
+export LD_LIBRARY_PATH="$APP_DIR/lib:$LD_LIBRARY_PATH"
 
-# 🧰 Archivo de log para depuración persistente
+# 🧩 Engaño para EGLUT y teclado (evita el popup “Unknown Key”)
+export XKB_CONFIG_ROOT="/app/share/X11/xkb"
+mkdir -p "$XKB_CONFIG_ROOT/rules"
+touch "$XKB_CONFIG_ROOT/rules/evdev"
+export EGLUT_NO_WARNINGS=1
+
+# 🧰 Log persistente
 LOG_FILE="$HOME/.minecraft-launcher-flatpak.log"
 {
     echo "[$(date)] ======================================="
     echo "[Wrapper] Iniciando Minecraft Bedrock Launcher..."
-    export XKB_CONFIG_ROOT="/app/share/X11/xkb"
-    export EGLUT_NO_WARNINGS=1
     echo "[Wrapper] APP_DIR: $APP_DIR"
     echo "[Wrapper] BIN_DIR: $BIN_DIR"
     echo "[Wrapper] DATA_DIR: $DATA_DIR"
-    echo "[Wrapper] FLATPAK_ID: ${FLATPAK_ID:-no definido}"
     echo "[Wrapper] DISPLAY: ${DISPLAY:-no definido}"
     echo "-----------------------------------------------"
 } >> "$LOG_FILE"
 
-# 🧩 Verificar existencia del lanzador Python (UI)
+# 🧩 Ejecutar interfaz Python (UI)
 if [ -f "$PYTHON_LAUNCHER" ]; then
     echo "[Wrapper] Ejecutando interfaz Python..."
-    echo "[Wrapper] Archivo encontrado: $PYTHON_LAUNCHER"
-    echo "[Wrapper] Cambiando a directorio de aplicación: $APP_DIR"
     cd "$APP_DIR"
+    exec python3 "$PYTHON_LAUNCHER" "$@" 2>>"$LOG_FILE"
 
-    # 🧩 Añadir librerías internas solo para la UI (Tkinter necesita Tcl/Tk)
-    export LD_LIBRARY_PATH="$APP_DIR/lib:$LD_LIBRARY_PATH"
-
-    {
-        echo "[Wrapper] LD_LIBRARY_PATH temporal: $LD_LIBRARY_PATH"
-        echo "[Wrapper] Iniciando interfaz gráfica con Python..."
-    } >> "$LOG_FILE"
-
-    # 🪶 Ejecutar la UI del launcher
-    exec python3 "$PYTHON_LAUNCHER" "$@"
-
-# 🧩 Si no hay UI, intentar usar el cliente nativo
+# 🧩 Fallback: ejecutar cliente nativo
 elif [ -x "$CLIENT_BIN" ]; then
-    echo "[Wrapper] Ejecutando cliente nativo..."
-    {
-        echo "[Wrapper] Ejecutando cliente nativo..."
-        echo "[Wrapper] LD_LIBRARY_PATH actual: ${LD_LIBRARY_PATH:-no definido}"
-    } >> "$LOG_FILE"
+    echo "[Wrapper] Ejecutando cliente nativo (silenciado)..."
+    exec "$CLIENT_BIN" "$@" 2>>"$LOG_FILE" >/dev/null
 
-    exec "$CLIENT_BIN" "$@"
-
-# ❌ Si no hay ningún ejecutable disponible, mostrar diagnóstico completo
+# ❌ Diagnóstico
 else
     echo "[Error] ❌ No se encontró ningún binario ejecutable"
-    echo "[Error] PYTHON_LAUNCHER: $PYTHON_LAUNCHER (existe: $([ -f "$PYTHON_LAUNCHER" ] && echo 'SÍ' || echo 'NO'))"
-    echo "[Error] CLIENT_BIN: $CLIENT_BIN (existe: $([ -x "$CLIENT_BIN" ] && echo 'SÍ' || echo 'NO'))"
-
     echo "[Error] Contenido de $BIN_DIR:"
-    ls -la "$BIN_DIR" 2>/dev/null || echo "No se puede listar $BIN_DIR"
-
+    ls -la "$BIN_DIR" 2>/dev/null
     echo "[Error] Contenido de $APP_DIR:"
-    ls -la "$APP_DIR" 2>/dev/null || echo "No se puede listar $APP_DIR"
-
-    {
-        echo "[Error] ❌ No se encontró ningún binario ejecutable"
-        echo "[Error] CLIENT_BIN: $CLIENT_BIN"
-        echo "[Error] PYTHON_LAUNCHER: $PYTHON_LAUNCHER"
-        echo "[Error] Contenido de $BIN_DIR:"
-        ls -la "$BIN_DIR" 2>/dev/null
-        echo "[Error] Contenido de $APP_DIR:"
-        ls -la "$APP_DIR" 2>/dev/null
-    } >> "$LOG_FILE"
-
+    ls -la "$APP_DIR" 2>/dev/null
     exit 1
 fi
