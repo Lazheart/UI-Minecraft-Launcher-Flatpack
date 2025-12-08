@@ -11,14 +11,15 @@ Rectangle {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         Item {
-            width: Math.max(parent.width, 950 + 60)
-            height: contentLayout.height
+            width: parent.width
+            height: contentLayout.implicitHeight + 80
 
             ColumnLayout {
                 id: contentLayout
                 width: Math.min(parent.width - 60, 950)
-                x: Math.max((parent.width - width) / 2, 30)
-                y: 40
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: 40
                 spacing: 32
 
                 // TÍTULO
@@ -51,7 +52,7 @@ Rectangle {
                     Layout.fillWidth: true
                 }
 
-                Item { Layout.fillHeight: true; height: 60 }
+                Item { Layout.preferredHeight: 60 }
             }
         }
     }

@@ -7,6 +7,8 @@ Rectangle {
     radius: 16
     border.color: "#343434"
     border.width: 1
+    Layout.minimumHeight: 180
+    Layout.fillWidth: true
 
     ColumnLayout {
         anchors.fill: parent
@@ -14,6 +16,7 @@ Rectangle {
         spacing: 16
 
         RowLayout {
+            Layout.fillWidth: true
             spacing: 16
 
             Rectangle {
@@ -40,6 +43,7 @@ Rectangle {
                 font.pixelSize: 20
                 font.bold: true
                 color: "#ffffff"
+                wrapMode: Text.WordWrap
                 Layout.alignment: Qt.AlignVCenter
             }
         }

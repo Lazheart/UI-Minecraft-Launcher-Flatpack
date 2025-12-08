@@ -9,6 +9,7 @@ Rectangle {
     border.width: 1
     clip: true
     Layout.preferredHeight: 220
+    Layout.fillWidth: true
 
     Image {
         anchors.fill: parent

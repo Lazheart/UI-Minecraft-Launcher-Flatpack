@@ -7,6 +7,8 @@ Rectangle {
     radius: 18
     border.color: "#363636"
     border.width: 1
+    Layout.minimumHeight: 200
+    Layout.fillWidth: true
 
     ColumnLayout {
         anchors.fill: parent
@@ -36,6 +38,8 @@ Rectangle {
                     font.pixelSize: 18
                     font.bold: true
                     color: "#ffffff"
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
 
                 Text {
