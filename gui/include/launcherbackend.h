@@ -27,6 +27,12 @@ public:
     Q_INVOKABLE QString getAppDir() const;
     Q_INVOKABLE QString getDataDir() const;
     Q_INVOKABLE void showNotification(const QString &title, const QString &message);
+    Q_INVOKABLE void installVersion(const QString &name,
+                                    const QString &apkRoute,
+                                    const QString &iconPath = QString(),
+                                    const QString &backgroundPath = QString(),
+                                    bool useDefaultIcon = true,
+                                    bool useDefaultBackground = true);
 
 signals:
     void statusChanged(const QString &status);
@@ -35,6 +41,12 @@ signals:
     void gameStopped();
     void errorOccurred(const QString &error);
     void logMessage(const QString &message);
+    void installVersionRequested(const QString &name,
+                                 const QString &apkRoute,
+                                 const QString &iconPath,
+                                 const QString &backgroundPath,
+                                 bool useDefaultIcon,
+                                 bool useDefaultBackground);
 
 private slots:
     void onProcessStarted();

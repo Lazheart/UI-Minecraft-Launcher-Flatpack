@@ -115,6 +115,21 @@ ApplicationWindow {
             }
         }
     }
+
+    InstallVersionDialog {
+        id: installVersionDialog
+        parent: mainWindow.contentItem
+        anchorItem: stackView
+        backgroundColor: "#171515"
+        surfaceColor: "#0f0f0f"
+        accentColor: mainWindow.accentColor
+        textColor: mainWindow.textColor
+        secondaryTextColor: mainWindow.secondaryTextColor
+
+        onInstallRequested: function(name, apkPath, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath) {
+            launcherBackend.installVersion(name, apkPath, iconPath, backgroundPath, useDefaultIcon, useDefaultBackground)
+        }
+    }
     
     ColumnLayout {
         anchors.fill: parent
@@ -143,6 +158,8 @@ ApplicationWindow {
             SideBar {
                 Layout.preferredWidth: 280
                 Layout.fillHeight: true
+
+                onAddVersionsRequested: installVersionDialog.open()
             }
             
             // Contenido principal

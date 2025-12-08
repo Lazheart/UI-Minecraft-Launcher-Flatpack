@@ -7,6 +7,8 @@
         <file>NavBar.qml</file>
         <file>NavBarButton.qml</file>
         <file>SideBar.qml</file>
+        <file>InstallVersionDialog.qml</file>
+        <file>Media.js</file>
         
         <!-- Page Components -->
         <file>HomePage.qml</file>
@@ -17,5 +19,10 @@
         <file>PlayTab.qml</file>
         <file>SettingsTab.qml</file>
         <file>LogsTab.qml</file>
+
+        <!-- Media Assets -->
+        <file alias="assets/media/logo.svg">../../assets/media/logo.svg</file>
+        <file alias="assets/media/bedrockLogo.png">../../assets/media/bedrockLogo.png</file>
+        <file alias="assets/icons/trash.ico">../../assets/icons/trash.ico</file>
     </qresource>
 </RCC>

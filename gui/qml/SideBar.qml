@@ -1,11 +1,18 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "Media.js" as Media
 
 Rectangle {
     id: sideBar
     width: 280
-    color: "#1e1e1e"
+    color: "#171515"
+    property color baseColor: "#171515"
+    property color highlightColor: "#302C2C"
+    property color listItemBaseColor: "#231f1f"
+
+    signal addVersionsRequested()
+    signal deleteVersionsRequested()
     
     ColumnLayout {
         anchors.fill: parent
@@ -14,12 +21,15 @@ Rectangle {
         
         // Sección Installed Versions
         Rectangle {
+            id: versionsHeader
             Layout.fillWidth: true
             Layout.preferredHeight: 60
-            color: "#2d2d2d"
+            color: versionsMenu.isExpanded || headerMouse.containsMouse ? sideBar.highlightColor : sideBar.baseColor
             
             MouseArea {
+                id: headerMouse
                 anchors.fill: parent
+                hoverEnabled: true
                 onClicked: versionsMenu.isExpanded = !versionsMenu.isExpanded
                 
                 RowLayout {
@@ -27,18 +37,31 @@ Rectangle {
                     anchors.margins: 12
                     spacing: 10
                     
-                    Rectangle {
+                    Item {
                         Layout.preferredWidth: 32
                         Layout.preferredHeight: 32
-                        color: "#4CAF50"
-                        radius: 4
                         
-                        Text {
-                            anchors.centerIn: parent
-                            text: "M"
-                            font.pixelSize: 16
-                            font.bold: true
-                            color: "#ffffff"
+                        Image {
+                            id: versionsIcon
+                            anchors.fill: parent
+                            source: Media.BedrockLogo
+                            fillMode: Image.PreserveAspectFit
+                            cache: true
+                        }
+                        
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "#4CAF50"
+                            radius: 4
+                            visible: versionsIcon.status !== Image.Ready
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: "M"
+                                font.pixelSize: 16
+                                font.bold: true
+                                color: "#ffffff"
+                            }
                         }
                     }
                     
@@ -68,7 +91,7 @@ Rectangle {
             id: versionsMenu
             Layout.fillWidth: true
             Layout.preferredHeight: isExpanded ? 200 : 0
-            color: "#252525"
+            color: sideBar.highlightColor
             clip: true
             
             property bool isExpanded: false
@@ -86,10 +109,10 @@ Rectangle {
                     spacing: 0
                     
                     // Si no hay versiones
-                    Rectangle {
-                        width: parent.width
-                        height: 80
-                        color: "transparent"
+                        Rectangle {
+                            width: parent.width
+                            height: 80
+                            color: "transparent"
                         visible: minecraftManager.getAvailableVersions().length === 0
                         
                         Text {
@@ -108,15 +131,15 @@ Rectangle {
                         model: Math.min(minecraftManager.getAvailableVersions().length, 5)
                         
                         Rectangle {
+                            id: versionItem
                             width: parent.width
                             height: 40
-                            color: index % 2 === 0 ? "#2d2d2d" : "#252525"
+                            color: versionMouse.containsMouse ? sideBar.highlightColor : sideBar.listItemBaseColor
                             
                             MouseArea {
+                                id: versionMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onEntered: parent.color = "#3d3d3d"
-                                onExited: parent.color = index % 2 === 0 ? "#2d2d2d" : "#252525"
                             }
                             
                             Text {
@@ -140,33 +163,38 @@ Rectangle {
         
         // Pie de SideBar - Add Versions
         Rectangle {
+            id: addButton
             Layout.fillWidth: true
             Layout.preferredHeight: 50
-            color: "#2d2d2d"
+            color: addMouse.containsMouse ? sideBar.highlightColor : sideBar.baseColor
             
             MouseArea {
+                id: addMouse
                 anchors.fill: parent
-                onClicked: console.log("[SideBar] Add versions")
                 hoverEnabled: true
-                onEntered: parent.color = "#3d3d3d"
-                onExited: parent.color = "#2d2d2d"
                 
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 12
                     spacing: 10
                     
-                    Image {
+                    Item {
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
-                        source: "file:///home/lazheart/Escritorio/UI-Minecraft-Launcher-Flatpack/assets/media/bedrockLogo.png"
-                        cache: true
+                        
+                        Image {
+                            id: addIcon
+                            anchors.fill: parent
+                            source: Media.BedrockLogo
+                            fillMode: Image.PreserveAspectFit
+                            cache: true
+                        }
                         
                         Rectangle {
                             anchors.fill: parent
                             color: "#4CAF50"
                             radius: 3
-                            visible: parent.status !== Image.Ready
+                            visible: addIcon.status !== Image.Ready
                             
                             Text {
                                 anchors.centerIn: parent
@@ -185,39 +213,53 @@ Rectangle {
                         Layout.fillWidth: true
                     }
                 }
+
+                onClicked: sideBar.addVersionsRequested()
             }
         }
         
         // Delete Versions
         Rectangle {
+            id: deleteButton
             Layout.fillWidth: true
             Layout.preferredHeight: 50
-            color: "#2d2d2d"
+            color: deleteMouse.containsMouse ? sideBar.highlightColor : sideBar.baseColor
             
             MouseArea {
+                id: deleteMouse
                 anchors.fill: parent
-                onClicked: console.log("[SideBar] Delete versions")
                 hoverEnabled: true
-                onEntered: parent.color = "#3d3d3d"
-                onExited: parent.color = "#2d2d2d"
                 
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 12
                     spacing: 10
                     
-                    Rectangle {
+                    Item {
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
-                        color: "#f44336"
-                        radius: 3
                         
-                        Text {
-                            anchors.centerIn: parent
-                            text: "✕"
-                            color: "#ffffff"
-                            font.bold: true
-                            font.pixelSize: 16
+                        Image {
+                            id: deleteIcon
+                            anchors.fill: parent
+                            source: Media.TrashIcon
+                            fillMode: Image.PreserveAspectFit
+                            cache: true
+                        }
+                        
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "#f44336"
+                            radius: 3
+                            visible: deleteIcon.status !== Image.Ready
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: "✕"
+                                color: "#ffffff"
+                                font.bold: true
+                                font.pixelSize: 16
+                            }
                         }
                     }
                     
@@ -228,6 +270,8 @@ Rectangle {
                         Layout.fillWidth: true
                     }
                 }
+
+                onClicked: sideBar.deleteVersionsRequested()
             }
         }
         
@@ -235,7 +279,7 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 60
-            color: "#1e1e1e"
+            color: sideBar.baseColor
             
             ColumnLayout {
                 anchors.fill: parent

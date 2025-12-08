@@ -156,6 +156,41 @@ void LauncherBackend::showNotification(const QString &title, const QString &mess
     }
 }
 
+void LauncherBackend::installVersion(const QString &name,
+                                     const QString &apkRoute,
+                                     const QString &iconPath,
+                                     const QString &backgroundPath,
+                                     bool useDefaultIcon,
+                                     bool useDefaultBackground)
+{
+    const QString trimmedName = name.trimmed();
+    const QString trimmedApk = apkRoute.trimmed();
+
+    if (trimmedName.isEmpty() || trimmedApk.isEmpty()) {
+        emit errorOccurred("Debe proporcionar un nombre y la ruta del APK");
+        return;
+    }
+
+    emit logMessage(QString("[Installer] Solicitud de instalación: %1").arg(trimmedName));
+    emit logMessage(QString("[Installer] APK: %1").arg(trimmedApk));
+    emit logMessage(QString("[Installer] Icono: %1 (default=%2)")
+                    .arg(iconPath.isEmpty() ? "<defecto>" : iconPath,
+                         useDefaultIcon ? "sí" : "no"));
+    emit logMessage(QString("[Installer] Fondo: %1 (default=%2)")
+                    .arg(backgroundPath.isEmpty() ? "<defecto>" : backgroundPath,
+                         useDefaultBackground ? "sí" : "no"));
+
+    emit installVersionRequested(trimmedName,
+                                 trimmedApk,
+                                 iconPath,
+                                 backgroundPath,
+                                 useDefaultIcon,
+                                 useDefaultBackground);
+
+    showNotification("Install Version",
+                     QString("Instalando %1...").arg(trimmedName));
+}
+
 void LauncherBackend::onProcessStarted()
 {
     setStatus("Juego en ejecución");

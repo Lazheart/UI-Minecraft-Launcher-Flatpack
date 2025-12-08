@@ -1,11 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "Media.js" as Media
 
 Rectangle {
     id: navBar
     height: 80
-    color: "#2d2d2d"
+    color: "#121111"
     
     // Signal para cambiar de página
     signal navigate(string page)
@@ -25,7 +26,7 @@ Rectangle {
             Image {
                 Layout.preferredWidth: 50
                 Layout.preferredHeight: 50
-                source: "file:///home/lazheart/Escritorio/UI-Minecraft-Launcher-Flatpack/assets/media/logo.svg"
+                source: Media.LogoImage
                 cache: true
                 
                 Rectangle {
