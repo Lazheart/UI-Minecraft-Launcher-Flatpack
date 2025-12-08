@@ -14,6 +14,10 @@
         <file>HomePage.qml</file>
         <file>SettingsPage.qml</file>
         <file>AboutPage.qml</file>
+        <file>AboutHeroCard.qml</file>
+        <file>AboutAuthorCard.qml</file>
+        <file>AboutFeaturesCard.qml</file>
+        <file>AboutDisclaimerCard.qml</file>
         
         <!-- Legacy Components (if still used) -->
         <file>PlayTab.qml</file>
@@ -23,6 +27,9 @@
         <!-- Media Assets -->
         <file alias="assets/media/logo.svg">../../assets/media/logo.svg</file>
         <file alias="assets/media/bedrockLogo.png">../../assets/media/bedrockLogo.png</file>
-        <file alias="assets/icons/trash.ico">../../assets/icons/trash.ico</file>
+        <file alias="assets/media/yo.png">../../assets/media/yo.png</file>
+            <file alias="assets/backgrounds/Minecraft_village.jpg">../../assets/backgrounds/Minecraft_village.jpg</file>
+        <file alias="assets/media/directAccess.png">../../assets/media/directAccess.png</file>
+            <file alias="assets/icons/trash.ico">../../assets/icons/trash.ico</file>
     </qresource>
 </RCC>

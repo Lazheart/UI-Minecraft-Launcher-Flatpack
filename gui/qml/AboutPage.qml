@@ -8,83 +8,51 @@ Rectangle {
     ScrollView {
         anchors.fill: parent
         clip: true
-        
-        ColumnLayout {
-            width: parent.width
-            spacing: 20
-            anchors.margins: 30
-            
-            Text {
-                text: "About Enkidu Launcher"
-                font.pixelSize: 32
-                font.bold: true
-                color: "#ffffff"
-                Layout.topMargin: 20
-            }
-            
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 200
-                color: "#2d2d2d"
-                radius: 8
-                
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 15
-                    
-                    Text {
-                        text: "Minecraft Bedrock Launcher"
-                        font.pixelSize: 18
-                        font.bold: true
-                        color: "#4CAF50"
-                    }
-                    
-                    Text {
-                        text: "Version: " + launcherBackend.version
-                        color: "#b0b0b0"
-                        font.pixelSize: 12
-                    }
-                    
-                    Text {
-                        text: "A modern Qt Quick/QML interface for launching Minecraft Bedrock Edition on Linux."
-                        color: "#b0b0b0"
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+        Item {
+            width: Math.max(parent.width, 950 + 60)
+            height: contentLayout.height
+
+            ColumnLayout {
+                id: contentLayout
+                width: Math.min(parent.width - 60, 950)
+                x: Math.max((parent.width - width) / 2, 30)
+                y: 40
+                spacing: 32
+
+                // TÍTULO
+                Text {
+                    text: "About Enkidu Launcher"
+                    font.pixelSize: 36
+                    font.bold: true
+                    color: "#ffffff"
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
-            }
-            
-            Rectangle {
-                Layout.fillWidth: true
-                color: "#2d2d2d"
-                radius: 8
-                Layout.preferredHeight: 150
-                
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 10
-                    
-                    Text {
-                        text: "Features"
-                        font.pixelSize: 16
-                        font.bold: true
-                        color: "#ffffff"
-                    }
-                    
-                    Text {
-                        text: "✓ Modern Qt Quick/QML UI\n✓ Profile Management\n✓ Real-time Logging\n✓ Flatpak Integration"
-                        color: "#b0b0b0"
-                        font.pixelSize: 11
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
+
+                // TARJETA HERO
+                AboutHeroCard {
+                    Layout.fillWidth: true
                 }
+
+                // TARJETA AUTOR
+                AboutAuthorCard {
+                    Layout.fillWidth: true
+                }
+
+                // TARJETA CARACTERÍSTICAS
+                AboutFeaturesCard {
+                    Layout.fillWidth: true
+                }
+
+                // TARJETA DISCLAIMER
+                AboutDisclaimerCard {
+                    Layout.fillWidth: true
+                }
+
+                Item { Layout.fillHeight: true; height: 60 }
             }
-            
-            Item { Layout.fillHeight: true }
         }
     }
 }
