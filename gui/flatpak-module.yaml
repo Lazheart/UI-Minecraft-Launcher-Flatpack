@@ -1,0 +1,18 @@
+  # GUI del launcher (Qt Quick/QML)
+  - name: mcpelauncher-gui
+    buildsystem: cmake
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_PREFIX_PATH=/usr/lib/sdk/qt5/lib/cmake
+      - -DCMAKE_INSTALL_PREFIX=/app
+    sources:
+      - type: dir
+        path: gui
+    build-commands:
+      - cmake -B build -S . 
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_PREFIX_PATH=/usr/lib/sdk/qt5/lib/cmake
+          -DCMAKE_INSTALL_PREFIX=/app
+      - make -C build -j4
+      - make -C build install

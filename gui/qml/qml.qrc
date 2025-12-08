@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Main QML Files -->
+        <file>main.qml</file>
+        
+        <!-- Navigation Components -->
+        <file>NavBar.qml</file>
+        <file>NavBarButton.qml</file>
+        <file>SideBar.qml</file>
+        
+        <!-- Page Components -->
+        <file>HomePage.qml</file>
+        <file>SettingsPage.qml</file>
+        <file>AboutPage.qml</file>
+        
+        <!-- Legacy Components (if still used) -->
+        <file>PlayTab.qml</file>
+        <file>SettingsTab.qml</file>
+        <file>LogsTab.qml</file>
+    </qresource>
+</RCC>

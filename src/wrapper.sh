@@ -4,7 +4,7 @@ set -e
 # Directorio del lanzador dentro del sandbox Flatpak
 APP_DIR="/app"
 BIN_DIR="$APP_DIR/bin"
-PYTHON_LAUNCHER="$BIN_DIR/minecraft-launcher-ui"
+QT_GUI_LAUNCHER="$BIN_DIR/minecraft-launcher-gui"
 CLIENT_BIN="$BIN_DIR/mcpelauncher-client"
 
 # Configurar variables de entorno para el sandbox Flatpak
@@ -36,25 +36,22 @@ echo "[Wrapper] APP_DIR: $APP_DIR"
 echo "[Wrapper] BIN_DIR: $BIN_DIR"
 echo "[Wrapper] Teclado configurado: layout=$XKB_DEFAULT_LAYOUT, model=$XKB_DEFAULT_MODEL"
 
-# Verificar si el launcher Python existe
-if [ -f "$PYTHON_LAUNCHER" ]; then
-    echo "[Wrapper] Ejecutando interfaz Python..."
-    echo "[Wrapper] Archivo encontrado: $PYTHON_LAUNCHER"
+# Verificar si existe la GUI Qt Quick
+if [ -x "$QT_GUI_LAUNCHER" ]; then
+    echo "[Wrapper] Ejecutando interfaz Qt Quick/QML..."
+    echo "[Wrapper] Archivo encontrado: $QT_GUI_LAUNCHER"
     
-    # Cambiar al directorio de la app para que Python encuentre los módulos
-    cd "$APP_DIR"
-    
-    # Ejecutar el launcher Python con la UI
-    exec python3 "$PYTHON_LAUNCHER" "$@"
+    # Ejecutar el launcher Qt Quick con la UI
+    exec "$QT_GUI_LAUNCHER" "$@"
 
-# Si no existe la UI, usar directamente el cliente nativo
+# Si no existe la UI Qt, usar directamente el cliente nativo
 elif [ -x "$CLIENT_BIN" ]; then
-    echo "[Wrapper] Ejecutando cliente nativo..."
+    echo "[Wrapper] Ejecutando cliente nativo sin GUI..."
     exec "$CLIENT_BIN" "$@"
 
 else
     echo "[Error] No se encontró ningún binario ejecutable"
-    echo "[Error] PYTHON_LAUNCHER: $PYTHON_LAUNCHER (existe: $([ -f "$PYTHON_LAUNCHER" ] && echo "SÍ" || echo "NO"))"
+    echo "[Error] QT_GUI_LAUNCHER: $QT_GUI_LAUNCHER (existe: $([ -x "$QT_GUI_LAUNCHER" ] && echo "SÍ" || echo "NO"))"
     echo "[Error] CLIENT_BIN: $CLIENT_BIN (existe: $([ -x "$CLIENT_BIN" ] && echo "SÍ" || echo "NO"))"
     echo "[Error] Contenido de $BIN_DIR:"
     ls -la "$BIN_DIR" 2>/dev/null || echo "No se puede listar $BIN_DIR"
