@@ -7,8 +7,8 @@ Rectangle {
     radius: 16
     border.color: "#404040"
     border.width: 1
-    Layout.minimumHeight: 250
     Layout.fillWidth: true
+    Layout.minimumHeight: Math.max(implicitHeight, 400)
 
     ColumnLayout {
         anchors.fill: parent

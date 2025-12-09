@@ -56,7 +56,7 @@ Rectangle {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Desarrollo abierto, comunidad activa y soporte continuo para disfrutar de tu biblioteca de Minecraft Bedrock en Linux."
+                    text: "Desarrollo abierto, comunidad activa y soporte continuo para disfrutar tu biblioteca de Minecraft Bedrock en Linux."
                     wrapMode: Text.WordWrap
                     color: "#bcbcbc"
                     font.pixelSize: 13
