@@ -60,27 +60,53 @@ Rectangle {
                             Layout.fillWidth: true
                             spacing: 10
 
-                            ColumnLayout {
+                            // Área clickeable para seleccionar el perfil
+                            MouseArea {
                                 Layout.fillWidth: true
-                                spacing: 0
-
-                                Text {
-                                    text: modelData.name
-                                    color: modelData.name === profileManager.currentProfile ? "#1e1e1e" : "#ffffff"
-                                    font.pixelSize: 13
-                                    font.bold: true
+                                Layout.fillHeight: true
+                                onClicked: {
+                                    profileManager.currentProfile = modelData.name
+                                    
+                                    // Aplicar la configuración del perfil seleccionado
+                                    var language = modelData.language || "EN"
+                                    var theme = modelData.theme || "DARK"
+                                    var scale = modelData.scale || 1.0
+                                    
+                                    launcherBackend.applyProfileSettings(language, theme, scale)
+                                    
+                                    // Actualizar la UI con los valores del perfil
+                                    if (settingsPageRef) {
+                                        settingsPageRef.currentLanguage = language
+                                        settingsPageRef.currentTheme = theme
+                                        settingsPageRef.currentScale = scale
+                                    }
                                 }
 
-                                Text {
-                                    text: {
-                                        var info = []
-                                        if (modelData.language) info.push(modelData.language)
-                                        if (modelData.theme) info.push(modelData.theme)
-                                        if (modelData.scale) info.push(modelData.scale + "x")
-                                        return info.length > 0 ? info.join(" | ") : "Version: " + (modelData.version || "latest")
+                                ColumnLayout {
+                                    anchors {
+                                        fill: parent
+                                        margins: 0
                                     }
-                                    color: modelData.name === profileManager.currentProfile ? "#2d2d2d" : "#b0b0b0"
-                                    font.pixelSize: 10
+                                    spacing: 0
+
+                                    Text {
+                                        text: modelData.name
+                                        color: modelData.name === profileManager.currentProfile ? "#1e1e1e" : "#ffffff"
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: {
+                                            var info = []
+                                            if (modelData.language) info.push(modelData.language)
+                                            if (modelData.theme) info.push(modelData.theme)
+                                            if (modelData.scale) info.push(modelData.scale + "x")
+                                            return info.length > 0 ? info.join(" | ") : "Version: " + (modelData.version || "latest")
+                                        }
+                                        color: modelData.name === profileManager.currentProfile ? "#2d2d2d" : "#b0b0b0"
+                                        font.pixelSize: 10
+                                    }
                                 }
                             }
 
@@ -101,6 +127,7 @@ Rectangle {
                                     font.pixelSize: 14
                                     font.bold: true
                                     horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
                                 }
 
                                 onClicked: {
@@ -108,27 +135,6 @@ Rectangle {
                                         profileManager.removeProfile(modelData.name)
                                     }
                                 }
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            profileManager.currentProfile = modelData.name
-                            
-                            // Aplicar la configuración del perfil seleccionado
-                            var language = modelData.language || "EN"
-                            var theme = modelData.theme || "DARK"
-                            var scale = modelData.scale || 1.0
-                            
-                            launcherBackend.applyProfileSettings(language, theme, scale)
-                            
-                            // Actualizar la UI con los valores del perfil
-                            if (settingsPageRef) {
-                                settingsPageRef.currentLanguage = language
-                                settingsPageRef.currentTheme = theme
-                                settingsPageRef.currentScale = scale
                             }
                         }
                     }
