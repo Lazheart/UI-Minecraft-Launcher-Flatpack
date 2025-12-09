@@ -11,6 +11,9 @@ Rectangle {
     Layout.preferredWidth: 300
     Layout.preferredHeight: 200
 
+    // Referencia a SettingsPage para acceder a los valores actuales
+    property var settingsPageRef: null
+
     ColumnLayout {
         anchors {
             fill: parent
@@ -69,7 +72,13 @@ Rectangle {
                                 }
 
                                 Text {
-                                    text: "Version: " + (modelData.version || "latest")
+                                    text: {
+                                        var info = []
+                                        if (modelData.language) info.push(modelData.language)
+                                        if (modelData.theme) info.push(modelData.theme)
+                                        if (modelData.scale) info.push(modelData.scale + "x")
+                                        return info.length > 0 ? info.join(" | ") : "Version: " + (modelData.version || "latest")
+                                    }
                                     color: modelData.name === profileManager.currentProfile ? "#2d2d2d" : "#b0b0b0"
                                     font.pixelSize: 10
                                 }
@@ -105,7 +114,23 @@ Rectangle {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: profileManager.currentProfile = modelData.name
+                        onClicked: {
+                            profileManager.currentProfile = modelData.name
+                            
+                            // Aplicar la configuración del perfil seleccionado
+                            var language = modelData.language || "EN"
+                            var theme = modelData.theme || "DARK"
+                            var scale = modelData.scale || 1.0
+                            
+                            launcherBackend.applyProfileSettings(language, theme, scale)
+                            
+                            // Actualizar la UI con los valores del perfil
+                            if (settingsPageRef) {
+                                settingsPageRef.currentLanguage = language
+                                settingsPageRef.currentTheme = theme
+                                settingsPageRef.currentScale = scale
+                            }
+                        }
                     }
                 }
             }
@@ -150,7 +175,17 @@ Rectangle {
 
                     onClicked: {
                         if (newProfileInput.text.trim() !== "") {
-                            profileManager.addProfile(newProfileInput.text.trim())
+                            // Obtener los valores actuales de SettingsPage
+                            var language = settingsPageRef ? settingsPageRef.currentLanguage : "EN"
+                            var theme = settingsPageRef ? settingsPageRef.currentTheme : "DARK"
+                            var scale = settingsPageRef ? settingsPageRef.currentScale : 1.0
+                            
+                            profileManager.addProfileWithSettings(
+                                newProfileInput.text.trim(),
+                                language,
+                                theme,
+                                scale
+                            )
                             newProfileInput.text = ""
                         }
                     }

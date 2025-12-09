@@ -16,6 +16,9 @@ class LauncherBackend : public QObject
     Q_PROPERTY(QString backgroundsPath READ backgroundsPath CONSTANT)
     Q_PROPERTY(QString iconsPath READ iconsPath CONSTANT)
     Q_PROPERTY(QString profilesPath READ profilesPath CONSTANT)
+    Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(QString theme READ theme WRITE setTheme NOTIFY themeChanged)
+    Q_PROPERTY(double scale READ scale WRITE setScale NOTIFY scaleChanged)
 
 public:
     explicit LauncherBackend(QObject *parent = nullptr);
@@ -28,9 +31,20 @@ public:
     QString backgroundsPath() const;
     QString iconsPath() const;
     QString profilesPath() const;
+    QString language() const;
+    QString theme() const;
+    double scale() const;
 
     // Métodos invocables desde QML
+    Q_INVOKABLE void setLanguage(const QString &language);
+    Q_INVOKABLE void setTheme(const QString &theme);
+    Q_INVOKABLE void setScale(double scale);
+    Q_INVOKABLE void applyProfileSettings(const QString &language, const QString &theme, double scale);
+    Q_INVOKABLE void saveProfileSettings(const QString &profileName);
     Q_INVOKABLE void openFolder(const QString &path);
+    Q_INVOKABLE void saveSettings();
+    Q_INVOKABLE void applySettings();
+    Q_INVOKABLE void resetSettings();
     Q_INVOKABLE void launchGame(const QString &profile = QString());
     Q_INVOKABLE void stopGame();
     Q_INVOKABLE QString getAppDir() const;
@@ -50,6 +64,9 @@ signals:
     void gameStopped();
     void errorOccurred(const QString &error);
     void logMessage(const QString &message);
+    void languageChanged(const QString &language);
+    void themeChanged(const QString &theme);
+    void scaleChanged(double scale);
     void installVersionRequested(const QString &name,
                                  const QString &apkRoute,
                                  const QString &iconPath,
@@ -72,6 +89,9 @@ private:
     QString m_backgroundsPath;
     QString m_iconsPath;
     QString m_profilesPath;
+    QString m_language;
+    QString m_theme;
+    double m_scale;
     QSettings *m_settings;
 
     void setStatus(const QString &status);

@@ -26,6 +26,11 @@ LauncherBackend::LauncherBackend(QObject *parent)
     m_iconsPath = configPath + "/minecraft-launcher/icons";
     m_profilesPath = configPath + "/minecraft-launcher/profiles";
     
+    // Inicializar valores de sesión con defaults
+    m_language = "EN";
+    m_theme = "DARK";
+    m_scale = 1.0;
+    
     // Crear directorios si no existen
     QDir().mkpath(m_dataDir);
     QDir().mkpath(m_versionsPath);
@@ -94,6 +99,48 @@ QString LauncherBackend::profilesPath() const
     return m_profilesPath;
 }
 
+QString LauncherBackend::language() const
+{
+    return m_language;
+}
+
+QString LauncherBackend::theme() const
+{
+    return m_theme;
+}
+
+double LauncherBackend::scale() const
+{
+    return m_scale;
+}
+
+void LauncherBackend::setLanguage(const QString &language)
+{
+    if (m_language != language) {
+        m_language = language;
+        emit languageChanged(language);
+        qDebug() << "[Backend] Idioma cambiado en sesión actual a:" << language;
+    }
+}
+
+void LauncherBackend::setTheme(const QString &theme)
+{
+    if (m_theme != theme) {
+        m_theme = theme;
+        emit themeChanged(theme);
+        qDebug() << "[Backend] Tema cambiado en sesión actual a:" << theme;
+    }
+}
+
+void LauncherBackend::setScale(double scale)
+{
+    if (m_scale != scale) {
+        m_scale = scale;
+        emit scaleChanged(scale);
+        qDebug() << "[Backend] Escala cambiada en sesión actual a:" << scale;
+    }
+}
+
 void LauncherBackend::openFolder(const QString &path)
 {
     if (path.isEmpty()) {
@@ -111,6 +158,94 @@ void LauncherBackend::openFolder(const QString &path)
     } else {
         qDebug() << "[Backend] Carpeta abierta exitosamente:" << path;
     }
+}
+
+void LauncherBackend::saveSettings()
+{
+    // Guardar permanentemente los valores actuales de sesión
+    m_settings->setValue("language", m_language);
+    m_settings->setValue("theme", m_theme);
+    m_settings->setValue("scale", m_scale);
+    m_settings->sync();
+    
+    qDebug() << "[Backend] Configuración guardada";
+    qDebug() << "  - Idioma:" << m_language;
+    qDebug() << "  - Tema:" << m_theme;
+    qDebug() << "  - Escala:" << m_scale;
+    
+    showNotification("Settings Saved", "Your preferences have been saved");
+}
+
+void LauncherBackend::applySettings()
+{
+    // Aplicar la configuración (actualmente ya está aplicada en sesión)
+    // Este método puede usarse para aplicar cambios a componentes si es necesario
+    qDebug() << "[Backend] Configuración aplicada en sesión";
+    qDebug() << "  - Idioma:" << m_language;
+    qDebug() << "  - Tema:" << m_theme;
+    qDebug() << "  - Escala:" << m_scale;
+    
+    showNotification("Settings Applied", "Your settings have been applied");
+}
+
+void LauncherBackend::resetSettings()
+{
+    // Resetear a valores por defecto
+    m_language = "EN";
+    m_theme = "DARK";
+    m_scale = 1.0;
+    
+    // Guardar los valores por defecto
+    m_settings->setValue("language", m_language);
+    m_settings->setValue("theme", m_theme);
+    m_settings->setValue("scale", m_scale);
+    m_settings->sync();
+    
+    qDebug() << "[Backend] Configuración reseteada a valores por defecto";
+    
+    // Emitir signals para actualizar la UI
+    emit languageChanged(m_language);
+    emit themeChanged(m_theme);
+    emit scaleChanged(m_scale);
+    
+    showNotification("Settings Reset", "Settings have been reset to default");
+}
+
+void LauncherBackend::applyProfileSettings(const QString &language, const QString &theme, double scale)
+{
+    // Aplicar los valores del perfil a la sesión actual sin guardar permanentemente
+    m_language = language;
+    m_theme = theme;
+    m_scale = scale;
+    
+    qDebug() << "[Backend] Configuración del perfil cargada en sesión";
+    qDebug() << "  - Idioma:" << m_language;
+    qDebug() << "  - Tema:" << m_theme;
+    qDebug() << "  - Escala:" << m_scale;
+    
+    // Emitir signals para actualizar la UI
+    emit languageChanged(m_language);
+    emit themeChanged(m_theme);
+    emit scaleChanged(m_scale);
+    
+    showNotification("Profile Loaded", QString("Profile settings loaded: %1").arg(language));
+}
+
+void LauncherBackend::saveProfileSettings(const QString &profileName)
+{
+    // Guardar permanentemente los valores actuales como configuración del perfil
+    // Los valores ya están en m_language, m_theme, m_scale
+    m_settings->setValue(QString("profile/%1/language").arg(profileName), m_language);
+    m_settings->setValue(QString("profile/%1/theme").arg(profileName), m_theme);
+    m_settings->setValue(QString("profile/%1/scale").arg(profileName), m_scale);
+    m_settings->sync();
+    
+    qDebug() << "[Backend] Configuración del perfil" << profileName << "guardada";
+    qDebug() << "  - Idioma:" << m_language;
+    qDebug() << "  - Tema:" << m_theme;
+    qDebug() << "  - Escala:" << m_scale;
+    
+    showNotification("Profile Saved", QString("Profile '%1' configuration saved").arg(profileName));
 }
 
 void LauncherBackend::launchGame(const QString &profile)
