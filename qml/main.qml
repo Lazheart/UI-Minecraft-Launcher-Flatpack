@@ -20,6 +20,7 @@ ApplicationWindow {
     readonly property color secondaryTextColor: "#b0b0b0"
     
     property string currentPage: "Home"
+    property bool sidebarVisible: true
     
     Component.onCompleted: {
         console.log("[QML] Launcher iniciado")
@@ -165,6 +166,8 @@ ApplicationWindow {
                 mainWindow.currentPage = page
                 stackView.currentIndex = getPageIndex(page)
             }
+            
+            onToggleSidebar: mainWindow.sidebarVisible = !mainWindow.sidebarVisible
         }
         
         // Contenedor principal: SideBar + Contenido
@@ -175,8 +178,15 @@ ApplicationWindow {
             
             // SideBar
             SideBar {
-                Layout.preferredWidth: 280
+                id: sideBar
+                Layout.preferredWidth: mainWindow.sidebarVisible ? 280 : 0
                 Layout.fillHeight: true
+                visible: mainWindow.sidebarVisible
+                clip: true
+
+                Behavior on Layout.preferredWidth {
+                    NumberAnimation { duration: 300 }
+                }
 
                 onAddVersionsRequested: installVersionDialog.open()
                 onDeleteVersionsRequested: deleteVersionDialog.open()

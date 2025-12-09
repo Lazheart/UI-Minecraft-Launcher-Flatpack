@@ -10,6 +10,7 @@ Rectangle {
     
     // Signal para cambiar de página
     signal navigate(string page)
+    signal toggleSidebar()
     
     property string currentPage: "Home"
     
@@ -52,6 +53,30 @@ Rectangle {
                 color: "#ffffff"
                 Layout.fillWidth: true
             }
+        }
+        
+        // Botón toggle sidebar
+        Button {
+            Layout.preferredWidth: 50
+            Layout.preferredHeight: 50
+            
+            background: Rectangle {
+                color: parent.hovered ? "#2d2d2d" : "#1e1e1e"
+                radius: 6
+                border.color: parent.hovered ? "#4CAF50" : "transparent"
+                border.width: 1
+                Behavior on color { ColorAnimation { duration: 200 } }
+            }
+            
+            contentItem: Text {
+                text: "☰"
+                font.pixelSize: 24
+                color: "#4CAF50"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            
+            onClicked: navBar.toggleSidebar()
         }
         
         // Espaciador
