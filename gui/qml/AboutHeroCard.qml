@@ -69,7 +69,7 @@ Rectangle {
 
             Text {
                 Layout.fillWidth: true
-                text: "Una interfaz moderna en Qt Quick/QML para lanzar Minecraft Bedrock Edition en Linux con integración de perfiles, descargas y registros en tiempo real."
+                text: "Launcher de Minecraft Bedrock Edition en Linux mediante flatpak con integración de perfiles, customización y registros en tiempo real."
                 color: "#c0c0c0"
                 font.pixelSize: 13
                 wrapMode: Text.WordWrap

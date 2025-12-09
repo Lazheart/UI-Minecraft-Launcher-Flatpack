@@ -39,7 +39,7 @@ Rectangle {
 
             Text {
                 Layout.fillWidth: true
-                text: "Características Clave"
+                text: "Información y Características"
                 font.pixelSize: 20
                 font.bold: true
                 color: "#ffffff"
@@ -50,7 +50,7 @@ Rectangle {
 
         Text {
             Layout.fillWidth: true
-            text: "• Interfaz moderna con Qt Quick/QML diseñada para usabilidad\n• Gestión completa de perfiles y descargas de versiones\n• Registro en tiempo real para depuración y soporte\n• Integración seamless con Flatpak y app sandbox de Linux"
+            text: "• Interfaz diseñada con Qt para usabilidad\n• Gestión completa de perfiles y lenguaje \n• Registro en tiempo real para depuración y soporte\n• Integración seamless con Flatpak y app sandbox de Linux"
             color: "#b8b8b8"
             font.pixelSize: 13
             lineHeight: 1.6
