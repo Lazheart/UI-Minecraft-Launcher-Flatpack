@@ -16,11 +16,12 @@ Dialog {
     // Item that defines the visual area where the dialog should be centered.
     property Item anchorItem: null
 
-    property color backgroundColor: "#1b1a1a"
-    property color surfaceColor: "#0f0f0f"
+    property color backgroundColor: '#292929'
+    property color surfaceColor: "#2d2d2d"
     property color accentColor: "#4CAF50"
     property color textColor: "#ffffff"
     property color secondaryTextColor: "#c7c7c7"
+    property color borderColor: "#3d3d3d"
 
     property string iconPath: ""
     property string backgroundPath: ""
@@ -73,9 +74,10 @@ Dialog {
     onOpened: resetForm()
 
     background: Rectangle {
-        radius: 26
+        radius: 8
         color: surfaceColor
-        border.color: "transparent"
+        border.color: borderColor
+        border.width: 1
         clip: true
     }
 
@@ -114,9 +116,9 @@ Dialog {
                     color: textColor
                     selectByMouse: true
                     background: Rectangle {
-                        radius: 14
-                        color: "#111111"
-                        border.color: nameField.activeFocus ? accentColor : "#3a3a3a"
+                        radius: 6
+                        color: "#1a1a1a"
+                        border.color: nameField.activeFocus ? accentColor : borderColor
                         border.width: nameField.activeFocus ? 2 : 1
                     }
                 }
@@ -145,9 +147,10 @@ Dialog {
                         color: textColor
                         readOnly: true
                         background: Rectangle {
-                            radius: 14
-                            color: "#d0d0d0"
-                            border.color: "transparent"
+                            radius: 6
+                            color: '#232222'
+                            border.color: borderColor
+                            border.width: 1
                         }
                     }
 
@@ -156,7 +159,7 @@ Dialog {
                         text: "Browse"
                         Layout.preferredWidth: 100
                         background: Rectangle {
-                            radius: 12
+                            radius: 6
                             color: apkButton.pressed ? Qt.darker(accentColor, 1.5) : accentColor
                         }
                         contentItem: Text {
@@ -234,12 +237,12 @@ Dialog {
                         enabled: false
                         text: installDialog.iconPath === "" ? "Upload Here" : "Change"
                         background: Rectangle {
-                            radius: 12
-                            color: enabled ? (iconUploadButton.pressed ? "#bbbbbb" : "#d9d9d9") : "#6f6f6f"
+                            radius: 6
+                            color: enabled ? (iconUploadButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
                         }
                         contentItem: Text {
                             text: parent.text
-                            color: enabled ? "#2b2b2b" : "#1f1f1f"
+                            color: enabled ? textColor : "#999999"
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -312,12 +315,12 @@ Dialog {
                         enabled: false
                         text: installDialog.backgroundPath === "" ? "Upload Here" : "Change"
                         background: Rectangle {
-                            radius: 12
-                            color: enabled ? (backgroundUploadButton.pressed ? "#bbbbbb" : "#d9d9d9") : "#6f6f6f"
+                            radius: 6
+                            color: enabled ? (backgroundUploadButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
                         }
                         contentItem: Text {
                             text: parent.text
-                            color: enabled ? "#2b2b2b" : "#1f1f1f"
+                            color: enabled ? textColor : "#999999"
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -344,14 +347,14 @@ Dialog {
                 text: "INSTALL"
                 enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (installDialog.useDefaultIcon || installDialog.iconPath !== "") && (installDialog.useDefaultBackground || installDialog.backgroundPath !== "")
                 background: Rectangle {
-                    radius: 16
+                    radius: 6
                     color: installButton.enabled ? (installButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
                 }
                 contentItem: Text {
                     text: parent.text
                     font.pixelSize: 16
                     font.bold: true
-                    color: installButton.enabled ? textColor : "#cccccc"
+                    color: installButton.enabled ? textColor : "#999999"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }

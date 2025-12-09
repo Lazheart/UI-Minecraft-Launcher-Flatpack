@@ -8,7 +8,7 @@ Rectangle {
     border.color: "#343434"
     border.width: 1
     Layout.fillWidth: true
-    Layout.minimumHeight: Math.max(implicitHeight, 200)
+    Layout.minimumHeight: Math.max(implicitHeight, 210)
 
     ColumnLayout {
         anchors.fill: parent
