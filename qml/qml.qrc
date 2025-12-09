@@ -1,0 +1,51 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Main QML Files -->
+        <file>main.qml</file>
+        
+        <!-- Navigation Components -->
+        <file>NavBar.qml</file>
+        <file>NavBarButton.qml</file>
+        <file>SideBar.qml</file>
+        <file>InstallVersionDialog.qml</file>
+        <file>Media.js</file>
+        
+        <!-- Page Components -->
+        <file>HomePage.qml</file>
+        <file>SettingsPage.qml</file>
+        <file>AboutPage.qml</file>
+        <file>AboutHeroCard.qml</file>
+        <file>AboutAuthorCard.qml</file>
+        <file>AboutFeaturesCard.qml</file>
+        <file>AboutDisclaimerCard.qml</file>
+        
+        <!-- Settings Cards -->
+        <file>LanguageCard.qml</file>
+        <file>PathsCard.qml</file>
+        <file>VisualCard.qml</file>
+        <file>ProfilesCard.qml</file>
+        <file>DebugCard.qml</file>
+        
+        <!-- Legacy Components (if still used) -->
+        <file>PlayTab.qml</file>
+        <file>SettingsTab.qml</file>
+        <file>LogsTab.qml</file>
+
+        <!-- Media Assets -->
+        <file alias="assets/media/logo.svg">../assets/media/logo.svg</file>
+        <file alias="assets/media/bedrockLogo.png">../assets/media/bedrockLogo.png</file>
+        <file alias="assets/media/yo.png">../assets/media/yo.png</file>
+        <file alias="assets/backgrounds/Minecraft_village.jpg">../assets/backgrounds/Minecraft_village.jpg</file>
+        <file alias="assets/media/directAccess.png">../assets/media/directAccess.png</file>
+        <file alias="assets/icons/trash.ico">../assets/icons/trash.ico</file>
+        <file alias="assets/icons/play.jpg">../assets/icons/play.jpg</file>
+        <file alias="assets/icons/setting.jpg">../assets/icons/setting.jpg</file>
+        <file alias="assets/media/dropper.jpg">../assets/media/dropper.jpg</file>
+        <file alias="assets/media/libreria.jpg">../assets/media/libreria.jpg</file>
+        <file alias="assets/backgrounds/Minecraft_1.14.jpg">../assets/backgrounds/Minecraft_1.14.jpg</file>
+        <file alias="assets/backgrounds/Minecraf_1.14.2.jpg">../assets/backgrounds/Minecraf_1.14.2.jpg</file>
+        <file alias="assets/backgrounds/Minecraft_1.14.3.jpg">../assets/backgrounds/Minecraft_1.14.3.jpg</file>
+        <file alias="assets/backgrounds/Minecraf_caveandcliffs.jpg">../assets/backgrounds/Minecraf_caveandcliffs.jpg</file>
+        <file alias="assets/backgrounds/Minecraft_bee.jpg">../assets/backgrounds/Minecraft_bee.jpg</file>
+    </qresource>
+</RCC>
