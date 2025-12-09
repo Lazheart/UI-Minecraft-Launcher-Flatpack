@@ -6,13 +6,15 @@ Rectangle {
     color: "#1e1e1e"
     
     ScrollView {
+        id: scrollView
         anchors.fill: parent
         clip: true
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        contentHeight: contentLayout.implicitHeight + 80
 
         Item {
-            width: parent.width
-            height: contentLayout.implicitHeight + 80
+            width: scrollView.width
+            height: Math.max(scrollView.height, contentLayout.implicitHeight + 80)
 
             ColumnLayout {
                 id: contentLayout
