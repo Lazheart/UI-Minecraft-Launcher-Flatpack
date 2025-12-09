@@ -15,6 +15,16 @@ Rectangle {
     signal deleteVersionsRequested()
     signal versionSelected(string version)
     
+    property var versionsList: minecraftManager.getAvailableVersions()
+    
+    Connections {
+        target: minecraftManager
+        function onAvailableVersionsChanged() {
+            // Actualizar la lista de versiones
+            sideBar.versionsList = minecraftManager.getAvailableVersions()
+        }
+    }
+    
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 0
@@ -129,7 +139,7 @@ Rectangle {
                     
                     // Lista de versiones (máximo 5)
                     Repeater {
-                        model: Math.min(minecraftManager.getAvailableVersions().length, 5)
+                        model: Math.min(sideBar.versionsList.length, 5)
                         
                         Rectangle {
                             id: versionItem
@@ -141,13 +151,13 @@ Rectangle {
                                 id: versionMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onClicked: sideBar.versionSelected(minecraftManager.getAvailableVersions()[index])
+                                onClicked: sideBar.versionSelected(sideBar.versionsList[index])
                             }
                             
                             Text {
                                 anchors.fill: parent
                                 anchors.margins: 10
-                                text: minecraftManager.getAvailableVersions()[index] || ""
+                                text: sideBar.versionsList[index] || ""
                                 color: "#ffffff"
                                 font.pixelSize: 12
                                 verticalAlignment: Text.AlignVCenter

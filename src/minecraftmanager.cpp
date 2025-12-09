@@ -111,6 +111,7 @@ bool MinecraftManager::deleteVersion(const QString &version)
     }
     
     emit logMessage(QString("Versión %1 eliminada correctamente").arg(version));
+    emit availableVersionsChanged();
     return true;
 }
 

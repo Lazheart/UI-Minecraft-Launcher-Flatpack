@@ -29,6 +29,19 @@ Dialog {
 
     signal deleteRequested(var versions)
 
+    function centeredPosition() {
+        if (!parent)
+            return Qt.point(0, 0)
+        if (!anchorItem)
+            return Qt.point((parent.width - width) / 2, (parent.height - height) / 2)
+        return anchorItem.mapToItem(parent,
+                                    (anchorItem.width - width) / 2,
+                                    (anchorItem.height - height) / 2)
+    }
+
+    x: centeredPosition().x
+    y: centeredPosition().y
+
     contentItem: Rectangle {
         color: backgroundColor
         radius: 8
@@ -227,20 +240,9 @@ Dialog {
     }
 
     background: Rectangle {
-        color: "transparent"
+        color: surfaceColor
         radius: 8
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            id: shadow
-            anchors.fill: parent
-            source: parent
-            horizontalOffset: 0
-            verticalOffset: 4
-            radius: 8
-            samples: 17
-            color: "#00000040"
-            cached: true
-        }
+        border.color: borderColor
+        border.width: 1
     }
 }

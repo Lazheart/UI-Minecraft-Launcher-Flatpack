@@ -26,6 +26,7 @@ signals:
     void versionChanged(const QString &version);
     void installationChanged(bool installed);
     void logMessage(const QString &message);
+    void availableVersionsChanged();
 
 private:
     QString m_installedVersion;
