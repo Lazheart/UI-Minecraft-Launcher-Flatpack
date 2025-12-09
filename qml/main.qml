@@ -194,7 +194,9 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 currentIndex: 0
                 
-                HomePage { }
+                HomePage { 
+                    onInstallVersionRequested: installVersionDialog.open()
+                }
                 SettingsPage { }
                 AboutPage { }
             }

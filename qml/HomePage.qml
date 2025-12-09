@@ -9,6 +9,9 @@ Rectangle {
     // Property to track selected version
     property string selectedVersion: ""
     
+    // Señal para abrir el diálogo de instalación
+    signal installVersionRequested()
+    
     ScrollView {
         id: homeScroll
         anchors.fill: parent
@@ -73,7 +76,7 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onClicked: mainWindow.installVersionDialog.open()
+                                onClicked: installVersionRequested()
                                 cursorShape: Qt.PointingHandCursor
 
                                 Image {
