@@ -87,6 +87,7 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse versions directory")
+                        launcherBackend.openFolder(launcherBackend.versionsPath)
                     }
                 }
             }
@@ -146,6 +147,7 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse backgrounds directory")
+                        launcherBackend.openFolder(launcherBackend.backgroundsPath)
                     }
                 }
             }
@@ -205,6 +207,7 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse icons directory")
+                        launcherBackend.openFolder(launcherBackend.iconsPath)
                     }
                 }
             }
@@ -264,6 +267,7 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse profiles directory")
+                        launcherBackend.openFolder(launcherBackend.profilesPath)
                     }
                 }
             }

@@ -12,6 +12,10 @@ class LauncherBackend : public QObject
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString status READ status NOTIFY statusChanged)
     Q_PROPERTY(bool isRunning READ isRunning NOTIFY isRunningChanged)
+    Q_PROPERTY(QString versionsPath READ versionsPath CONSTANT)
+    Q_PROPERTY(QString backgroundsPath READ backgroundsPath CONSTANT)
+    Q_PROPERTY(QString iconsPath READ iconsPath CONSTANT)
+    Q_PROPERTY(QString profilesPath READ profilesPath CONSTANT)
 
 public:
     explicit LauncherBackend(QObject *parent = nullptr);
@@ -20,8 +24,13 @@ public:
     QString version() const;
     QString status() const;
     bool isRunning() const;
+    QString versionsPath() const;
+    QString backgroundsPath() const;
+    QString iconsPath() const;
+    QString profilesPath() const;
 
     // Métodos invocables desde QML
+    Q_INVOKABLE void openFolder(const QString &path);
     Q_INVOKABLE void launchGame(const QString &profile = QString());
     Q_INVOKABLE void stopGame();
     Q_INVOKABLE QString getAppDir() const;
@@ -59,6 +68,10 @@ private:
     QString m_status;
     QString m_appDir;
     QString m_dataDir;
+    QString m_versionsPath;
+    QString m_backgroundsPath;
+    QString m_iconsPath;
+    QString m_profilesPath;
     QSettings *m_settings;
 
     void setStatus(const QString &status);

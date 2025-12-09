@@ -6,6 +6,8 @@
 #include <QDBusConnection>
 #include <QTimer>
 #include <QFile>
+#include <QDesktopServices>
+#include <QUrl>
 
 LauncherBackend::LauncherBackend(QObject *parent)
     : QObject(parent)
@@ -18,8 +20,18 @@ LauncherBackend::LauncherBackend(QObject *parent)
     QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     m_dataDir = configPath + "/minecraft-launcher";
     
-    // Crear directorio de datos si no existe
+    // Inicializar rutas de carpetas
+    m_versionsPath = configPath + "/minecraft-launcher/versions";
+    m_backgroundsPath = configPath + "/minecraft-launcher/backgrounds";
+    m_iconsPath = configPath + "/minecraft-launcher/icons";
+    m_profilesPath = configPath + "/minecraft-launcher/profiles";
+    
+    // Crear directorios si no existen
     QDir().mkpath(m_dataDir);
+    QDir().mkpath(m_versionsPath);
+    QDir().mkpath(m_backgroundsPath);
+    QDir().mkpath(m_iconsPath);
+    QDir().mkpath(m_profilesPath);
     
     // Configurar QSettings
     m_settings = new QSettings(
@@ -33,6 +45,10 @@ LauncherBackend::LauncherBackend(QObject *parent)
     qDebug() << "[Backend] Inicializado";
     qDebug() << "[Backend] APP_DIR:" << m_appDir;
     qDebug() << "[Backend] DATA_DIR:" << m_dataDir;
+    qDebug() << "[Backend] Versions path:" << m_versionsPath;
+    qDebug() << "[Backend] Backgrounds path:" << m_backgroundsPath;
+    qDebug() << "[Backend] Icons path:" << m_iconsPath;
+    qDebug() << "[Backend] Profiles path:" << m_profilesPath;
 }
 
 LauncherBackend::~LauncherBackend()
@@ -56,6 +72,45 @@ QString LauncherBackend::status() const
 bool LauncherBackend::isRunning() const
 {
     return m_gameProcess && m_gameProcess->state() != QProcess::NotRunning;
+}
+
+QString LauncherBackend::versionsPath() const
+{
+    return m_versionsPath;
+}
+
+QString LauncherBackend::backgroundsPath() const
+{
+    return m_backgroundsPath;
+}
+
+QString LauncherBackend::iconsPath() const
+{
+    return m_iconsPath;
+}
+
+QString LauncherBackend::profilesPath() const
+{
+    return m_profilesPath;
+}
+
+void LauncherBackend::openFolder(const QString &path)
+{
+    if (path.isEmpty()) {
+        qWarning() << "[Backend] Ruta vacía para abrir carpeta";
+        emit errorOccurred("La ruta proporcionada está vacía");
+        return;
+    }
+    
+    qDebug() << "[Backend] Abriendo carpeta:" << path;
+    
+    QUrl folderUrl = QUrl::fromLocalFile(path);
+    if (!QDesktopServices::openUrl(folderUrl)) {
+        qWarning() << "[Backend] No se pudo abrir la carpeta:" << path;
+        emit errorOccurred(QString("No se pudo abrir la carpeta: %1").arg(path));
+    } else {
+        qDebug() << "[Backend] Carpeta abierta exitosamente:" << path;
+    }
 }
 
 void LauncherBackend::launchGame(const QString &profile)
