@@ -13,6 +13,7 @@ Rectangle {
 
     signal addVersionsRequested()
     signal deleteVersionsRequested()
+    signal versionSelected(string version)
     
     ColumnLayout {
         anchors.fill: parent
@@ -140,6 +141,7 @@ Rectangle {
                                 id: versionMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
+                                onClicked: sideBar.versionSelected(minecraftManager.getAvailableVersions()[index])
                             }
                             
                             Text {

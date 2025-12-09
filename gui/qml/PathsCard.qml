@@ -1,0 +1,272 @@
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+
+Rectangle {
+    id: pathsCard
+    color: "#2d2d2d"
+    radius: 8
+    border.color: "#3d3d3d"
+    border.width: 1
+    Layout.fillWidth: true
+    Layout.preferredHeight: 280
+
+    property string currentField: ""
+
+    ColumnLayout {
+        anchors {
+            fill: parent
+            margins: 20
+        }
+        spacing: 15
+
+        Text {
+            text: "PATHS"
+            color: "#ffffff"
+            font.pixelSize: 14
+            font.bold: true
+            font.capitalization: Font.AllUppercase
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 12
+
+            // Versiones
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Text {
+                    text: "Installed Versions"
+                    color: "#ffffff"
+                    font.pixelSize: 12
+                    Layout.preferredWidth: 160
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 35
+                    color: "#1e1e1e"
+                    radius: 4
+                    border.color: "#555555"
+                    border.width: 1
+
+                    TextInput {
+                        id: versionsInput
+                        anchors {
+                            fill: parent
+                            leftMargin: 10
+                            rightMargin: 10
+                        }
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: "#b0b0b0"
+                        font.pixelSize: 11
+                        readOnly: true
+                        text: launcherBackend.versionsPath || "/home/user/.minecraft/versions"
+                    }
+                }
+
+                Button {
+                    text: "Browse"
+                    Layout.preferredWidth: 80
+                    Layout.preferredHeight: 35
+
+                    background: Rectangle {
+                        color: parent.pressed ? "#505050" : "#3d3d3d"
+                        radius: 3
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font.pixelSize: 11
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        console.log("Browse versions directory")
+                    }
+                }
+            }
+
+            // Backgrounds
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Text {
+                    text: "Installed Backgrounds"
+                    color: "#ffffff"
+                    font.pixelSize: 12
+                    Layout.preferredWidth: 160
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 35
+                    color: "#1e1e1e"
+                    radius: 4
+                    border.color: "#555555"
+                    border.width: 1
+
+                    TextInput {
+                        id: backgroundsInput
+                        anchors {
+                            fill: parent
+                            leftMargin: 10
+                            rightMargin: 10
+                        }
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: "#b0b0b0"
+                        font.pixelSize: 11
+                        readOnly: true
+                        text: launcherBackend.backgroundsPath || "/home/user/.minecraft/backgrounds"
+                    }
+                }
+
+                Button {
+                    text: "Browse"
+                    Layout.preferredWidth: 80
+                    Layout.preferredHeight: 35
+
+                    background: Rectangle {
+                        color: parent.pressed ? "#505050" : "#3d3d3d"
+                        radius: 3
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font.pixelSize: 11
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        console.log("Browse backgrounds directory")
+                    }
+                }
+            }
+
+            // Icons
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Text {
+                    text: "Installed Icons"
+                    color: "#ffffff"
+                    font.pixelSize: 12
+                    Layout.preferredWidth: 160
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 35
+                    color: "#1e1e1e"
+                    radius: 4
+                    border.color: "#555555"
+                    border.width: 1
+
+                    TextInput {
+                        id: iconsInput
+                        anchors {
+                            fill: parent
+                            leftMargin: 10
+                            rightMargin: 10
+                        }
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: "#b0b0b0"
+                        font.pixelSize: 11
+                        readOnly: true
+                        text: launcherBackend.iconsPath || "/home/user/.minecraft/icons"
+                    }
+                }
+
+                Button {
+                    text: "Browse"
+                    Layout.preferredWidth: 80
+                    Layout.preferredHeight: 35
+
+                    background: Rectangle {
+                        color: parent.pressed ? "#505050" : "#3d3d3d"
+                        radius: 3
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font.pixelSize: 11
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        console.log("Browse icons directory")
+                    }
+                }
+            }
+
+            // Profile Config
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Text {
+                    text: "Profile Config"
+                    color: "#ffffff"
+                    font.pixelSize: 12
+                    Layout.preferredWidth: 160
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 35
+                    color: "#1e1e1e"
+                    radius: 4
+                    border.color: "#555555"
+                    border.width: 1
+
+                    TextInput {
+                        id: profilesInput
+                        anchors {
+                            fill: parent
+                            leftMargin: 10
+                            rightMargin: 10
+                        }
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: "#b0b0b0"
+                        font.pixelSize: 11
+                        readOnly: true
+                        text: launcherBackend.profilesPath || "/home/user/.minecraft/profiles"
+                    }
+                }
+
+                Button {
+                    text: "Browse"
+                    Layout.preferredWidth: 80
+                    Layout.preferredHeight: 35
+
+                    background: Rectangle {
+                        color: parent.pressed ? "#505050" : "#3d3d3d"
+                        radius: 3
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font.pixelSize: 11
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        console.log("Browse profiles directory")
+                    }
+                }
+            }
+        }
+    }
+}

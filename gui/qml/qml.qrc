@@ -19,6 +19,13 @@
         <file>AboutFeaturesCard.qml</file>
         <file>AboutDisclaimerCard.qml</file>
         
+        <!-- Settings Cards -->
+        <file>LanguageCard.qml</file>
+        <file>PathsCard.qml</file>
+        <file>VisualCard.qml</file>
+        <file>ProfilesCard.qml</file>
+        <file>DebugCard.qml</file>
+        
         <!-- Legacy Components (if still used) -->
         <file>PlayTab.qml</file>
         <file>SettingsTab.qml</file>

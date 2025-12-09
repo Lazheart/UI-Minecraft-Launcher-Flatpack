@@ -160,6 +160,11 @@ ApplicationWindow {
                 Layout.fillHeight: true
 
                 onAddVersionsRequested: installVersionDialog.open()
+                onVersionSelected: function(version) {
+                    if (stackView.itemAt(0)) {
+                        stackView.itemAt(0).selectedVersion = version
+                    }
+                }
             }
             
             // Contenido principal
