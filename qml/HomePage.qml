@@ -17,7 +17,7 @@ Rectangle {
         Item {
             id: contentRoot
             width: homeScroll.availableWidth
-            implicitHeight: contentLoader.implicitHeight
+            height: Math.max(homeScroll.availableHeight, contentLoader.implicitHeight)
 
             Loader {
                 id: contentLoader
@@ -40,9 +40,10 @@ Rectangle {
 
                 Column {
                     id: emptyColumn
-                    width: parent.width
+                    width: Math.min(parent.width - 40, 420)
                     spacing: 20
                     anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
                     Text {
                         text: "Welcome to Enkidu Launcher"
@@ -69,26 +70,37 @@ Rectangle {
                             width: 80
                             height: 80
 
-                            Image {
-                                id: installIcon
+                            MouseArea {
                                 anchors.fill: parent
-                                source: Media.BedrockLogo
-                                fillMode: Image.PreserveAspectFit
-                                cache: true
-                            }
+                                hoverEnabled: true
+                                onClicked: mainWindow.installVersionDialog.open()
+                                cursorShape: Qt.PointingHandCursor
 
-                            Rectangle {
-                                anchors.fill: parent
-                                color: "#4CAF50"
-                                radius: 8
-                                visible: installIcon.status !== Image.Ready
+                                Image {
+                                    id: installIcon
+                                    anchors.fill: parent
+                                    source: Media.BedrockLogo
+                                    fillMode: Image.PreserveAspectFit
+                                    cache: true
+                                    opacity: parent.containsMouse ? 0.8 : 1.0
+                                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                                }
 
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "B"
-                                    font.pixelSize: 48
-                                    font.bold: true
-                                    color: "#ffffff"
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: "#4CAF50"
+                                    radius: 8
+                                    visible: installIcon.status !== Image.Ready
+                                    opacity: parent.containsMouse ? 0.8 : 1.0
+                                    Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "B"
+                                        font.pixelSize: 48
+                                        font.bold: true
+                                        color: "#ffffff"
+                                    }
                                 }
                             }
                         }
