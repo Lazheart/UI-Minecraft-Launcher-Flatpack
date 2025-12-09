@@ -87,3 +87,30 @@ void MinecraftManager::detectVersion()
         emit versionChanged("");
     }
 }
+
+bool MinecraftManager::deleteVersion(const QString &version)
+{
+    QString versionPath = m_gameDirectory + "/versions/" + version;
+    QDir versionDir(versionPath);
+    
+    if (!versionDir.exists()) {
+        emit logMessage(QString("Error: La versión %1 no existe").arg(version));
+        return false;
+    }
+    
+    // Eliminar el directorio de la versión
+    if (!versionDir.removeRecursively()) {
+        emit logMessage(QString("Error: No se pudo eliminar la versión %1").arg(version));
+        return false;
+    }
+    
+    // Si la versión eliminada era la versión actual, actualizar
+    if (m_installedVersion == version) {
+        detectVersion();
+        emit versionChanged(m_installedVersion);
+    }
+    
+    emit logMessage(QString("Versión %1 eliminada correctamente").arg(version));
+    return true;
+}
+

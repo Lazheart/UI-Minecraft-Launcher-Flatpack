@@ -130,6 +130,25 @@ ApplicationWindow {
             launcherBackend.installVersion(name, apkPath, iconPath, backgroundPath, useDefaultIcon, useDefaultBackground)
         }
     }
+
+    DeleteVersionDialog {
+        id: deleteVersionDialog
+        parent: mainWindow.contentItem
+        anchorItem: stackView
+        backgroundColor: "#171515"
+        surfaceColor: "#0f0f0f"
+        accentColor: mainWindow.accentColor
+        textColor: mainWindow.textColor
+        secondaryTextColor: mainWindow.secondaryTextColor
+        deleteColor: "#f44336"
+
+        onDeleteRequested: function(versions) {
+            for (let i = 0; i < versions.length; i++) {
+                minecraftManager.deleteVersion(versions[i])
+            }
+            showNotification("Success", "Selected versions deleted successfully", "info")
+        }
+    }
     
     ColumnLayout {
         anchors.fill: parent
@@ -160,6 +179,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
 
                 onAddVersionsRequested: installVersionDialog.open()
+                onDeleteVersionsRequested: deleteVersionDialog.open()
                 onVersionSelected: function(version) {
                     if (stackView.itemAt(0)) {
                         stackView.itemAt(0).selectedVersion = version

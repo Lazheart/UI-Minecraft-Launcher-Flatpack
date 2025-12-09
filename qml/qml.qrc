@@ -8,6 +8,7 @@
         <file>NavBarButton.qml</file>
         <file>SideBar.qml</file>
         <file>InstallVersionDialog.qml</file>
+        <file>DeleteVersionDialog.qml</file>
         <file>Media.js</file>
         
         <!-- Page Components -->

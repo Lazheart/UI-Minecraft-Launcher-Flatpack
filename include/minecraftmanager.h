@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE void checkInstallation();
     Q_INVOKABLE QStringList getAvailableVersions();
     Q_INVOKABLE QString getGameDirectory() const;
+    Q_INVOKABLE bool deleteVersion(const QString &version);
 
 signals:
     void versionChanged(const QString &version);
