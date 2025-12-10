@@ -343,47 +343,6 @@ Rectangle {
                             Item {
                                 Layout.fillHeight: true
                             }
-
-                            // Import worlds and mods button
-                            Button {
-                                Layout.alignment: Qt.AlignTop | Qt.AlignRight
-                                Layout.preferredWidth: 200
-                                Layout.preferredHeight: 80
-
-                                background: Rectangle {
-                                    color: parent.pressed ? "#3d3d3d" : "#2d2d2d"
-                                    radius: 8
-                                    border.color: parent.hovered ? "#4CAF50" : "#555555"
-                                    border.width: 2
-                                }
-
-                                contentItem: ColumnLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: 10
-                                    spacing: 5
-
-                                    Image {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        Layout.preferredWidth: 32
-                                        Layout.preferredHeight: 32
-                                        source: Media.LibreriaIcon
-                                        fillMode: Image.PreserveAspectFit
-                                    }
-
-                                    Text {
-                                        text: "Import worlds\nand mods"
-                                        font.pixelSize: 12
-                                        color: "#ffffff"
-                                        horizontalAlignment: Text.AlignHCenter
-                                        wrapMode: Text.WordWrap
-                                        Layout.fillWidth: true
-                                    }
-                                }
-
-                                onClicked: {
-                                    console.log("[Home] Importing worlds and mods for version:", selectedVersion)
-                                }
-                            }
                         }
                     }
 

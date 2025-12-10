@@ -13,13 +13,13 @@
         
         <!-- Page Components -->
         <file>HomePage.qml</file>
-        <file>PackageManagementPage.qml</file>
         <file>SettingsPage.qml</file>
         <file>AboutPage.qml</file>
         <file>AboutHeroCard.qml</file>
         <file>AboutAuthorCard.qml</file>
         <file>AboutFeaturesCard.qml</file>
         <file>AboutDisclaimerCard.qml</file>
+        <file>ImportWorldsAddonsCard.qml</file>
         
         <!-- Settings Cards -->
         <file>LanguageCard.qml</file>

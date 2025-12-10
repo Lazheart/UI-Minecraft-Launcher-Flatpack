@@ -150,6 +150,21 @@ ApplicationWindow {
             showNotification("Success", "Selected versions deleted successfully", "info")
         }
     }
+
+    ImportWorldsAddonsCard {
+        id: importWorldsAddonsCard
+        parent: mainWindow.contentItem
+        anchors.centerIn: Overlay.overlay
+        
+        onImportRequested: function(path, type) {
+            showNotification("Import", `Importing ${type} from: ${path}`, "info")
+            console.log("[QML] Import requested - Type:", type, "Path:", path)
+        }
+
+        onClosed: {
+            console.log("[QML] Import card closed")
+        }
+    }
     
     ColumnLayout {
         anchors.fill: parent
@@ -190,6 +205,7 @@ ApplicationWindow {
 
                 onAddVersionsRequested: installVersionDialog.open()
                 onDeleteVersionsRequested: deleteVersionDialog.open()
+                onImportWorldsAddonsRequested: importWorldsAddonsCard.show()
                 onVersionSelected: function(version) {
                     if (stackView.itemAt(0)) {
                         stackView.itemAt(0).selectedVersion = version
@@ -207,7 +223,6 @@ ApplicationWindow {
                 HomePage { 
                     onInstallVersionRequested: installVersionDialog.open()
                 }
-                PackageManagementPage { }
                 SettingsPage { }
                 AboutPage { }
             }
@@ -217,9 +232,8 @@ ApplicationWindow {
     function getPageIndex(page) {
         switch(page) {
             case "Home": return 0
-            case "Packages": return 1
-            case "Settings": return 2
-            case "About": return 3
+            case "Settings": return 1
+            case "About": return 2
             default: return 0
         }
     }

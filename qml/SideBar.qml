@@ -13,6 +13,7 @@ Rectangle {
 
     signal addVersionsRequested()
     signal deleteVersionsRequested()
+    signal importWorldsAddonsRequested()
     signal versionSelected(string version)
     
     property var versionsList: minecraftManager.getAvailableVersions()
@@ -284,6 +285,67 @@ Rectangle {
                 }
 
                 onClicked: sideBar.deleteVersionsRequested()
+            }
+        }
+        
+        // Import Worlds / Addons Button
+        Rectangle {
+            id: importButton
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            color: importMouse.containsMouse ? sideBar.highlightColor : sideBar.baseColor
+            
+            Behavior on color {
+                ColorAnimation { duration: 200 }
+            }
+            
+            MouseArea {
+                id: importMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 10
+                    
+                    Item {
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 28
+                        
+                        Image {
+                            id: importIcon
+                            anchors.fill: parent
+                            source: Media.LibreriaIcon
+                            fillMode: Image.PreserveAspectFit
+                            cache: true
+                        }
+                        
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "#4CAF50"
+                            radius: 3
+                            visible: importIcon.status !== Image.Ready
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: "+"
+                                color: "#ffffff"
+                                font.bold: true
+                                font.pixelSize: 16
+                            }
+                        }
+                    }
+                    
+                    Text {
+                        text: "Import Worlds\nand mods"
+                        color: "#ffffff"
+                        font.pixelSize: 13
+                        Layout.fillWidth: true
+                    }
+                }
+
+                onClicked: sideBar.importWorldsAddonsRequested()
             }
         }
         
