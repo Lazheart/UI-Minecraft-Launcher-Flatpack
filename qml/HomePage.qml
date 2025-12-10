@@ -216,8 +216,9 @@ Rectangle {
                             }
 
                             onClicked: {
-                                console.log("[Home] Launching game with profile:", profileManager.currentProfile)
-                                launcherBackend.launchGame(profileManager.currentProfile)
+                                var version = minecraftManager.installedVersion
+                                console.log("[Home] Launching game with version:", version, "and profile:", profileManager.currentProfile)
+                                launcherBackend.runGame(version, "", profileManager.currentProfile)
                             }
                         }
 
@@ -443,8 +444,8 @@ Rectangle {
                                     }
 
                                     onClicked: {
-                                        console.log("[Home] Launching game with profile:", profileManager.currentProfile)
-                                        launcherBackend.launchGame(profileManager.currentProfile)
+                                        console.log("[Home] Launching game with version:", selectedVersion, "and profile:", profileManager.currentProfile)
+                                        launcherBackend.runGame(selectedVersion, "", profileManager.currentProfile)
                                     }
                                 }
 

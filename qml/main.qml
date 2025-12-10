@@ -157,8 +157,32 @@ ApplicationWindow {
         anchors.centerIn: Overlay.overlay
         
         onImportRequested: function(path, type) {
-            showNotification("Import", `Importing ${type} from: ${path}`, "info")
-            console.log("[QML] Import requested - Type:", type, "Path:", path)
+            // Get the currently selected version from HomePage
+            var selectedVersion = ""
+            if (stackView.itemAt(0)) {
+                selectedVersion = stackView.itemAt(0).selectedVersion
+            }
+            
+            // If no version is selected, use the installed version
+            if (selectedVersion === "") {
+                selectedVersion = minecraftManager.installedVersion
+            }
+            
+            if (selectedVersion === "") {
+                showNotification("Error", "No version selected", "error")
+                console.log("[QML] Import failed: No version selected")
+                return
+            }
+            
+            console.log("[QML] Import requested - Type:", type, "Path:", path, "Version:", selectedVersion)
+            
+            if (type === "World") {
+                launcherBackend.importWorld(path, selectedVersion)
+            } else if (type === "Addon") {
+                launcherBackend.importPack(path, selectedVersion)
+            } else {
+                showNotification("Error", "Unknown import type: " + type, "error")
+            }
         }
 
         onClosed: {
