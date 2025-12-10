@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>org.lazheart.minecraft-launcher</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  
   <name>Minecraft Bedrock Launcher</name>
   <summary>Lanzador no oficial de Minecraft Bedrock Edition en Linux</summary>
 
   <description>
     <p>
-      Launcher no oficial para Minecraft Bedrock Edition que permite instalar , jugar y manejar disintintas versiones del juego en sistemas Linux de manera sencilla.
+      Launcher no oficial para Minecraft Bedrock Edition que permite instalar, jugar y manejar distintas versiones del juego en sistemas Linux de manera sencilla.
     </p>
-
+    <p>
+      Características:
+    </p>
+    <ul>
+      <li>Instalar múltiples versiones de Minecraft Bedrock</li>
+      <li>Gestionar perfiles y configuraciones</li>
+      <li>Importar mundos y complementos</li>
+      <li>Interfaz gráfica moderna basada en Qt5</li>
+    </ul>
   </description>
+
 
   <!-- licencia obligatoria -->
   <metadata_license>MIT</metadata_license>
-
+  <project_license>MIT</project_license>
   <!-- Información del desarrollador -->
   <developer_name>Lazheart</developer_name>
 
@@ -22,19 +34,38 @@
 
   <!-- Binario que provee -->
   <provides>
-    <binary>minecraft-launcher</binary>
+    <binary>minecraft-launcher-gui</binary>
   </provides>
 
   <!-- Página principal del proyecto -->
-  <url type="homepage">https://github.com/Lazheart/Minecraft-Launcher-Bedrock-in-FlatPack</url>
+  <url type="homepage">https://github.com/Lazheart/UI-Minecraft-Launcher-Flatpack</url>
 
-  <!-- Iconos incluidos -->
-  <icon type="stock">org.lazheart.minecraft-launcher</icon>
+  <!-- Icono incluido -->
+  <icon type="remote">
+    <image>https://raw.githubusercontent.com/Lazheart/UI-Minecraft-Launcher-Flatpack/c%2B%2B/assets/icons/logo.svg</image>
+  </icon>
 
   <!-- Categorías para el menú de aplicaciones -->
   <categories>
     <category>Game</category>
     <category>Utility</category>
   </categories>
+
+  <!-- Palabras clave para búsqueda -->
+  <keywords>
+    <keyword>minecraft</keyword>
+    <keyword>bedrock</keyword>
+    <keyword>launcher</keyword>
+    <keyword>game</keyword>
+  </keywords>
+
+  <!-- Información de lanzamiento -->
+  <releases>
+    <release version="1.0.0" date="2025-12-09">
+      <description>
+        <p>Primera versión del launcher para Minecraft Bedrock Edition</p>
+      </description>
+    </release>
+  </releases>
 
 </component>
