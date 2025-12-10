@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
     ProfileManager *profileManager = new ProfileManager(&app);
 
     // Exponer los backends al contexto QML
-    engine.rootContext()->setContextProperty("launcherBackend", launcherBackend);
-    engine.rootContext()->setContextProperty("minecraftManager", minecraftManager);
-    engine.rootContext()->setContextProperty("profileManager", profileManager);
+    engine.rootContext()->setContextProperty("launcherBackend", QVariant::fromValue(launcherBackend));
+    engine.rootContext()->setContextProperty("minecraftManager", QVariant::fromValue(minecraftManager));
+    engine.rootContext()->setContextProperty("profileManager", QVariant::fromValue(profileManager));
 
     // Configurar rutas de importación para módulos QML
     engine.addImportPath("qrc:/");

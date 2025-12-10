@@ -19,11 +19,16 @@ find_package(Qt5 REQUIRED COMPONENTS
     DBus
 )
 
+# Buscar libzip
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBZIP REQUIRED libzip)
+
 # Incluir directorios
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/qml
+    ${LIBZIP_INCLUDE_DIRS}
 )
 
 # Archivos fuente
@@ -32,6 +37,10 @@ set(SOURCES
     src/launcherbackend.cpp
     src/minecraftmanager.cpp
     src/profilemanager.cpp
+    src/packagemanager.cpp
+    src/workers.cpp
+    src/zipvalidator.cpp
+    src/packageinspector.cpp
 )
 
 # Archivos de cabecera
@@ -39,6 +48,10 @@ set(HEADERS
     include/launcherbackend.h
     include/minecraftmanager.h
     include/profilemanager.h
+    include/packagemanager.h
+    include/workers.h
+    include/zipvalidator.h
+    include/packageinspector.h
 )
 
 # Archivos QML y recursos
@@ -61,6 +74,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::Widgets
     Qt5::Network
     Qt5::DBus
+    ${LIBZIP_LIBRARIES}
 )
 
 # Opciones de compilación

@@ -1,4 +1,6 @@
 #include "../include/launcherbackend.h"
+#include "../include/packagemanager.h"
+#include "../include/workers.h"
 #include <QDir>
 #include <QStandardPaths>
 #include <QDebug>
@@ -13,6 +15,11 @@ LauncherBackend::LauncherBackend(QObject *parent)
     : QObject(parent)
     , m_gameProcess(nullptr)
     , m_status("Listo")
+    , m_packageManager(nullptr)
+    , m_installAPKWorker(nullptr)
+    , m_importWorldWorker(nullptr)
+    , m_importPackWorker(nullptr)
+    , m_runGameWorker(nullptr)
 {
     // Configurar directorios para Flatpak
     m_appDir = qEnvironmentVariable("APP_DIR", "/app");
@@ -46,14 +53,11 @@ LauncherBackend::LauncherBackend(QObject *parent)
         "minecraft-launcher",
         this
     );
+    
+    // Inicializar PackageManager
+    initializePackageManager();
 
     qDebug() << "[Backend] Inicializado";
-    qDebug() << "[Backend] APP_DIR:" << m_appDir;
-    qDebug() << "[Backend] DATA_DIR:" << m_dataDir;
-    qDebug() << "[Backend] Versions path:" << m_versionsPath;
-    qDebug() << "[Backend] Backgrounds path:" << m_backgroundsPath;
-    qDebug() << "[Backend] Icons path:" << m_iconsPath;
-    qDebug() << "[Backend] Profiles path:" << m_profilesPath;
 }
 
 LauncherBackend::~LauncherBackend()
@@ -62,6 +66,8 @@ LauncherBackend::~LauncherBackend()
         m_gameProcess->terminate();
         m_gameProcess->waitForFinished(3000);
     }
+    
+    cleanupWorkers();
 }
 
 QString LauncherBackend::version() const
@@ -436,11 +442,10 @@ void LauncherBackend::onProcessOutput()
     QString stdErr = QString::fromUtf8(m_gameProcess->readAllStandardError());
     
     if (!stdOut.isEmpty()) {
-        emit logMessage("[STDOUT] " + stdOut.trimmed());
+        emit gameLogMessage(stdOut);
     }
-    
     if (!stdErr.isEmpty()) {
-        emit logMessage("[STDERR] " + stdErr.trimmed());
+        emit gameLogMessage(stdErr);
     }
 }
 
@@ -450,4 +455,309 @@ void LauncherBackend::setStatus(const QString &status)
         m_status = status;
         emit statusChanged(m_status);
     }
+}
+
+// ============= Package Management =============
+
+void LauncherBackend::initializePackageManager()
+{
+    if (!m_packageManager) {
+        m_packageManager = new PackageManager(m_versionsPath, m_profilesPath, this);
+        qDebug() << "[Backend] PackageManager inicializado";
+    }
+}
+
+void LauncherBackend::cleanupWorkers()
+{
+    if (m_installAPKWorker) {
+        if (m_installAPKWorker->isRunning()) {
+            m_installAPKWorker->quit();
+            m_installAPKWorker->wait();
+        }
+        delete m_installAPKWorker;
+        m_installAPKWorker = nullptr;
+    }
+    
+    if (m_importWorldWorker) {
+        if (m_importWorldWorker->isRunning()) {
+            m_importWorldWorker->quit();
+            m_importWorldWorker->wait();
+        }
+        delete m_importWorldWorker;
+        m_importWorldWorker = nullptr;
+    }
+    
+    if (m_importPackWorker) {
+        if (m_importPackWorker->isRunning()) {
+            m_importPackWorker->quit();
+            m_importPackWorker->wait();
+        }
+        delete m_importPackWorker;
+        m_importPackWorker = nullptr;
+    }
+    
+    if (m_runGameWorker) {
+        if (m_runGameWorker->isRunning()) {
+            m_runGameWorker->quit();
+            m_runGameWorker->wait();
+        }
+        delete m_runGameWorker;
+        m_runGameWorker = nullptr;
+    }
+}
+
+QStringList LauncherBackend::getInstalledVersions()
+{
+    if (!m_packageManager) {
+        qWarning() << "[Backend] PackageManager not initialized";
+        return QStringList();
+    }
+    return m_packageManager->getInstalledVersions();
+}
+
+QStringList LauncherBackend::getWorldsForVersion(const QString &version)
+{
+    if (!m_packageManager) {
+        return QStringList();
+    }
+    return m_packageManager->getWorldsForVersion(version);
+}
+
+QStringList LauncherBackend::getResourcePacksForVersion(const QString &version)
+{
+    if (!m_packageManager) {
+        return QStringList();
+    }
+    return m_packageManager->getResourcePacksForVersion(version);
+}
+
+QStringList LauncherBackend::getBehaviorPacksForVersion(const QString &version)
+{
+    if (!m_packageManager) {
+        return QStringList();
+    }
+    return m_packageManager->getBehaviorPacksForVersion(version);
+}
+
+QJsonObject LauncherBackend::getWorldInfo(const QString &version, const QString &worldName)
+{
+    if (!m_packageManager) {
+        return QJsonObject();
+    }
+    return m_packageManager->getWorldInfo(version, worldName);
+}
+
+QJsonObject LauncherBackend::getPackageInfo(const QString &packagePath)
+{
+    if (!m_packageManager) {
+        return QJsonObject();
+    }
+    return m_packageManager->getPackageInfo(packagePath);
+}
+
+void LauncherBackend::installAPK(const QString &apkPath, const QString &versionName)
+{
+    emit logMessage(QString("Iniciando instalación de APK: %1").arg(apkPath));
+    
+    QString extractorPath = m_appDir + "/bin/mcpelauncher-extract";
+    
+    if (!QFile::exists(extractorPath)) {
+        QString error = QString("Extractor no encontrado: %1").arg(extractorPath);
+        emit errorOccurred(error);
+        emit operationFailed(error);
+        return;
+    }
+    
+    // Crear y conectar worker
+    if (m_installAPKWorker) {
+        delete m_installAPKWorker;
+    }
+    
+    m_installAPKWorker = new InstallAPKWorker(apkPath, versionName, extractorPath, m_versionsPath);
+    
+    connect(m_installAPKWorker, &InstallAPKWorker::progress, this, &LauncherBackend::onInstallAPKProgress);
+    connect(m_installAPKWorker, &InstallAPKWorker::finished, this, &LauncherBackend::onInstallAPKFinished);
+    connect(m_installAPKWorker, &InstallAPKWorker::logMessage, this, &LauncherBackend::onInstallAPKLog);
+    
+    m_installAPKWorker->start();
+}
+
+void LauncherBackend::importWorld(const QString &worldZipPath, const QString &version)
+{
+    emit logMessage(QString("Iniciando importación de mundo: %1").arg(worldZipPath));
+    
+    if (!m_packageManager) {
+        emit operationFailed("PackageManager not initialized");
+        return;
+    }
+    
+    QString destPath = m_packageManager->getWorldsPath(version);
+    
+    if (m_importWorldWorker) {
+        delete m_importWorldWorker;
+    }
+    
+    m_importWorldWorker = new ImportWorldWorker(worldZipPath, destPath);
+    
+    connect(m_importWorldWorker, &ImportWorldWorker::progress, this, &LauncherBackend::onImportWorldProgress);
+    connect(m_importWorldWorker, &ImportWorldWorker::finished, this, &LauncherBackend::onImportWorldFinished);
+    connect(m_importWorldWorker, &ImportWorldWorker::logMessage, this, &LauncherBackend::onImportWorldLog);
+    
+    m_importWorldWorker->start();
+}
+
+void LauncherBackend::importPack(const QString &packZipPath, const QString &version)
+{
+    emit logMessage(QString("Iniciando importación de pack: %1").arg(packZipPath));
+    
+    if (!m_packageManager) {
+        emit operationFailed("PackageManager not initialized");
+        return;
+    }
+    
+    if (m_importPackWorker) {
+        delete m_importPackWorker;
+    }
+    
+    m_importPackWorker = new ImportPackWorker(packZipPath, m_versionsPath, version);
+    
+    connect(m_importPackWorker, &ImportPackWorker::progress, this, &LauncherBackend::onImportPackProgress);
+    connect(m_importPackWorker, &ImportPackWorker::finished, this, &LauncherBackend::onImportPackFinished);
+    connect(m_importPackWorker, &ImportPackWorker::logMessage, this, &LauncherBackend::onImportPackLog);
+    
+    m_importPackWorker->start();
+}
+
+void LauncherBackend::runGame(const QString &version, const QString &worldName, const QString &profile)
+{
+    emit logMessage(QString("Preparando lanzamiento de versión: %1").arg(version));
+    
+    if (!m_packageManager) {
+        emit errorOccurred("PackageManager not initialized");
+        return;
+    }
+    
+    QString versionPath = m_packageManager->getVersionPath(version);
+    QString worldPath;
+    
+    if (!worldName.isEmpty()) {
+        worldPath = m_packageManager->getWorldsPath(version) + "/" + worldName;
+    }
+    
+    if (m_runGameWorker) {
+        if (m_runGameWorker->isRunning()) {
+            emit errorOccurred("El juego ya está en ejecución");
+            return;
+        }
+        delete m_runGameWorker;
+    }
+    
+    m_runGameWorker = new RunGameWorker(versionPath, worldPath, profile);
+    
+    connect(m_runGameWorker, &RunGameWorker::gameStarted, this, &LauncherBackend::onGameWorkerStarted);
+    connect(m_runGameWorker, &RunGameWorker::gameStopped, this, &LauncherBackend::onGameWorkerStopped);
+    connect(m_runGameWorker, &RunGameWorker::errorOccurred, this, &LauncherBackend::onGameWorkerError);
+    connect(m_runGameWorker, &RunGameWorker::logMessage, this, &LauncherBackend::onGameWorkerLog);
+    
+    m_runGameWorker->start();
+}
+
+void LauncherBackend::stopGameProcess()
+{
+    if (m_runGameWorker && m_runGameWorker->isRunning()) {
+        m_runGameWorker->stopGame();
+    }
+}
+
+// ============= Slots for Workers =============
+
+void LauncherBackend::onGameWorkerStarted()
+{
+    emit gameStarted();
+    emit gameProcessStarted();
+    setStatus("Juego en ejecución");
+}
+
+void LauncherBackend::onGameWorkerStopped(int exitCode)
+{
+    emit gameStopped();
+    emit gameProcessStopped(exitCode);
+    setStatus("Listo");
+}
+
+void LauncherBackend::onGameWorkerError(const QString &error)
+{
+    emit errorOccurred(error);
+}
+
+void LauncherBackend::onGameWorkerLog(const QString &message)
+{
+    emit gameLogMessage(message);
+    emit logMessage(message);
+}
+
+void LauncherBackend::onInstallAPKProgress(int current, int total)
+{
+    emit installProgress(current, total, QString("Instalando APK... %1/%2").arg(current, total));
+}
+
+void LauncherBackend::onInstallAPKFinished(bool success, const QString &message)
+{
+    if (success) {
+        emit installationCompleted(message);
+        emit versionsChanged();
+        showNotification("Installation Complete", message);
+    } else {
+        emit operationFailed(message);
+        showNotification("Installation Failed", message);
+    }
+}
+
+void LauncherBackend::onInstallAPKLog(const QString &message)
+{
+    emit logMessage(message);
+}
+
+void LauncherBackend::onImportWorldProgress(int current, int total)
+{
+    emit importProgress(current, total, QString("Importando mundo... %1/%2").arg(current, total));
+}
+
+void LauncherBackend::onImportWorldFinished(bool success, const QString &worldName)
+{
+    if (success) {
+        emit importCompleted(worldName);
+        emit worldsChanged(QString()); // TODO: pasar versión
+        showNotification("Import Complete", QString("Mundo importado: %1").arg(worldName));
+    } else {
+        emit operationFailed(worldName);
+        showNotification("Import Failed", worldName);
+    }
+}
+
+void LauncherBackend::onImportWorldLog(const QString &message)
+{
+    emit logMessage(message);
+}
+
+void LauncherBackend::onImportPackProgress(int current, int total)
+{
+    emit importProgress(current, total, QString("Importando pack... %1/%2").arg(current, total));
+}
+
+void LauncherBackend::onImportPackFinished(bool success, const QString &packName)
+{
+    if (success) {
+        emit importCompleted(packName);
+        emit packsChanged(QString()); // TODO: pasar versión
+        showNotification("Import Complete", QString("Pack importado: %1").arg(packName));
+    } else {
+        emit operationFailed(packName);
+        showNotification("Import Failed", packName);
+    }
+}
+
+void LauncherBackend::onImportPackLog(const QString &message)
+{
+    emit logMessage(message);
 }

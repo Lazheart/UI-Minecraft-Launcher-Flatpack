@@ -13,6 +13,7 @@
         
         <!-- Page Components -->
         <file>HomePage.qml</file>
+        <file>PackageManagementPage.qml</file>
         <file>SettingsPage.qml</file>
         <file>AboutPage.qml</file>
         <file>AboutHeroCard.qml</file>

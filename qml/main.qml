@@ -207,6 +207,7 @@ ApplicationWindow {
                 HomePage { 
                     onInstallVersionRequested: installVersionDialog.open()
                 }
+                PackageManagementPage { }
                 SettingsPage { }
                 AboutPage { }
             }
@@ -216,8 +217,9 @@ ApplicationWindow {
     function getPageIndex(page) {
         switch(page) {
             case "Home": return 0
-            case "Settings": return 1
-            case "About": return 2
+            case "Packages": return 1
+            case "Settings": return 2
+            case "About": return 3
             default: return 0
         }
     }

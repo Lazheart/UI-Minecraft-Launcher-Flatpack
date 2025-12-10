@@ -5,6 +5,14 @@
 #include <QString>
 #include <QProcess>
 #include <QSettings>
+#include <QStringList>
+#include <QJsonObject>
+
+class PackageManager;
+class InstallAPKWorker;
+class ImportWorldWorker;
+class ImportPackWorker;
+class RunGameWorker;
 
 class LauncherBackend : public QObject
 {
@@ -56,6 +64,23 @@ public:
                                     const QString &backgroundPath = QString(),
                                     bool useDefaultIcon = true,
                                     bool useDefaultBackground = true);
+    
+    // Package Management
+    Q_INVOKABLE QStringList getInstalledVersions();
+    Q_INVOKABLE QStringList getWorldsForVersion(const QString &version);
+    Q_INVOKABLE QStringList getResourcePacksForVersion(const QString &version);
+    Q_INVOKABLE QStringList getBehaviorPacksForVersion(const QString &version);
+    Q_INVOKABLE QJsonObject getWorldInfo(const QString &version, const QString &worldName);
+    Q_INVOKABLE QJsonObject getPackageInfo(const QString &packagePath);
+    
+    // Workers
+    Q_INVOKABLE void installAPK(const QString &apkPath, const QString &versionName);
+    Q_INVOKABLE void importWorld(const QString &worldZipPath, const QString &version);
+    Q_INVOKABLE void importPack(const QString &packZipPath, const QString &version);
+    Q_INVOKABLE void runGame(const QString &version, 
+                            const QString &worldName = QString(),
+                            const QString &profile = QString());
+    Q_INVOKABLE void stopGameProcess();
 
 signals:
     void statusChanged(const QString &status);
@@ -73,13 +98,19 @@ signals:
                                  const QString &backgroundPath,
                                  bool useDefaultIcon,
                                  bool useDefaultBackground);
-
-private slots:
-    void onProcessStarted();
-    void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void onProcessError(QProcess::ProcessError error);
-    void onProcessOutput();
-
+    
+    // Package Management signals
+    void installProgress(int current, int total, const QString &message);
+    void importProgress(int current, int total, const QString &message);
+    void installationCompleted(const QString &version);
+    void importCompleted(const QString &worldOrPackName);
+    void operationFailed(const QString &error);
+    void gameProcessStarted();
+    void gameProcessStopped(int exitCode);
+    void gameLogMessage(const QString &message);
+    void versionsChanged();
+    void worldsChanged(const QString &version);
+    void packsChanged(const QString &version);
 private:
     QProcess *m_gameProcess;
     QString m_status;
@@ -93,9 +124,44 @@ private:
     QString m_theme;
     double m_scale;
     QSettings *m_settings;
+    
+    // Package Management
+    PackageManager *m_packageManager;
+    
+    // Workers
+    InstallAPKWorker *m_installAPKWorker;
+    ImportWorldWorker *m_importWorldWorker;
+    ImportPackWorker *m_importPackWorker;
+    RunGameWorker *m_runGameWorker;
 
     void setStatus(const QString &status);
     void setupEnvironment();
+    void initializePackageManager();
+    void cleanupWorkers();
+    // Install APK slots
+    void onInstallAPKProgress(int current, int total);
+    void onInstallAPKFinished(bool success, const QString &message);
+    void onInstallAPKLog(const QString &message);
+    
+    // Import World slots
+    void onImportWorldProgress(int current, int total);
+    void onImportWorldFinished(bool success, const QString &worldName);
+    void onImportWorldLog(const QString &message);
+    
+    // Import Pack slots
+    void onImportPackProgress(int current, int total);
+    void onImportPackFinished(bool success, const QString &packName);
+    void onImportPackLog(const QString &message);
+    
+    // Game Worker slots
+    void onGameWorkerStarted();
+    void onGameWorkerStopped(int exitCode);
+    void onGameWorkerError(const QString &error);
+    void onGameWorkerLog(const QString &message);
+    void onProcessStarted();
+    void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void onProcessError(QProcess::ProcessError error);
+    void onProcessOutput();
 };
 
 #endif // LAUNCHERBACKEND_H
