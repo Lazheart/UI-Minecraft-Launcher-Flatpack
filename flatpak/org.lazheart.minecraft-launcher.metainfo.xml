@@ -22,10 +22,6 @@
     </ul>
   </description>
 
-
-  <!-- licencia obligatoria -->
-  <metadata_license>MIT</metadata_license>
-  <project_license>MIT</project_license>
   <!-- Información del desarrollador -->
   <developer_name>Lazheart</developer_name>
 
@@ -41,9 +37,7 @@
   <url type="homepage">https://github.com/Lazheart/UI-Minecraft-Launcher-Flatpack</url>
 
   <!-- Icono incluido -->
-  <icon type="remote">
-    <image>https://raw.githubusercontent.com/Lazheart/UI-Minecraft-Launcher-Flatpack/c%2B%2B/assets/icons/logo.svg</image>
-  </icon>
+  <icon type="stock">org.lazheart.minecraft-launcher</icon>
 
   <!-- Categorías para el menú de aplicaciones -->
   <categories>

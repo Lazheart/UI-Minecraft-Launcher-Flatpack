@@ -118,8 +118,18 @@ endif()
 
 # Instalar iconos (si existen)
 if(EXISTS "${ICON_DIR}")
+    # Instalar icono SVG en la ruta estándar de hicolor para AppStream
+    if(EXISTS "${ICON_DIR}/logo.svg")
+        install(FILES "${ICON_DIR}/logo.svg"
+            DESTINATION share/icons/hicolor/scalable/apps
+            RENAME org.lazheart.minecraft-launcher.svg
+        )
+    endif()
+    
+    # Instalar otros iconos en share/icons
     install(DIRECTORY "${ICON_DIR}/"
         DESTINATION share/icons
+        PATTERN "logo.svg" EXCLUDE
     )
 else()
     message(WARNING "Icon directory no encontrado: ${ICON_DIR}")
