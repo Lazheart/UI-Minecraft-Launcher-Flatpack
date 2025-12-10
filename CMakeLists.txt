@@ -89,11 +89,38 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
 )
 
-# Instalar archivos adicionales
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../src/org.lazheart.minecraft-launcher.desktop
-    DESTINATION share/applications
-)
+# Definir rutas para los archivos de instalación
+set(DESKTOP_FILE "${CMAKE_SOURCE_DIR}/flatpak/org.lazheart.minecraft-launcher.desktop")
+set(METAINFO_FILE "${CMAKE_SOURCE_DIR}/flatpak/org.lazheart.minecraft-launcher.metainfo.xml")
+set(ICON_DIR "${CMAKE_SOURCE_DIR}/assets/icons")
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../src/org.lazheart.minecraft-launcher.metainfo.xml
-    DESTINATION share/metainfo
-)
+# Opción para permitir saltarse la instalación de archivos de escritorio
+option(INSTALL_DESKTOP_FILES "Instalar archivos de escritorio y metainfo" ON)
+
+# Instalar archivos de escritorio y metainfo (si existen)
+if(INSTALL_DESKTOP_FILES)
+    if(EXISTS "${DESKTOP_FILE}")
+        install(FILES "${DESKTOP_FILE}"
+            DESTINATION share/applications
+        )
+    else()
+        message(WARNING "Desktop file no encontrado: ${DESKTOP_FILE}")
+    endif()
+
+    if(EXISTS "${METAINFO_FILE}")
+        install(FILES "${METAINFO_FILE}"
+            DESTINATION share/metainfo
+        )
+    else()
+        message(WARNING "Metainfo file no encontrado: ${METAINFO_FILE}")
+    endif()
+endif()
+
+# Instalar iconos (si existen)
+if(EXISTS "${ICON_DIR}")
+    install(DIRECTORY "${ICON_DIR}/"
+        DESTINATION share/icons
+    )
+else()
+    message(WARNING "Icon directory no encontrado: ${ICON_DIR}")
+endif()
