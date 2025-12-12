@@ -3,6 +3,12 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import "navbar"
+import "sidebar"
+import "sidebar/cards"
+import "home"
+import "settings"
+import "about"
 
 ApplicationWindow {
     id: mainWindow

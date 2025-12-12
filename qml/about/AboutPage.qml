@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "cards"
 
 Rectangle {
     color: "#1e1e1e"
@@ -26,7 +27,7 @@ Rectangle {
 
                 // TÍTULO
                 Text {
-                    text: "About Enkidu Launcher"
+                    text: "About This Launcher"
                     font.pixelSize: 36
                     font.bold: true
                     color: "#ffffff"
