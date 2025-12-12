@@ -45,8 +45,20 @@ void InstallAPKWorker::run()
     emit logMessage(QString("Ejecutando extractor: %1").arg(m_extractorPath));
     
     // Ejecutar mcpelauncher-extract
-    QProcess process;
-    process.start(m_extractorPath, QStringList() << m_apkPath << targetPath);
+        // Determinar ruta del extractor (usar la ruta de Flatpak por defecto si no se pasó)
+        QString extractorPath = m_extractorPath;
+        if (extractorPath.isEmpty()) {
+            bool isFlatpak = !qgetenv("FLATPAK_ID").isEmpty();
+            extractorPath = isFlatpak ? QStringLiteral("/app/bin/mcpelauncher-extract") : QStringLiteral("mcpelauncher-extract");
+        }
+
+        emit logMessage(QString("Ejecutando extractor: %1").arg(extractorPath));
+
+        // Ejecutar mcpelauncher-extract. El binario espera: <apk_path> <name>
+        QProcess process;
+        QStringList args;
+        args << m_apkPath << m_versionName;
+        process.start(extractorPath, args);
     
     if (!process.waitForStarted()) {
         emit logMessage(QString("Error: No se pudo iniciar el extractor"));
@@ -260,8 +272,10 @@ void RunGameWorker::run()
     
     emit logMessage("Construyendo comando de lanzamiento...");
     
-    // Comando base
-    QString program = "mcpelauncher-client";
+    // Comando base (usar ruta Flatpak si corresponde)
+    QString program;
+    bool isFlatpak = !qgetenv("FLATPAK_ID").isEmpty();
+    program = isFlatpak ? QStringLiteral("/app/bin/mcpelauncher-client") : QStringLiteral("mcpelauncher-client");
     QStringList arguments;
     
     // Añadir rutas

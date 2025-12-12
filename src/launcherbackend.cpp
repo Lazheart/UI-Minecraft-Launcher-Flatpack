@@ -56,8 +56,101 @@ LauncherBackend::LauncherBackend(QObject *parent)
     
     // Inicializar PackageManager
     initializePackageManager();
-
     qDebug() << "[Backend] Inicializado";
+
+    // Emitir mensajes de inicio estilo wrapper/launcher
+    emitStartupMessages();
+    
+    // Conectar señales para imprimir por consola
+    connect(this, &LauncherBackend::logMessage, this, &LauncherBackend::onConsoleLog);
+    connect(this, &LauncherBackend::errorOccurred, this, [this](const QString &err){
+        onConsoleLog(QString("[ERROR] %1").arg(err));
+    });
+    connect(this, &LauncherBackend::gameLogMessage, this, &LauncherBackend::onConsoleLog);
+    connect(this, &LauncherBackend::operationFailed, this, [this](const QString &m){
+        onConsoleLog(QString("[OP FAILED] %1").arg(m));
+    });
+    connect(this, &LauncherBackend::installProgress, this, [this](int cur, int tot, const QString &msg){
+        onConsoleLog(QString("[Install] %1 (%2/%3)").arg(msg).arg(cur).arg(tot));
+    });
+    connect(this, &LauncherBackend::importProgress, this, [this](int cur, int tot, const QString &msg){
+        onConsoleLog(QString("[Import] %1 (%2/%3)").arg(msg).arg(cur).arg(tot));
+    });
+
+    // More event-to-console connections
+    connect(this, &LauncherBackend::versionsChanged, this, [this](){ onConsoleLog("[Backend] versionsChanged"); });
+    connect(this, &LauncherBackend::worldsChanged, this, [this](const QString &ver){ onConsoleLog(QString("[Backend] worldsChanged: %1").arg(ver)); });
+    connect(this, &LauncherBackend::packsChanged, this, [this](const QString &ver){ onConsoleLog(QString("[Backend] packsChanged: %1").arg(ver)); });
+    connect(this, &LauncherBackend::installationCompleted, this, [this](const QString &ver){ onConsoleLog(QString("[Installer] installationCompleted: %1").arg(ver)); });
+    connect(this, &LauncherBackend::importCompleted, this, [this](const QString &name){ onConsoleLog(QString("[Importer] importCompleted: %1").arg(name)); });
+    connect(this, &LauncherBackend::gameStarted, this, [this](){ onConsoleLog("[Game] gameStarted"); });
+    connect(this, &LauncherBackend::gameStopped, this, [this](){ onConsoleLog("[Game] gameStopped"); });
+    connect(this, &LauncherBackend::gameProcessStarted, this, [this](){ onConsoleLog("[Game] processStarted"); });
+    connect(this, &LauncherBackend::gameProcessStopped, this, [this](int code){ onConsoleLog(QString("[Game] processStopped (code=%1)").arg(code)); });
+    connect(this, &LauncherBackend::statusChanged, this, [this](const QString &s){ onConsoleLog(QString("[Status] %1").arg(s)); });
+    connect(this, &LauncherBackend::languageChanged, this, [this](const QString &l){ onConsoleLog(QString("[Settings] languageChanged: %1").arg(l)); });
+    connect(this, &LauncherBackend::themeChanged, this, [this](const QString &t){ onConsoleLog(QString("[Settings] themeChanged: %1").arg(t)); });
+    connect(this, &LauncherBackend::scaleChanged, this, [this](double sc){ onConsoleLog(QString("[Settings] scaleChanged: %1").arg(sc)); });
+    connect(this, &LauncherBackend::installVersionRequested, this, [this](const QString &name, const QString &apk, const QString &icon, const QString &bg, bool useDefIcon, bool useDefBg){
+        onConsoleLog(QString("[Installer] installVersionRequested: %1 APK=%2 icon=%3 bg=%4 defIcon=%5 defBg=%6")
+                     .arg(name).arg(apk).arg(icon.isEmpty()?"<def>":icon).arg(bg.isEmpty()?"<def>":bg).arg(useDefIcon).arg(useDefBg));
+    });
+}
+
+void LauncherBackend::emitStartupMessages()
+{
+    // Wrapper style messages
+    emit logMessage("[Wrapper] Iniciando Minecraft Bedrock Launcher...");
+
+    // APP_DIR y BIN_DIR
+    QString appDir = m_appDir;
+    QString binDir = appDir + "/bin";
+    emit logMessage(QString("[Wrapper] APP_DIR: %1").arg(appDir));
+    emit logMessage(QString("[Wrapper] BIN_DIR: %1").arg(binDir));
+
+    // Teclado heurístico: intentar leer XKB env vars o caer a defaults
+    QString layout = QString::fromUtf8(qgetenv("XKB_DEFAULT_LAYOUT"));
+    if (layout.isEmpty()) {
+        layout = QString::fromUtf8(qgetenv("LANG"));
+        if (!layout.isEmpty()) {
+            // LANG puede ser en_US.UTF-8 -> extraer 'us'
+            int underscore = layout.indexOf('_');
+            if (underscore > 0) layout = layout.left(underscore).split('.').first();
+        } else {
+            layout = "us"; // fallback
+        }
+    }
+    QString model = QString::fromUtf8(qgetenv("XKB_DEFAULT_MODEL"));
+    if (model.isEmpty()) model = "pc105";
+    emit logMessage(QString("[Wrapper] Teclado configurado: layout=%1, model=%2").arg(layout, model));
+
+    // Indicar que se ejecuta la interfaz (UI)
+    emit logMessage("[Wrapper] Ejecutando interfaz C++/QML...");
+
+    // Verificar binarios backend
+    emit logMessage("[Wrapper] Buscando binarios del backend...");
+    QString extractorPath = binDir + "/mcpelauncher-extract";
+    QString clientPath = binDir + "/mcpelauncher-client";
+
+    QStringList backendList;
+    if (QFile::exists(extractorPath)) {
+        backendList << QString("  - mcpelauncher-extract: %1").arg(extractorPath);
+    } else if (QFile::exists(QStringLiteral("/app/bin/mcpelauncher-extract"))) {
+        backendList << QString("  - mcpelauncher-extract: %1").arg(QStringLiteral("/app/bin/mcpelauncher-extract"));
+    } else {
+        backendList << QString("  - mcpelauncher-extract: <no encontrado>");
+    }
+
+    if (QFile::exists(clientPath)) {
+        backendList << QString("  - mcpelauncher-client: %1").arg(clientPath);
+    } else if (QFile::exists(QStringLiteral("/app/bin/mcpelauncher-client"))) {
+        backendList << QString("  - mcpelauncher-client: %1").arg(QStringLiteral("/app/bin/mcpelauncher-client"));
+    } else {
+        backendList << QString("  - mcpelauncher-client: <no encontrado>");
+    }
+
+    emit logMessage("[OK] Backends detectados:");
+    for (const QString &line : backendList) emit logMessage(line);
 }
 
 LauncherBackend::~LauncherBackend()
@@ -328,6 +421,28 @@ QString LauncherBackend::getDataDir() const
     return m_dataDir;
 }
 
+QString LauncherBackend::binDir() const
+{
+    return m_appDir + "/bin";
+}
+
+QString LauncherBackend::getExtractorPath() const
+{
+    QString path = binDir() + "/mcpelauncher-extract";
+    if (QFile::exists(path)) return path;
+    // Fallback to /app/bin
+    path = QStringLiteral("/app/bin/mcpelauncher-extract");
+    return path;
+}
+
+QString LauncherBackend::getClientPath() const
+{
+    QString path = binDir() + "/mcpelauncher-client";
+    if (QFile::exists(path)) return path;
+    path = QStringLiteral("/app/bin/mcpelauncher-client");
+    return path;
+}
+
 void LauncherBackend::showNotification(const QString &title, const QString &message)
 {
     QDBusInterface notifications(
@@ -447,6 +562,12 @@ void LauncherBackend::onProcessOutput()
     if (!stdErr.isEmpty()) {
         emit gameLogMessage(stdErr);
     }
+}
+
+void LauncherBackend::onConsoleLog(const QString &message)
+{
+    QTextStream ts(stdout);
+    ts << message << Qt::endl;
 }
 
 void LauncherBackend::setStatus(const QString &status)

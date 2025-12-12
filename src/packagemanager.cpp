@@ -1,5 +1,4 @@
 #include "../include/packagemanager.h"
-#include "../include/zipvalidator.h"
 #include "../include/packageinspector.h"
 #include <QDir>
 #include <QFile>
@@ -127,13 +126,38 @@ QJsonObject PackageManager::getPackageInfo(const QString &packagePath)
 
 bool PackageManager::validateZipFile(const QString &filePath)
 {
-    return ZipValidator::isValidZip(filePath) && !ZipValidator::hasPathTraversal(filePath);
+    QFile file(filePath);
+    if (!file.exists()) {
+        qWarning() << "[PackageManager] File does not exist:" << filePath;
+        return false;
+    }
+
+    // Basic extension check for zip-like packages
+    if (!filePath.endsWith(".zip", Qt::CaseInsensitive) &&
+        !filePath.endsWith(".mcpack", Qt::CaseInsensitive) &&
+        !filePath.endsWith(".mcworld", Qt::CaseInsensitive)) {
+        qWarning() << "[PackageManager] File extension not recognized as package:" << filePath;
+        return false;
+    }
+
+    return true;
 }
 
 bool PackageManager::validateApkFile(const QString &filePath)
 {
-    // Un APK es un ZIP, así que usamos la misma validación
-    return ZipValidator::isValidZip(filePath) && ZipValidator::validateFileSize(filePath);
+    QFile file(filePath);
+    if (!file.exists()) {
+        qWarning() << "[PackageManager] APK does not exist:" << filePath;
+        return false;
+    }
+
+    // Accept APK as file with .apk extension; rely on backend extractor for deeper validation
+    if (!filePath.endsWith(".apk", Qt::CaseInsensitive)) {
+        qWarning() << "[PackageManager] Not an APK file:" << filePath;
+        return false;
+    }
+
+    return true;
 }
 
 QString PackageManager::getVersionPath(const QString &version) const

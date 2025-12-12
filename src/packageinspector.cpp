@@ -1,11 +1,80 @@
 #include "../include/packageinspector.h"
-#include "../include/zipvalidator.h"
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
 #include <QFileInfo>
+#include <vector>
+#include <zip.h>
+
+// Helpers: leer manifest.json dentro del ZIP y listar contenidos (implementación mínima)
+static QJsonObject readManifestJsonFromZip(const QString &zipPath)
+{
+    QJsonObject empty;
+    int err = 0;
+    zip_t *zip = zip_open(zipPath.toStdString().c_str(), 0, &err);
+    if (!zip) {
+        qWarning() << "[PackageInspector] Cannot open ZIP:" << zipPath << "err:" << err;
+        return empty;
+    }
+
+    zip_int64_t numEntries = zip_get_num_entries(zip, 0);
+    zip_int64_t foundIndex = -1;
+
+    for (zip_int64_t i = 0; i < numEntries; ++i) {
+        const char *name = zip_get_name(zip, i, 0);
+        if (!name) continue;
+        QString sname = QString::fromUtf8(name);
+        if (sname.endsWith("manifest.json", Qt::CaseInsensitive) || sname.contains("/manifest.json")) {
+            foundIndex = i;
+            break;
+        }
+    }
+
+    if (foundIndex < 0) {
+        zip_close(zip);
+        return empty;
+    }
+
+    struct zip_stat sb;
+    if (zip_stat_index(zip, foundIndex, 0, &sb) != 0) {
+        zip_close(zip);
+        return empty;
+    }
+
+    zip_file_t *file = zip_fopen_index(zip, foundIndex, 0);
+    if (!file) {
+        zip_close(zip);
+        return empty;
+    }
+
+    std::vector<char> buffer(sb.size + 1);
+    zip_fread(file, buffer.data(), sb.size);
+    buffer[sb.size] = '\0';
+
+    zip_fclose(file);
+    zip_close(zip);
+
+    QJsonDocument doc = QJsonDocument::fromJson(QByteArray(buffer.data(), static_cast<int>(sb.size)));
+    if (doc.isObject()) return doc.object();
+    return empty;
+}
+
+static QStringList listZipContentsMinimal(const QString &zipPath)
+{
+    QStringList contents;
+    int err = 0;
+    zip_t *zip = zip_open(zipPath.toStdString().c_str(), 0, &err);
+    if (!zip) return contents;
+    zip_int64_t numEntries = zip_get_num_entries(zip, 0);
+    for (zip_int64_t i = 0; i < numEntries; ++i) {
+        const char *name = zip_get_name(zip, i, 0);
+        if (name) contents.append(QString::fromUtf8(name));
+    }
+    zip_close(zip);
+    return contents;
+}
 
 PackageInspector::PackageType PackageInspector::inspectPackage(const QString &zipPath)
 {
@@ -137,7 +206,7 @@ QJsonObject PackageInspector::getWorldMetadata(const QString &worldZipPath)
     
     // Los mundos tienen estructura diferente
     // Buscar level.dat o levelname.txt
-    QStringList contents = ZipValidator::listZipContents(worldZipPath);
+    QStringList contents = listZipContentsMinimal(worldZipPath);
     
     bool hasDb = false;
     bool hasLevelDat = false;
@@ -170,7 +239,7 @@ QString PackageInspector::getWorldLevelName(const QString &worldZipPath)
 
 QJsonObject PackageInspector::parseManifestJson(const QString &zipPath)
 {
-    return ZipValidator::readManifestJson(zipPath);
+    return readManifestJsonFromZip(zipPath);
 }
 
 bool PackageInspector::isResourcePack(const QJsonObject &manifest)

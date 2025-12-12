@@ -24,6 +24,9 @@ class LauncherBackend : public QObject
     Q_PROPERTY(QString backgroundsPath READ backgroundsPath CONSTANT)
     Q_PROPERTY(QString iconsPath READ iconsPath CONSTANT)
     Q_PROPERTY(QString profilesPath READ profilesPath CONSTANT)
+    Q_PROPERTY(QString appDir READ getAppDir CONSTANT)
+    Q_PROPERTY(QString dataDir READ getDataDir CONSTANT)
+    Q_PROPERTY(QString binDir READ binDir CONSTANT)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(QString theme READ theme WRITE setTheme NOTIFY themeChanged)
     Q_PROPERTY(double scale READ scale WRITE setScale NOTIFY scaleChanged)
@@ -57,6 +60,9 @@ public:
     Q_INVOKABLE void stopGame();
     Q_INVOKABLE QString getAppDir() const;
     Q_INVOKABLE QString getDataDir() const;
+    Q_INVOKABLE QString binDir() const;
+    Q_INVOKABLE QString getExtractorPath() const;
+    Q_INVOKABLE QString getClientPath() const;
     Q_INVOKABLE void showNotification(const QString &title, const QString &message);
     Q_INVOKABLE void installVersion(const QString &name,
                                     const QString &apkRoute,
@@ -138,6 +144,7 @@ private:
     void setupEnvironment();
     void initializePackageManager();
     void cleanupWorkers();
+    void emitStartupMessages();
     // Install APK slots
     void onInstallAPKProgress(int current, int total);
     void onInstallAPKFinished(bool success, const QString &message);
@@ -162,6 +169,8 @@ private:
     void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void onProcessError(QProcess::ProcessError error);
     void onProcessOutput();
+    // Console logging helper
+    void onConsoleLog(const QString &message);
 };
 
 #endif // LAUNCHERBACKEND_H

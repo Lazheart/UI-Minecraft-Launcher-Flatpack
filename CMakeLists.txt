@@ -7,13 +7,18 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Buscar Qt5 en el entorno Flatpak
-set(CMAKE_PREFIX_PATH "/usr/lib/sdk/qt5/lib/cmake:/usr/lib/sdk/qt5/lib/cmake/Qt5")
+# Buscar Qt5 en el entorno (evitar rutas absolutas)
+# Si el usuario no provee `CMAKE_PREFIX_PATH`, usar prefijos sensatos
+if(NOT CMAKE_PREFIX_PATH)
+    # Usar `/app` (Flatpak runtime) y `/usr` (sistema) por defecto.
+    # Los usuarios pueden sobreescribir con -DCMAKE_PREFIX_PATH="..."
+    set(CMAKE_PREFIX_PATH "/app" "/usr" CACHE STRING "Paths to search for packages (Qt etc.)" FORCE)
+endif()
 
-find_package(Qt5 REQUIRED COMPONENTS 
-    Core 
-    Quick 
-    Qml 
+find_package(Qt5 REQUIRED COMPONENTS
+    Core
+    Quick
+    Qml
     Widgets
     Network
     DBus
@@ -39,7 +44,6 @@ set(SOURCES
     src/profilemanager.cpp
     src/packagemanager.cpp
     src/workers.cpp
-    src/zipvalidator.cpp
     src/packageinspector.cpp
 )
 
@@ -50,7 +54,6 @@ set(HEADERS
     include/profilemanager.h
     include/packagemanager.h
     include/workers.h
-    include/zipvalidator.h
     include/packageinspector.h
 )
 
@@ -94,6 +97,9 @@ set(DESKTOP_FILE "${CMAKE_SOURCE_DIR}/flatpak/org.lazheart.minecraft-launcher.de
 set(METAINFO_FILE "${CMAKE_SOURCE_DIR}/flatpak/org.lazheart.minecraft-launcher.metainfo.xml")
 set(ICON_DIR "${CMAKE_SOURCE_DIR}/assets/icons")
 
+# Directorio de assets completo (fondos, media, etc.)
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+
 # Opción para permitir saltarse la instalación de archivos de escritorio
 option(INSTALL_DESKTOP_FILES "Instalar archivos de escritorio y metainfo" ON)
 
@@ -133,4 +139,14 @@ if(EXISTS "${ICON_DIR}")
     )
 else()
     message(WARNING "Icon directory no encontrado: ${ICON_DIR}")
+endif()
+
+# Instalar el resto de assets (backgrounds, media, etc.) evitando la carpeta de icons
+if(EXISTS "${ASSETS_DIR}")
+    install(DIRECTORY "${ASSETS_DIR}/"
+        DESTINATION share/${PROJECT_NAME}/assets
+        PATTERN "icons" EXCLUDE
+    )
+else()
+    message(WARNING "Assets directory no encontrado: ${ASSETS_DIR}")
 endif()
