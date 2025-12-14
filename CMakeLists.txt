@@ -41,6 +41,8 @@ set(SOURCES
     src/main.cpp
     src/launcherbackend.cpp
     src/minecraftmanager.cpp
+    src/pathmanager.cpp
+    src/minecraftextract.cpp
     src/profilemanager.cpp
     src/packagemanager.cpp
     src/workers.cpp

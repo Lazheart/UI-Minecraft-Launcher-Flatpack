@@ -2,38 +2,50 @@
 #define MINECRAFTMANAGER_H
 
 #include <QObject>
-#include <QString>
 #include <QStringList>
+#include <QVariant>
+
+class PathManager;
 
 class MinecraftManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString installedVersion READ installedVersion NOTIFY versionChanged)
-    Q_PROPERTY(bool isInstalled READ isInstalled NOTIFY installationChanged)
-
+    Q_PROPERTY(QString installedVersion READ installedVersion NOTIFY installedVersionChanged)
 public:
-    explicit MinecraftManager(QObject *parent = nullptr);
+    explicit MinecraftManager(PathManager *paths = nullptr, QObject *parent = nullptr);
 
-    QString installedVersion() const;
-    bool isInstalled() const;
+    // Devuelve una lista de objetos { name, path } para cada versión disponible
+    Q_INVOKABLE QVariantList getAvailableVersions() const;
 
-    Q_INVOKABLE void checkInstallation();
-    Q_INVOKABLE QStringList getAvailableVersions();
-    Q_INVOKABLE QString getGameDirectory() const;
-    Q_INVOKABLE bool deleteVersion(const QString &version);
+    // Elimina una versión (ruta completa) y opcionalmente su perfil asociado
+    Q_INVOKABLE void deleteVersion(const QString &versionPath, bool deleteProfile = true);
+
+    // Solicita la instalación/extracción de un APK con nombre y posibles assets
+    Q_INVOKABLE void installRequested(const QString &apkPath,
+                                      const QString &name,
+                                      bool useDefaultIcon,
+                                      const QString &iconPath,
+                                      bool useDefaultBackground,
+                                      const QString &backgroundPath);
+
+    // Comportamientos mínimos/auxiliares (stubs) que pueden ampliarse
+    Q_INVOKABLE bool checkInstallation();
+
+    QString installedVersion() const { return m_installedVersion; }
 
 signals:
-    void versionChanged(const QString &version);
-    void installationChanged(bool installed);
-    void logMessage(const QString &message);
     void availableVersionsChanged();
+    void installedVersionChanged();
+    // Señal emitida después de borrar una o varias versiones (listas de rutas eliminadas)
+    void versionsDeleted(QVariantList deletedPaths);
+    // Señales para notificar resultado de instalación/extracción
+    void installSucceeded(const QString &versionPath);
+    void installFailed(const QString &versionPath, const QString &reason);
 
 private:
     QString m_installedVersion;
-    bool m_isInstalled;
-    QString m_gameDirectory;
-
-    void detectVersion();
+    QString versionsDir() const;
+    PathManager *m_pathManager = nullptr;
 };
 
 #endif // MINECRAFTMANAGER_H

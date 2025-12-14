@@ -52,6 +52,29 @@ ApplicationWindow {
         }
     }
     
+    Connections {
+        target: minecraftManager
+        function onVersionsDeleted(deleted) {
+            if (deleted && deleted.length > 0) {
+                showNotification("Success", "Selected versions deleted successfully", "info")
+                console.log("[QML] Versions deleted:", deleted)
+            } else {
+                showNotification("Info", "No versions were deleted", "info")
+                console.log("[QML] versionsDeleted emitted with empty list")
+            }
+        }
+        function onInstallSucceeded(versionPath) {
+            showNotification("Install Complete", "Version installed: " + versionPath, "info")
+            console.log("[QML] Install succeeded:", versionPath)
+        }
+
+        function onInstallFailed(versionPath, reason) {
+            var msg = reason && reason.length ? reason : ("Failed to install " + versionPath)
+            showNotification("Install Failed", msg, "error")
+            console.log("[QML] Install failed:", versionPath, reason)
+        }
+    }
+    
     function showNotification(title, message, type) {
         notificationDialog.notificationTitle = title
         notificationDialog.notificationMessage = message

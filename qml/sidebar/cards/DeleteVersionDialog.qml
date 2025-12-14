@@ -111,6 +111,11 @@ Dialog {
                                 height: 45
                                 color: itemMouse.containsMouse ? "#3d3d3d" : "transparent"
 
+                                // Soportar modelos que devuelvan una ruta (string)
+                                // o un objeto { name: "1.21.0", path: "/abs/path/to/versions/1.21.0" }
+                                property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
+                                property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
+
                                 MouseArea {
                                     id: itemMouse
                                     anchors.fill: parent
@@ -132,13 +137,12 @@ Dialog {
 
                                         onCheckedChanged: {
                                             if (checked) {
-                                                if (deleteDialog.selectedVersions.indexOf(modelData) === -1) {
-                                                    deleteDialog.selectedVersions.push(modelData)
+                                                if (deleteDialog.selectedVersions.indexOf(versionPath) === -1) {
+                                                    deleteDialog.selectedVersions.push(versionPath)
                                                 }
                                             } else {
-                                                deleteDialog.selectedVersions.splice(
-                                                    deleteDialog.selectedVersions.indexOf(modelData), 1
-                                                )
+                                                var idx = deleteDialog.selectedVersions.indexOf(versionPath)
+                                                if (idx !== -1) deleteDialog.selectedVersions.splice(idx, 1)
                                             }
                                         }
 
@@ -166,7 +170,7 @@ Dialog {
                                     }
 
                                     Text {
-                                        text: modelData
+                                        text: versionName
                                         color: textColor
                                         font.pixelSize: 13
                                         Layout.fillWidth: true

@@ -141,24 +141,28 @@ Rectangle {
                     // Lista de versiones (máximo 5)
                     Repeater {
                         model: Math.min(sideBar.versionsList.length, 5)
-                        
+
                         Rectangle {
                             id: versionItem
                             width: parent.width
                             height: 40
                             color: versionMouse.containsMouse ? sideBar.highlightColor : sideBar.listItemBaseColor
-                            
+
+                            // Support model entries as string (path) or object {name, path}
+                            property string versionPath: (typeof sideBar.versionsList[index] === 'string') ? sideBar.versionsList[index] : (sideBar.versionsList[index] && sideBar.versionsList[index].path ? sideBar.versionsList[index].path : "")
+                            property string versionName: (typeof sideBar.versionsList[index] === 'string') ? (sideBar.versionsList[index].split("/").pop()) : (sideBar.versionsList[index] && sideBar.versionsList[index].name ? sideBar.versionsList[index].name : (versionPath.split("/").pop()))
+
                             MouseArea {
                                 id: versionMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onClicked: sideBar.versionSelected(sideBar.versionsList[index])
+                                onClicked: sideBar.versionSelected(versionName)
                             }
-                            
+
                             Text {
                                 anchors.fill: parent
                                 anchors.margins: 10
-                                text: sideBar.versionsList[index] || ""
+                                text: versionName
                                 color: "#ffffff"
                                 font.pixelSize: 12
                                 verticalAlignment: Text.AlignVCenter
