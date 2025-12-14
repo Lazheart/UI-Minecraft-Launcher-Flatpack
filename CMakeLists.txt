@@ -39,24 +39,21 @@ include_directories(
 # Archivos fuente
 set(SOURCES
     src/main.cpp
-    src/launcherbackend.cpp
     src/minecraftmanager.cpp
+    src/minecraftlaunch.cpp
     src/pathmanager.cpp
     src/minecraftextract.cpp
     src/profilemanager.cpp
-    src/packagemanager.cpp
-    src/workers.cpp
-    src/packageinspector.cpp
 )
 
 # Archivos de cabecera
 set(HEADERS
-    include/launcherbackend.h
     include/minecraftmanager.h
     include/profilemanager.h
-    include/packagemanager.h
-    include/workers.h
-    include/packageinspector.h
+    include/minecraftlaunch.h
+    include/pathmanager.h
+    include/minecraftextract.h
+    include/profilemanager.h
 )
 
 # Archivos QML y recursos
