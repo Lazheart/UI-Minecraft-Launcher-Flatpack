@@ -8,6 +8,9 @@
 #include <QFile>
 
 #include "../include/minecraftextract.h"
+#include "../include/minecraftlaunch.h"
+#include <QProcess>
+#include <QFile>
 
 MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
     : QObject(parent), m_pathManager(paths)
@@ -210,5 +213,74 @@ void MinecraftManager::installRequested(const QString &apkPath,
     qDebug() << "[MinecraftManager] installRequested completed for" << name << "folder:" << versionFolder;
 
     // Emitir señal de éxito con la ruta de la versión creada
+    // Intentar limpiar archivos staged que se copiaron a dataDir/imports
+    if (m_pathManager) {
+        QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
+        auto tryRemoveIfStaged = [&](const QString &p) {
+            if (p.isEmpty()) return;
+            QString clean = QDir::cleanPath(p);
+            if (clean.startsWith(QDir(importsDir).absolutePath())) {
+                qDebug() << "[MinecraftManager] Removing staged file:" << clean;
+                if (!QFile::remove(clean)) {
+                    qWarning() << "[MinecraftManager] Failed to remove staged file:" << clean;
+                }
+            } else {
+                qDebug() << "[MinecraftManager] Not a staged file (skipping):" << clean;
+            }
+        };
+
+        tryRemoveIfStaged(apkPath);
+        if (!useDefaultIcon) tryRemoveIfStaged(iconPath);
+        if (!useDefaultBackground) tryRemoveIfStaged(backgroundPath);
+    }
+
     emit installSucceeded(versionFolder);
+}
+
+void MinecraftManager::importSelected(const QString &filePath,
+                                     const QString &type,
+                                     const QString &versionPath,
+                                     bool useShared,
+                                     bool useNvidia,
+                                     bool useZink,
+                                     bool useMangohud)
+{
+    qDebug() << "MinecraftManager::importSelected file:" << filePath << "type:" << type << "version:" << versionPath;
+
+    if (versionPath.isEmpty()) {
+        qWarning() << "importSelected: versionPath empty";
+        emit importFailed(versionPath, filePath, "No version selected");
+        return;
+    }
+
+    if (!m_pathManager) {
+        qWarning() << "importSelected: no PathManager available";
+        emit importFailed(versionPath, filePath, "Internal error: no PathManager");
+        return;
+    }
+
+    // Stage file to ensure accessibility
+    QString staged = m_pathManager->stageFileForExtraction(filePath);
+    QString fileToUse = staged.isEmpty() ? filePath : staged;
+
+    // Create launcher and call import
+    MinecraftLaunch launcher(m_pathManager);
+    bool ok = launcher.importFile(versionPath, fileToUse, useShared, useNvidia, useZink, useMangohud);
+    if (!ok) {
+        qWarning() << "importSelected: launcher failed to start";
+        emit importFailed(versionPath, fileToUse, "Failed to start client for import");
+        return;
+    }
+
+    qDebug() << "importSelected: import started for" << fileToUse << "into" << versionPath;
+    emit importSucceeded(versionPath, fileToUse);
+
+    // If we staged the file, try to remove it after starting the import
+    if (!staged.isEmpty()) {
+        if (!QFile::remove(staged)) {
+            qWarning() << "importSelected: failed to remove staged file:" << staged;
+        } else {
+            qDebug() << "importSelected: removed staged file:" << staged;
+        }
+    }
 }

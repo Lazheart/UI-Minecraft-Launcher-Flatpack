@@ -364,13 +364,30 @@ Dialog {
                         return
                     }
                     errorLabel.text = ""
+                    // Stage files via pathManager so extractor can access them
+                    var apkPath = apkField.text.trim()
+                    var stagedApk = pathManager.stageFileForExtraction(apkPath)
+                    var stagedIcon = ""
+                    var stagedBg = ""
+                    if (!installDialog.useDefaultIcon && installDialog.iconPath) {
+                        stagedIcon = pathManager.stageFileForExtraction(installDialog.iconPath)
+                    }
+                    if (!installDialog.useDefaultBackground && installDialog.backgroundPath) {
+                        stagedBg = pathManager.stageFileForExtraction(installDialog.backgroundPath)
+                    }
+
+                    // Fallback a las rutas originales si stage falla (se intentará de todos modos)
+                    var apkToUse = stagedApk && stagedApk.length ? stagedApk : apkPath
+                    var iconToUse = stagedIcon && stagedIcon.length ? stagedIcon : installDialog.iconPath
+                    var bgToUse = stagedBg && stagedBg.length ? stagedBg : installDialog.backgroundPath
+
                     installDialog.installRequested(
                                 nameField.text.trim(),
-                                apkField.text.trim(),
+                                apkToUse,
                                 installDialog.useDefaultIcon,
-                                installDialog.iconPath,
+                                iconToUse,
                                 installDialog.useDefaultBackground,
-                                installDialog.backgroundPath
+                                bgToUse
                             )
                     installDialog.close()
                 }

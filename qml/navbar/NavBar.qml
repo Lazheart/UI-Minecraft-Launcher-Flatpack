@@ -97,14 +97,6 @@ Rectangle {
                 }
             }
             
-            NavBarButton {
-                text: "Packages"
-                isActive: navBar.currentPage === "Packages"
-                onClicked: {
-                    navBar.currentPage = "Packages"
-                    navBar.navigate("Packages")
-                }
-            }
             
             NavBarButton {
                 text: "Settings"

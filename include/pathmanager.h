@@ -36,6 +36,11 @@ public:
     // Ensure directories exist (callable from code)
     Q_INVOKABLE void ensurePathsExist() const;
 
+    // Copia (stage) un archivo externo a un area de datos accesible por la
+    // aplicación (por ejemplo dentro de dataDir()/imports) y devuelve la ruta
+    // destino. Si la copia falla devuelve cadena vacía.
+    Q_INVOKABLE QString stageFileForExtraction(const QString &originalPath) const;
+
 signals:
     void changed();
 

@@ -27,6 +27,32 @@ Dialog {
     signal importRequested(string path, string type)
     signal closed()
 
+    // Versions model for selection
+    ListModel { id: versionsListModel }
+    property string selectedVersionPath: ""
+    property string importError: ""
+
+    function rebuildVersions() {
+        versionsListModel.clear();
+        var versions = minecraftManager.getAvailableVersions();
+        if (!versions) return;
+        for (var i = 0; i < versions.length; ++i) {
+            var v = versions[i];
+            var name = (typeof v === 'string') ? v.split("/").pop() : (v.name ? v.name : (v.path ? v.path.split("/").pop() : ""));
+            var path = (typeof v === 'string') ? v : (v.path ? v.path : "");
+            versionsListModel.append({ text: name, path: path });
+        }
+        // reset selection
+        selectedVersionPath = "";
+    }
+
+    Connections {
+        target: minecraftManager
+        function onAvailableVersionsChanged() { rebuildVersions(); }
+    }
+
+    Component.onCompleted: rebuildVersions()
+
     contentItem: Rectangle {
         color: "#1a1a1a"
         radius: 16
@@ -231,6 +257,99 @@ Dialog {
                 }
             }
 
+            // Version Selector (must pick a version before importing)
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                    text: "Target Version"
+                    color: "#b0b0b0"
+                    font.pixelSize: 13
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    ComboBox {
+                        id: versionCombo
+                        Layout.fillWidth: true
+                        model: versionsListModel
+                        textRole: "text"
+                        implicitHeight: 40
+                        font.pixelSize: 13
+
+                        onCurrentIndexChanged: {
+                            if (currentIndex >= 0 && currentIndex < versionsListModel.count) {
+                                selectedVersionPath = versionsListModel.get(currentIndex).path
+                            } else {
+                                selectedVersionPath = ""
+                            }
+                            importError = ""
+                        }
+
+                        background: Rectangle {
+                            color: "#231f1f"
+                            border.color: "#4CAF50"
+                            border.width: versionCombo.activeFocus ? 2 : 1
+                            radius: 6
+                            implicitHeight: 36
+                        }
+
+                        contentItem: Text {
+                            text: control.displayText
+                            color: "#ffffff"
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            elide: Text.ElideRight
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            font.pixelSize: 13
+                        }
+
+                        // Simple indicator shaped like the rest of the UI
+                        indicator: Rectangle {
+                            width: 28
+                            height: 28
+                            radius: 6
+                            color: "transparent"
+                            border.color: "#4CAF50"
+                            border.width: 1
+                            anchors.right: parent.right
+                            anchors.rightMargin: 6
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "▾"
+                                color: "#ffffff"
+                                font.pixelSize: 12
+                            }
+                        }
+                    }
+
+                    Text {
+                        id: noVersionsLabel
+                        visible: versionsListModel.count === 0
+                        color: "#ff6b6b"
+                        text: "No versions installed. Install a version first."
+                        font.pixelSize: 12
+                    }
+                }
+            }
+
+            // Import error / hint
+            Text {
+                id: importErrorText
+                visible: importError !== ""
+                text: importError
+                color: "#ff6b6b"
+                font.pixelSize: 13
+                Layout.fillWidth: true
+            }
+
             // Spacer
             Item {
                 Layout.fillHeight: true
@@ -287,12 +406,26 @@ Dialog {
                     }
 
                     onClicked: {
-                        if (filePathInput.text.trim() !== "") {
-                            importCard.importRequested(filePathInput.text, importCard.selectedType)
-                            importCard.close()
-                            filePathInput.text = ""
-                            mundoRadio.checked = true
+                        importError = ""
+                        var fp = filePathInput.text.trim()
+                        if (fp === "") {
+                            importError = "Please select a file to import."
+                            return
                         }
+                        if (selectedVersionPath === "") {
+                            importError = "Please select a target version."
+                            return
+                        }
+
+                        // Stage file to ensure accessibility and then call manager
+                        var staged = pathManager.stageFileForExtraction(fp)
+                        var fileToUse = (staged && staged.length) ? staged : fp
+                        minecraftManager.importSelected(fileToUse, importCard.selectedType, selectedVersionPath)
+                        // close and reset
+                        importCard.close()
+                        filePathInput.text = ""
+                        mundoRadio.checked = true
+                        selectedVersionPath = ""
                     }
                 }
             }

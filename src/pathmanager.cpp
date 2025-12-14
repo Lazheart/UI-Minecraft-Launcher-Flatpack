@@ -4,6 +4,9 @@
 #include <QStandardPaths>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QUrl>
 
 PathManager::PathManager(QObject *parent)
     : QObject(parent)
@@ -79,4 +82,57 @@ void PathManager::ensurePathsExist() const
     qDebug() << "  versionsDir=" << m_versionsDir;
     qDebug() << "  profilesDir=" << m_profilesDir;
     qDebug() << "  logsDir=" << m_logsDir;
+}
+
+QString PathManager::stageFileForExtraction(const QString &originalPath) const
+{
+    if (originalPath.isEmpty()) return QString();
+
+    // Clean file:// URL if present
+    QString path = originalPath;
+    if (path.startsWith("file://")) {
+        QUrl u(path);
+        path = u.toLocalFile();
+    }
+
+    QFileInfo srcInfo(path);
+    if (!srcInfo.exists()) {
+        qWarning() << "[PathManager] stageFileForExtraction: source does not exist:" << path;
+        return QString();
+    }
+
+    // If the file is already inside versionsDir or dataDir, return as-is
+    QString abs = QDir::cleanPath(srcInfo.absoluteFilePath());
+    if (abs.startsWith(QDir(m_versionsDir).absolutePath()) || abs.startsWith(QDir(m_dataDir).absolutePath())) {
+        qDebug() << "[PathManager] stageFileForExtraction: file already in data area, returning original:" << abs;
+        return abs;
+    }
+
+    // Create imports dir
+    QString importsDir = QDir(m_dataDir).filePath("imports");
+    QDir().mkpath(importsDir);
+
+    QString dest = QDir(importsDir).filePath(srcInfo.fileName());
+
+    // If destination exists, try to generate a unique name
+    if (QFile::exists(dest)) {
+        QString base = srcInfo.completeBaseName();
+        QString ext = srcInfo.suffix();
+        int i = 1;
+        QString tryPath;
+        do {
+            tryPath = QDir(importsDir).filePath(QString("%1-%2.%3").arg(base).arg(i).arg(ext));
+            ++i;
+        } while (QFile::exists(tryPath) && i < 10000);
+        dest = tryPath;
+    }
+
+    bool ok = QFile::copy(abs, dest);
+    if (!ok) {
+        qWarning() << "[PathManager] Failed to copy" << abs << "->" << dest;
+        return QString();
+    }
+
+    qDebug() << "[PathManager] staged file for extraction:" << abs << "->" << dest;
+    return QDir::cleanPath(dest);
 }

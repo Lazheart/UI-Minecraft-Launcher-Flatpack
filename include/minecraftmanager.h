@@ -30,6 +30,14 @@ public:
 
     // Comportamientos mínimos/auxiliares (stubs) que pueden ampliarse
     Q_INVOKABLE bool checkInstallation();
+    // Import a selected file into a chosen version (versionPath must be full path)
+    Q_INVOKABLE void importSelected(const QString &filePath,
+                                    const QString &type,
+                                    const QString &versionPath,
+                                    bool useShared = false,
+                                    bool useNvidia = false,
+                                    bool useZink = false,
+                                    bool useMangohud = false);
 
     QString installedVersion() const { return m_installedVersion; }
 
@@ -41,6 +49,9 @@ signals:
     // Señales para notificar resultado de instalación/extracción
     void installSucceeded(const QString &versionPath);
     void installFailed(const QString &versionPath, const QString &reason);
+    // Signals for import operations
+    void importSucceeded(const QString &versionPath, const QString &filePath);
+    void importFailed(const QString &versionPath, const QString &filePath, const QString &reason);
 
 private:
     QString m_installedVersion;

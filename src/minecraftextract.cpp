@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include <QDebug>
+#include <QDir>
 
 MinecraftExtract::MinecraftExtract(PathManager *paths, QObject *parent)
     : QObject(parent), m_paths(paths)
