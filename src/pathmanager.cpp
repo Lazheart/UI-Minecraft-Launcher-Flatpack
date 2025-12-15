@@ -107,9 +107,18 @@ QString PathManager::stageFileForExtraction(const QString &originalPath) const
     }
 
     QFileInfo srcInfo(path);
-    if (!srcInfo.exists()) {
-        qWarning() << "[PathManager] stageFileForExtraction: source does not exist:" << path;
-        return QString();
+    bool srcExists = srcInfo.exists();
+    if (!srcExists) {
+        // Best-effort fallback for portal paths (e.g. Flatpak file chooser)
+        // Some portals expose files under /run/user/... which in some
+        // confinement setups may not be visible to QFileInfo(). In that
+        // case, attempt the copy anyway if the path looks like a portal
+        // path. The copy may still fail if sandboxing prevents access.
+        if (!path.startsWith("/run/user/")) {
+            qWarning() << "[PathManager] stageFileForExtraction: source does not exist:" << path;
+            return QString();
+        }
+        qDebug() << "[PathManager] stageFileForExtraction: source not visible to QFileInfo(), attempting portal fallback copy:" << path;
     }
 
     // If the file is already inside versionsDir or dataDir, return as-is
@@ -140,7 +149,7 @@ QString PathManager::stageFileForExtraction(const QString &originalPath) const
 
     bool ok = QFile::copy(abs, dest);
     if (!ok) {
-        qWarning() << "[PathManager] Failed to copy" << abs << "->" << dest;
+        qWarning() << "[PathManager] Failed to copy" << abs << "->" << dest << "; this may be due to sandbox/portal restrictions";
         return QString();
     }
 
