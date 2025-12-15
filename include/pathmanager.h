@@ -40,6 +40,7 @@ public:
     // aplicación (por ejemplo dentro de dataDir()/imports) y devuelve la ruta
     // destino. Si la copia falla devuelve cadena vacía.
     Q_INVOKABLE QString stageFileForExtraction(const QString &originalPath) const;
+    Q_INVOKABLE bool removeStagedFile(const QString &path) const;
 
 signals:
     void changed();

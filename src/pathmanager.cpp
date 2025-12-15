@@ -149,10 +149,48 @@ QString PathManager::stageFileForExtraction(const QString &originalPath) const
 
     bool ok = QFile::copy(abs, dest);
     if (!ok) {
-        qWarning() << "[PathManager] Failed to copy" << abs << "->" << dest << "; this may be due to sandbox/portal restrictions";
+        qWarning() << "[PathManager] Failed to copy" << abs << "->" << dest << "; attempting stream-based fallback (may still fail due to sandbox)";
+        // Fallback: try to open source and write bytes manually. This can
+        // succeed in cases where QFile::copy fails but reading the file is
+        // possible via QFile (some platform semantics differ).
+        QFile in(abs);
+        if (in.open(QIODevice::ReadOnly)) {
+            QFile out(dest);
+            if (out.open(QIODevice::WriteOnly)) {
+                QByteArray data = in.readAll();
+                qint64 written = out.write(data);
+                out.close();
+                in.close();
+                if (written == data.size()) {
+                    qDebug() << "[PathManager] staged file for extraction via stream fallback:" << abs << "->" << dest;
+                    return QDir::cleanPath(dest);
+                } else {
+                    qWarning() << "[PathManager] Stream fallback write incomplete" << written << "vs" << data.size();
+                }
+            } else {
+                qWarning() << "[PathManager] Failed to open dest for writing:" << dest;
+            }
+        } else {
+            qWarning() << "[PathManager] Failed to open source for reading (portal/sandbox may block):" << abs;
+        }
         return QString();
     }
 
     qDebug() << "[PathManager] staged file for extraction:" << abs << "->" << dest;
     return QDir::cleanPath(dest);
+}
+
+bool PathManager::removeStagedFile(const QString &path) const
+{
+    if (path.isEmpty()) return false;
+    QString clean = QDir::cleanPath(path);
+    QString importsDir = QDir(m_dataDir).filePath("imports");
+    if (clean.startsWith(QDir(importsDir).absolutePath())) {
+        if (QFile::exists(clean)) {
+            bool ok = QFile::remove(clean);
+            if (!ok) qWarning() << "[PathManager] removeStagedFile: failed to remove" << clean;
+            return ok;
+        }
+    }
+    return false;
 }

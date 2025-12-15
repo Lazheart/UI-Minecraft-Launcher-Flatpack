@@ -75,6 +75,28 @@ Dialog {
 
     onOpened: resetForm()
 
+    onClosed: {
+        // If dialog closed without installing, clean any staged files we created
+        if (!installing) {
+            try {
+                var apk = apkField.text && apkField.text.length ? apkField.text : ""
+                if (apk && apk.indexOf(pathManager.dataDir + "/imports/") === 0) {
+                    pathManager.removeStagedFile(apk)
+                    console.log("[InstallVersionDialog] removed staged apk on close:", apk)
+                }
+                // icons/backgrounds may also be staged separately; attempt removal similarly
+                if (installDialog.iconPath && installDialog.iconPath.indexOf(pathManager.dataDir + "/imports/") === 0) {
+                    pathManager.removeStagedFile(installDialog.iconPath)
+                }
+                if (installDialog.backgroundPath && installDialog.backgroundPath.indexOf(pathManager.dataDir + "/imports/") === 0) {
+                    pathManager.removeStagedFile(installDialog.backgroundPath)
+                }
+            } catch (e) {
+                console.log("[InstallVersionDialog] cleanup error:", e)
+            }
+        }
+    }
+
     background: Rectangle {
         radius: 8
         color: surfaceColor
