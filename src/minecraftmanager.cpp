@@ -49,6 +49,17 @@ MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
             qWarning() << "[MinecraftManager] client binary NOT found:" << client;
         }
     }
+
+    // Try to detect an installed version at startup so QML bindings work
+    QVariantList avail = getAvailableVersions();
+    if (!avail.isEmpty()) {
+        QVariantMap first = avail.first().toMap();
+        if (first.contains("name")) {
+            m_installedVersion = first.value("name").toString();
+            emit installedVersionChanged();
+            emit availableVersionsChanged();
+        }
+    }
 }
 
 QString MinecraftManager::versionsDir() const
@@ -134,12 +145,25 @@ bool MinecraftManager::runGame(const QString &versionPath, const QString &unused
         return false;
     }
 
+    // Accept either a full path or a version name. If a plain name is passed,
+    // construct the full path inside the versionsDir().
+    QString fullVersionPath = versionPath;
     QFileInfo vfi(versionPath);
+    if (!vfi.isAbsolute() && !versionPath.contains(QDir::separator())) {
+        fullVersionPath = QDir(versionsDir()).filePath(versionPath);
+        vfi.setFile(fullVersionPath);
+    }
+
+    if (!QDir(fullVersionPath).exists()) {
+        qWarning() << "runGame: version path does not exist:" << fullVersionPath;
+        return false;
+    }
+
     QString versionName = vfi.fileName();
     QString profilePath = QDir(m_pathManager->profilesDir()).filePath(versionName);
 
     QStringList args;
-    args << QStringLiteral("-dg") << versionPath;
+    args << QStringLiteral("-dg") << fullVersionPath;
     if (!profile.isEmpty()) {
         args << QStringLiteral("-dd") << profilePath;
     }
@@ -264,6 +288,19 @@ void MinecraftManager::deleteVersion(const QString &versionPath, bool deleteProf
 
     qDebug() << "[MinecraftManager] Deleted entries:" << deletedList;
     emit versionsDeleted(deletedList);
+
+    // Recompute installedVersion after deletion so QML reflects current state
+    QVariantList availAfter = getAvailableVersions();
+    QString newInstalled;
+    if (!availAfter.isEmpty()) {
+        QVariantMap first = availAfter.first().toMap();
+        if (first.contains("name")) newInstalled = first.value("name").toString();
+    }
+    if (newInstalled != m_installedVersion) {
+        m_installedVersion = newInstalled;
+        emit installedVersionChanged();
+        emit availableVersionsChanged();
+    }
 }
 
 void MinecraftManager::installRequested(const QString &apkPath,
@@ -335,6 +372,9 @@ void MinecraftManager::installRequested(const QString &apkPath,
     }
 
     // Notify UI and consumers that versions changed
+    // Update installedVersion so QML bindings reflect the new installation
+    m_installedVersion = name;
+    emit installedVersionChanged();
     emit availableVersionsChanged();
     qDebug() << "[MinecraftManager] installRequested completed for" << name << "folder:" << versionFolder;
 
@@ -387,13 +427,20 @@ void MinecraftManager::importSelected(const QString &filePath,
         return;
     }
 
+    // Resolve versionPath to a full path if a simple name was provided
+    QString fullVersionPath = versionPath;
+    QFileInfo vfi(versionPath);
+    if (!vfi.isAbsolute() && !versionPath.contains(QDir::separator())) {
+        fullVersionPath = QDir(versionsDir()).filePath(versionPath);
+    }
+
     // Stage file to ensure accessibility
     QString staged = m_pathManager->stageFileForExtraction(filePath);
     QString fileToUse = staged.isEmpty() ? filePath : staged;
 
     // Create launcher and call import
     MinecraftLaunch launcher(m_pathManager);
-    bool ok = launcher.importFile(versionPath, fileToUse, useShared, useNvidia, useZink, useMangohud);
+    bool ok = launcher.importFile(fullVersionPath, fileToUse, useShared, useNvidia, useZink, useMangohud);
     if (!ok) {
         qWarning() << "importSelected: launcher failed to start";
         emit importFailed(versionPath, fileToUse, "Failed to start client for import");
