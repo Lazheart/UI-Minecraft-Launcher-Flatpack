@@ -282,10 +282,22 @@ void MinecraftManager::installRequested(const QString &apkPath,
         return;
     }
 
+    // Stage APK if needed (e.g. Flatpak portal /run/user/ paths) so the
+    // external extractor can access a regular file path.
+    QString stagedApk;
+    QString apkToUse = apkPath;
+    if (m_pathManager) {
+        stagedApk = m_pathManager->stageFileForExtraction(apkPath);
+        if (!stagedApk.isEmpty()) {
+            qDebug() << "[MinecraftManager] Using staged APK for extraction:" << stagedApk;
+            apkToUse = stagedApk;
+        }
+    }
+
     // Use MinecraftExtract to perform extraction
     MinecraftExtract extractor(m_pathManager);
     QString extractorErr;
-    bool ok = extractor.extractApk(apkPath, name, &extractorErr);
+    bool ok = extractor.extractApk(apkToUse, name, &extractorErr);
     if (!ok) {
         qWarning() << "Extraction failed:" << extractorErr;
         // Emitir señal de fallo con razón
@@ -343,7 +355,9 @@ void MinecraftManager::installRequested(const QString &apkPath,
             }
         };
 
-        tryRemoveIfStaged(apkPath);
+        // remove the actual files used for extraction / copy operations
+        QString apkCleanup = stagedApk.isEmpty() ? apkPath : stagedApk;
+        tryRemoveIfStaged(apkCleanup);
         if (!useDefaultIcon) tryRemoveIfStaged(iconPath);
         if (!useDefaultBackground) tryRemoveIfStaged(backgroundPath);
     }
