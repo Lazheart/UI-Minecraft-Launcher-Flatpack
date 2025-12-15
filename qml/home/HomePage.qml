@@ -199,7 +199,7 @@ Rectangle {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 60
                             text: "PLAY"
-                            enabled: !launcherBackend.isRunning
+                            enabled: !minecraftManager.isRunning
 
                             background: Rectangle {
                                 color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#555555"
@@ -218,7 +218,7 @@ Rectangle {
                             onClicked: {
                                 var version = minecraftManager.installedVersion
                                 console.log("[Home] Launching game with version:", version, "and profile:", profileManager.currentProfile)
-                                launcherBackend.runGame(version, "", profileManager.currentProfile)
+                                minecraftManager.runGame(version, "", profileManager.currentProfile)
                             }
                         }
 
@@ -226,7 +226,7 @@ Rectangle {
                             Layout.preferredWidth: 150
                             Layout.preferredHeight: 60
                             text: "STOP"
-                            enabled: launcherBackend.isRunning
+                            enabled: minecraftManager.isRunning
 
                             background: Rectangle {
                                 color: parent.enabled ? (parent.pressed ? "#d32f2f" : "#f44336") : "#555555"
@@ -244,7 +244,7 @@ Rectangle {
 
                             onClicked: {
                                 console.log("[Home] Stopping game")
-                                launcherBackend.stopGame()
+                                minecraftManager.stopGame()
                             }
                         }
                     }
@@ -252,7 +252,7 @@ Rectangle {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 80
-                        color: launcherBackend.isRunning ? "#1b5e20" : "#3d3d3d"
+                        color: minecraftManager.isRunning ? "#1b5e20" : "#3d3d3d"
                         radius: 8
 
                         ColumnLayout {
@@ -268,9 +268,9 @@ Rectangle {
                             }
 
                             Text {
-                                text: launcherBackend.status
+                                text: (typeof minecraftManager !== 'undefined') ? minecraftManager.status : ""
                                 font.pixelSize: 16
-                                color: launcherBackend.isRunning ? "#81C784" : "#b0b0b0"
+                                color: minecraftManager.isRunning ? "#81C784" : "#b0b0b0"
                                 font.bold: true
                             }
                         }
@@ -415,7 +415,7 @@ Rectangle {
                                 Button {
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 70
-                                    enabled: !launcherBackend.isRunning
+                                    enabled: !minecraftManager.isRunning
 
                                     background: Rectangle {
                                         color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#555555"
@@ -445,7 +445,7 @@ Rectangle {
 
                                     onClicked: {
                                         console.log("[Home] Launching game with version:", selectedVersion, "and profile:", profileManager.currentProfile)
-                                        launcherBackend.runGame(selectedVersion, "", profileManager.currentProfile)
+                                        minecraftManager.runGame(selectedVersion, "", profileManager.currentProfile)
                                     }
                                 }
 

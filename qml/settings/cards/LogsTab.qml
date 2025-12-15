@@ -151,7 +151,7 @@ Rectangle {
                     font.pixelSize: 11
                 }
                 Text {
-                    text: launcherBackend.status
+                    text: (typeof minecraftManager !== 'undefined') ? minecraftManager.status : ""
                     color: "#4CAF50"
                     font.pixelSize: 11
                     font.bold: true

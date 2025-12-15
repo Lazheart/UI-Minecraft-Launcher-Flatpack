@@ -63,7 +63,7 @@ Rectangle {
                         color: "#b0b0b0"
                         font.pixelSize: 11
                         readOnly: true
-                        text: launcherBackend.versionsPath || "/home/user/.minecraft/versions"
+                        text: (typeof pathManager !== 'undefined' && pathManager.versionsDir && pathManager.versionsDir.length) ? pathManager.versionsDir : "/home/user/.minecraft/versions"
                     }
                 }
 
@@ -87,7 +87,8 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse versions directory")
-                        launcherBackend.openFolder(launcherBackend.versionsPath)
+                        var p = (typeof pathManager !== 'undefined' && pathManager.versionsDir && pathManager.versionsDir.length) ? pathManager.versionsDir : "/home/user/.minecraft/versions"
+                        Qt.openUrlExternally("file://" + p)
                     }
                 }
             }
@@ -123,7 +124,7 @@ Rectangle {
                         color: "#b0b0b0"
                         font.pixelSize: 11
                         readOnly: true
-                        text: launcherBackend.backgroundsPath || "/home/user/.minecraft/backgrounds"
+                        text: (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/backgrounds" : "/home/user/.minecraft/backgrounds"
                     }
                 }
 
@@ -147,7 +148,8 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse backgrounds directory")
-                        launcherBackend.openFolder(launcherBackend.backgroundsPath)
+                        var bp = (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/backgrounds" : "/home/user/.minecraft/backgrounds"
+                        Qt.openUrlExternally("file://" + bp)
                     }
                 }
             }
@@ -183,7 +185,7 @@ Rectangle {
                         color: "#b0b0b0"
                         font.pixelSize: 11
                         readOnly: true
-                        text: launcherBackend.iconsPath || "/home/user/.minecraft/icons"
+                        text: (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/icons" : "/home/user/.minecraft/icons"
                     }
                 }
 
@@ -207,7 +209,8 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse icons directory")
-                        launcherBackend.openFolder(launcherBackend.iconsPath)
+                        var ip = (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/icons" : "/home/user/.minecraft/icons"
+                        Qt.openUrlExternally("file://" + ip)
                     }
                 }
             }
@@ -243,7 +246,7 @@ Rectangle {
                         color: "#b0b0b0"
                         font.pixelSize: 11
                         readOnly: true
-                        text: launcherBackend.profilesPath || "/home/user/.minecraft/profiles"
+                        text: (typeof pathManager !== 'undefined' && pathManager.profilesDir && pathManager.profilesDir.length) ? pathManager.profilesDir : "/home/user/.minecraft/profiles"
                     }
                 }
 
@@ -267,7 +270,8 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse profiles directory")
-                        launcherBackend.openFolder(launcherBackend.profilesPath)
+                        var pp = (typeof pathManager !== 'undefined' && pathManager.profilesDir && pathManager.profilesDir.length) ? pathManager.profilesDir : "/home/user/.minecraft/profiles"
+                        Qt.openUrlExternally("file://" + pp)
                     }
                 }
             }

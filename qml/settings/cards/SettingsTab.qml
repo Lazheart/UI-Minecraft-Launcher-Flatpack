@@ -244,7 +244,7 @@ Rectangle {
                         font.pixelSize: 13
                     }
                     Text {
-                        text: launcherBackend.version
+                        text: minecraftManager.getLauncherVersion()
                         color: "#ffffff"
                         font.pixelSize: 13
                     }
@@ -255,7 +255,7 @@ Rectangle {
                         font.pixelSize: 13
                     }
                     Text {
-                        text: launcherBackend.getDataDir()
+                        text: (typeof pathManager !== 'undefined' && pathManager.dataDir) ? pathManager.dataDir : ""
                         color: "#ffffff"
                         font.pixelSize: 11
                         elide: Text.ElideMiddle
@@ -268,7 +268,7 @@ Rectangle {
                         font.pixelSize: 13
                     }
                     Text {
-                        text: launcherBackend.getAppDir()
+                        text: (typeof pathManager !== 'undefined' && pathManager.launcherDir) ? pathManager.launcherDir : ""
                         color: "#ffffff"
                         font.pixelSize: 11
                         elide: Text.ElideMiddle

@@ -371,7 +371,7 @@ Rectangle {
                 }
                 
                 Text {
-                    text: launcherBackend.version
+                    text: {"Launcher v" + minecraftManager.getLauncherVersion()}
                     color: "#4CAF50"
                     font.pixelSize: 13
                     font.bold: true

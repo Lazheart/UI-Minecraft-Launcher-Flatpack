@@ -71,9 +71,10 @@ Rectangle {
                                     var language = modelData.language || "EN"
                                     var theme = modelData.theme || "DARK"
                                     var scale = modelData.scale || 1.0
-                                    
-                                    launcherBackend.applyProfileSettings(language, theme, scale)
-                                    
+
+                                    // Guardar la configuración en el ProfileManager
+                                    profileManager.updateProfile(modelData.name, { language: language, theme: theme, scale: scale })
+
                                     // Actualizar la UI con los valores del perfil
                                     if (settingsPageRef) {
                                         settingsPageRef.currentLanguage = language

@@ -64,12 +64,94 @@ QVariantList MinecraftManager::getAvailableVersions() const
     return list;
 }
 
-bool MinecraftManager::checkInstallation()
+bool MinecraftManager::checkInstallation() const
 {
     // Stub simple: comprobar que existe al menos una versión
     QDir dir(versionsDir());
     qDebug() << "[MinecraftManager] checkInstallation() using versionsDir:" << versionsDir();
     return dir.exists() && !dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).isEmpty();
+}
+
+bool MinecraftManager::isRunning() const
+{
+    return m_gameProcess && m_gameProcess->state() != QProcess::NotRunning;
+}
+
+QString MinecraftManager::status() const
+{
+    if (!m_status.isEmpty()) return m_status;
+    return isRunning() ? QStringLiteral("Running") : QStringLiteral("Stopped");
+}
+
+bool MinecraftManager::runGame(const QString &versionPath, const QString &unused, const QString &profile)
+{
+    qDebug() << "MinecraftManager::runGame version:" << versionPath << "profile:" << profile;
+    if (!m_pathManager) {
+        qWarning() << "runGame: no PathManager";
+        return false;
+    }
+
+    if (isRunning()) {
+        qWarning() << "runGame: game already running";
+        return false;
+    }
+
+    QString client = m_pathManager->mcpelauncherClient();
+    if (client.isEmpty()) {
+        qWarning() << "runGame: mcpelauncher-client not configured";
+        return false;
+    }
+
+    QFileInfo vfi(versionPath);
+    QString versionName = vfi.fileName();
+    QString profilePath = QDir(m_pathManager->profilesDir()).filePath(versionName);
+
+    QStringList args;
+    args << QStringLiteral("-dg") << versionPath;
+    if (!profile.isEmpty()) {
+        args << QStringLiteral("-dd") << profilePath;
+    }
+
+    QProcess *proc = new QProcess(this);
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    proc->setProcessEnvironment(env);
+
+    proc->start(client, args);
+    if (!proc->waitForStarted(5000)) {
+        qWarning() << "runGame: failed to start";
+        proc->deleteLater();
+        return false;
+    }
+
+    m_gameProcess = proc;
+    m_status = QStringLiteral("Running");
+    emit statusChanged();
+    emit isRunningChanged();
+
+    connect(proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this](int code, QProcess::ExitStatus es){
+        Q_UNUSED(code);
+        Q_UNUSED(es);
+        m_status = QStringLiteral("Stopped");
+        emit statusChanged();
+        m_gameProcess = nullptr;
+        emit isRunningChanged();
+    });
+
+    return true;
+}
+
+void MinecraftManager::stopGame()
+{
+    qDebug() << "MinecraftManager::stopGame()";
+    if (!m_gameProcess) return;
+    m_gameProcess->terminate();
+    if (!m_gameProcess->waitForFinished(3000)) {
+        m_gameProcess->kill();
+    }
+    m_status = QStringLiteral("Stopped");
+    emit statusChanged();
+    m_gameProcess = nullptr;
+    emit isRunningChanged();
 }
 
 void MinecraftManager::deleteVersion(const QString &versionPath, bool deleteProfile)
@@ -283,4 +365,12 @@ void MinecraftManager::importSelected(const QString &filePath,
             qDebug() << "importSelected: removed staged file:" << staged;
         }
     }
+}
+
+QString MinecraftManager::getLauncherVersion() const {
+#ifdef APP_VERSION
+    return QString::fromUtf8(APP_VERSION);
+#else
+    return QStringLiteral("0.0.0");
+#endif
 }

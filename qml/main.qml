@@ -30,25 +30,34 @@ ApplicationWindow {
     
     Component.onCompleted: {
         console.log("[QML] Launcher iniciado")
-        console.log("[QML] Versión:", launcherBackend.version)
+        console.log("[QML] Versión:", minecraftManager.getLauncherVersion())
         minecraftManager.checkInstallation()
     }
     
+    // Replaced launcherBackend (removed). Use minecraftManager signals for install/import notifications.
     Connections {
-        target: launcherBackend
-        
-        function onGameStarted() {
-            showNotification("Game Started", "Minecraft is now running", "info")
-            console.log("[QML] Juego iniciado")
+        target: minecraftManager
+
+        function onInstallSucceeded(versionPath) {
+            showNotification("Install Complete", "Version installed: " + versionPath, "info")
+            console.log("[QML] Install succeeded:", versionPath)
         }
-        
-        function onGameStopped() {
-            showNotification("Game Stopped", "Minecraft has been closed", "info")
-            console.log("[QML] Juego detenido")
+
+        function onInstallFailed(versionPath, reason) {
+            var msg = reason && reason.length ? reason : ("Failed to install " + versionPath)
+            showNotification("Install Failed", msg, "error")
+            console.log("[QML] Install failed:", versionPath, reason)
         }
-        
-        function onErrorOccurred(error) {
-            showNotification("Error", error, "error")
+
+        function onImportSucceeded(versionPath, filePath) {
+            showNotification("Import Complete", "Imported: " + filePath + " into " + versionPath, "info")
+            console.log("[QML] Import succeeded:", versionPath, filePath)
+        }
+
+        function onImportFailed(versionPath, filePath, reason) {
+            var msg = reason && reason.length ? reason : ("Failed to import " + filePath)
+            showNotification("Import Failed", msg, "error")
+            console.log("[QML] Import failed:", versionPath, filePath, reason)
         }
     }
     
@@ -157,7 +166,9 @@ ApplicationWindow {
         secondaryTextColor: mainWindow.secondaryTextColor
 
         onInstallRequested: function(name, apkPath, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath) {
-            launcherBackend.installVersion(name, apkPath, iconPath, backgroundPath, useDefaultIcon, useDefaultBackground)
+            // Call the new backend API exposed by `minecraftManager`.
+            // Signature: installRequested(apkPath, name, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath)
+            minecraftManager.installRequested(apkPath, name, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath)
         }
     }
 
@@ -206,9 +217,9 @@ ApplicationWindow {
             console.log("[QML] Import requested - Type:", type, "Path:", path, "Version:", selectedVersion)
             
             if (type === "World") {
-                launcherBackend.importWorld(path, selectedVersion)
+                minecraftManager.importSelected(path, "World", selectedVersion)
             } else if (type === "Addon") {
-                launcherBackend.importPack(path, selectedVersion)
+                minecraftManager.importSelected(path, "Addon", selectedVersion)
             } else {
                 showNotification("Error", "Unknown import type: " + type, "error")
             }

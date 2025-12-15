@@ -4,6 +4,7 @@
 
 #include "../include/pathmanager.h"
 #include "../include/minecraftmanager.h"
+#include "../include/profilemanager.h"
 
 int main(int argc, char **argv)
 {
@@ -14,9 +15,11 @@ int main(int argc, char **argv)
 
     PathManager pathManager;
     MinecraftManager minecraftManager(&pathManager);
+    ProfileManager profileManager;
 
     engine.rootContext()->setContextProperty("pathManager", &pathManager);
     engine.rootContext()->setContextProperty("minecraftManager", &minecraftManager);
+    engine.rootContext()->setContextProperty("profileManager", &profileManager);
 
     qDebug() << "[main] Exposed pathManager and minecraftManager to QML";
     qDebug() << "[main] pathManager.versionsDir=" << pathManager.versionsDir();

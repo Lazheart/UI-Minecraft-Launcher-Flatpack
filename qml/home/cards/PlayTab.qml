@@ -42,8 +42,8 @@ Rectangle {
                         font.pixelSize: 13
                     }
                     Text {
-                        text: minecraftManager.isInstalled ? "Sí" : "No"
-                        color: minecraftManager.isInstalled ? "#4CAF50" : "#f44336"
+                            text: minecraftManager.isInstalled ? "Sí" : "No"
+                            color: minecraftManager.isInstalled ? "#4CAF50" : "#f44336"
                         font.pixelSize: 13
                         font.bold: true
                     }
@@ -65,7 +65,7 @@ Rectangle {
                         font.pixelSize: 13
                     }
                     Text {
-                        text: minecraftManager.getGameDirectory()
+                        text: (typeof pathManager !== 'undefined') ? pathManager.versionsDir : ""
                         color: "#ffffff"
                         font.pixelSize: 11
                         elide: Text.ElideMiddle
@@ -90,7 +90,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 text: "JUGAR"
-                enabled: !launcherBackend.isRunning && minecraftManager.isInstalled
+                enabled: !minecraftManager.isRunning && minecraftManager.isInstalled
                 
                 background: Rectangle {
                     color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#555555"
@@ -108,7 +108,7 @@ Rectangle {
                 
                 onClicked: {
                     console.log("[QML] Iniciando juego con perfil:", profileManager.currentProfile)
-                    launcherBackend.launchGame(profileManager.currentProfile)
+                    minecraftManager.runGame(minecraftManager.installedVersion, "", profileManager.currentProfile)
                 }
             }
             
@@ -117,7 +117,7 @@ Rectangle {
                 Layout.preferredWidth: 150
                 Layout.preferredHeight: 60
                 text: "DETENER"
-                enabled: launcherBackend.isRunning
+                enabled: minecraftManager.isRunning
                 
                 background: Rectangle {
                     color: parent.enabled ? (parent.pressed ? "#d32f2f" : "#f44336") : "#555555"
@@ -135,7 +135,7 @@ Rectangle {
                 
                 onClicked: {
                     console.log("[QML] Deteniendo juego")
-                    launcherBackend.stopGame()
+                    minecraftManager.stopGame()
                 }
             }
         }

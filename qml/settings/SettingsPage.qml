@@ -33,7 +33,6 @@ Rectangle {
                 settingsPage.currentScale = scale
                 settingsPage.scale = scale
                 
-                qDebug() << "[SettingsPage] Componentes actualizados con valores del perfil"
             }
         }
     }
@@ -105,7 +104,8 @@ Rectangle {
                         Layout.fillWidth: true
                         onLanguageChanged: (language) => {
                             settingsPage.currentLanguage = language
-                            launcherBackend.setLanguage(language)
+                            // Persist to profile manager for current profile
+                            profileManager.updateProfile(profileManager.currentProfile, { language: language })
                         }
                     }
 
@@ -128,11 +128,11 @@ Rectangle {
                     onScaleChanged: (scale) => {
                         settingsPage.scale = scale
                         settingsPage.currentScale = scale
-                        launcherBackend.setScale(scale)
+                        profileManager.updateProfile(profileManager.currentProfile, { scale: scale })
                     }
                     onThemeChanged: (theme) => {
                         settingsPage.currentTheme = theme
-                        launcherBackend.setTheme(theme)
+                        profileManager.updateProfile(profileManager.currentProfile, { theme: theme })
                     }
                 }
 
@@ -169,7 +169,11 @@ Rectangle {
 
                         onClicked: {
                             // Actualizar el perfil actual con la configuración
-                            launcherBackend.saveProfileSettings(profileManager.currentProfile)
+                            profileManager.updateProfile(profileManager.currentProfile, {
+                                language: languageCard.currentLanguage,
+                                theme: visualCard.currentTheme,
+                                scale: visualCard.scaleValue
+                            })
                             // Recargar los perfiles para reflejar los cambios
                             profileManager.reloadProfiles()
                             console.log("[Settings] Settings saved to profile:", profileManager.currentProfile)
@@ -197,7 +201,7 @@ Rectangle {
 
                         onClicked: {
                             // Resetear a valores por defecto
-                            launcherBackend.applyProfileSettings("EN", "DARK", 1.0)
+                            profileManager.updateProfile(profileManager.currentProfile, { language: "EN", theme: "DARK", scale: 1.0 })
                             languageCard.currentLanguage = "EN"
                             visualCard.scaleValue = 1.0
                             visualCard.currentTheme = "DARK"

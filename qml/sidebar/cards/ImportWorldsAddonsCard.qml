@@ -298,7 +298,7 @@ Dialog {
                         }
 
                         contentItem: Text {
-                            text: control.displayText
+                            text: versionCombo.displayText
                             color: "#ffffff"
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignLeft

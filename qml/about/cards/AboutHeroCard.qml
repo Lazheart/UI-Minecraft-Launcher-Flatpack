@@ -62,7 +62,7 @@ Rectangle {
             }
 
             Text {
-                text: "Versión: " + launcherBackend.version
+                text: "Versión: " + minecraftManager.getLauncherVersion()
                 color: "#d4d4d4"
                 font.pixelSize: 14
             }

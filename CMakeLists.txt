@@ -86,6 +86,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wpedantic
 )
 
+# Expose the project version to C++ as APP_VERSION (string literal)
+target_compile_definitions(${PROJECT_NAME} PRIVATE APP_VERSION=\"${PROJECT_VERSION}\")
 # Instalar el ejecutable en /app/bin (Flatpak)
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin

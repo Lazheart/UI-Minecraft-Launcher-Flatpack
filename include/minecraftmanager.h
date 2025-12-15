@@ -6,11 +6,15 @@
 #include <QVariant>
 
 class PathManager;
+class QProcess;
 
 class MinecraftManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString installedVersion READ installedVersion NOTIFY installedVersionChanged)
+    Q_PROPERTY(bool isInstalled READ checkInstallation NOTIFY availableVersionsChanged)
+    Q_PROPERTY(bool isRunning READ isRunning NOTIFY isRunningChanged)
+    Q_PROPERTY(QString status READ status NOTIFY statusChanged)
 public:
     explicit MinecraftManager(PathManager *paths = nullptr, QObject *parent = nullptr);
 
@@ -29,7 +33,13 @@ public:
                                       const QString &backgroundPath);
 
     // Comportamientos mínimos/auxiliares (stubs) que pueden ampliarse
-    Q_INVOKABLE bool checkInstallation();
+    Q_INVOKABLE bool checkInstallation() const;
+    Q_INVOKABLE bool isRunning() const;
+    Q_INVOKABLE QString status() const;
+
+    // Control del juego
+    Q_INVOKABLE bool runGame(const QString &versionPath, const QString &unused, const QString &profile);
+    Q_INVOKABLE void stopGame();
     // Import a selected file into a chosen version (versionPath must be full path)
     Q_INVOKABLE void importSelected(const QString &filePath,
                                     const QString &type,
@@ -41,9 +51,13 @@ public:
 
     QString installedVersion() const { return m_installedVersion; }
 
+    Q_INVOKABLE QString getLauncherVersion() const;
+
 signals:
     void availableVersionsChanged();
     void installedVersionChanged();
+    void isRunningChanged();
+    void statusChanged();
     // Señal emitida después de borrar una o varias versiones (listas de rutas eliminadas)
     void versionsDeleted(QVariantList deletedPaths);
     // Señales para notificar resultado de instalación/extracción
@@ -57,6 +71,8 @@ private:
     QString m_installedVersion;
     QString versionsDir() const;
     PathManager *m_pathManager = nullptr;
+    QProcess *m_gameProcess = nullptr;
+    QString m_status;
 };
 
 #endif // MINECRAFTMANAGER_H
