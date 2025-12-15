@@ -41,7 +41,11 @@ void PathManager::computePaths()
             m_dataDir = QDir::cleanPath(m_homeDir + "/.var/app/org.lazheart.minecraft-launcher/data");
         }
     } else {
-        m_dataDir = QDir::cleanPath(m_homeDir + "/.local/share/minecraft-launcher");
+        // When NOT running as Flatpak, place the data directory next to the
+        // application binary so versions/profiles/logs are created in the
+        // application's folder (matching how you want the local UI to behave).
+        QString appDir = QCoreApplication::applicationDirPath();
+        m_dataDir = QDir::cleanPath(appDir);
     }
 
     m_launcherDir = QDir::cleanPath(m_dataDir + "/minecraft-bedrock");

@@ -17,6 +17,38 @@ MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
 {
     m_installedVersion = QString();
     qDebug() << "[MinecraftManager] Constructed. PathManager present:" << (m_pathManager != nullptr);
+
+    // QML-visible startup messages
+    qDebug() << "qml: [QML] Launcher iniciado";
+    qDebug() << "qml: [QML] Versión:" << getLauncherVersion();
+
+    // Report versionsDir early so logs match expected output
+    qDebug() << "[MinecraftManager] checkInstallation() using versionsDir:" << versionsDir();
+
+    // Check for presence of extractor and client binaries (from PathManager)
+    if (m_pathManager) {
+        QString extractor = m_pathManager->mcpelauncherExtract();
+        QString client = m_pathManager->mcpelauncherClient();
+
+        QFileInfo extFi(extractor);
+        QFileInfo cliFi(client);
+
+        if (extFi.isAbsolute() && extFi.exists()) {
+            qDebug() << "[MinecraftManager] Found extractor binary:" << extFi.absoluteFilePath();
+        } else if (!extFi.isAbsolute() && !extractor.isEmpty() && QStandardPaths::findExecutable(extractor).isEmpty() == false) {
+            qDebug() << "[MinecraftManager] Found extractor binary on PATH:" << extractor;
+        } else {
+            qWarning() << "[MinecraftManager] extractor binary NOT found:" << extractor;
+        }
+
+        if (cliFi.isAbsolute() && cliFi.exists()) {
+            qDebug() << "[MinecraftManager] Found client binary:" << cliFi.absoluteFilePath();
+        } else if (!cliFi.isAbsolute() && !client.isEmpty() && QStandardPaths::findExecutable(client).isEmpty() == false) {
+            qDebug() << "[MinecraftManager] Found client binary on PATH:" << client;
+        } else {
+            qWarning() << "[MinecraftManager] client binary NOT found:" << client;
+        }
+    }
 }
 
 QString MinecraftManager::versionsDir() const
