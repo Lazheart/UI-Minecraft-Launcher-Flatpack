@@ -77,11 +77,18 @@ void PathManager::ensurePathsExist() const
     d.mkpath(m_versionsDir);
     d.mkpath(m_profilesDir);
     d.mkpath(m_logsDir);
+    // Ensure optional asset dirs exist as well
+    QString backgrounds = QDir(m_dataDir).filePath("backgrounds");
+    QString icons = QDir(m_dataDir).filePath("icons");
+    d.mkpath(backgrounds);
+    d.mkpath(icons);
     qDebug() << "[PathManager] ensurePathsExist created (or verified) dirs:";
     qDebug() << "  launcherDir=" << m_launcherDir;
     qDebug() << "  versionsDir=" << m_versionsDir;
     qDebug() << "  profilesDir=" << m_profilesDir;
     qDebug() << "  logsDir=" << m_logsDir;
+    qDebug() << "  backgrounds=" << backgrounds;
+    qDebug() << "  icons=" << icons;
 }
 
 QString PathManager::stageFileForExtraction(const QString &originalPath) const

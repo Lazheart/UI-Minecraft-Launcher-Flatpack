@@ -87,8 +87,10 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse versions directory")
+                        if (typeof pathManager !== 'undefined') pathManager.ensurePathsExist()
                         var p = (typeof pathManager !== 'undefined' && pathManager.versionsDir && pathManager.versionsDir.length) ? pathManager.versionsDir : "/home/user/.minecraft/versions"
-                        Qt.openUrlExternally("file://" + p)
+                        var uri = p.indexOf("file://") === 0 ? p : ("file://" + p)
+                        Qt.openUrlExternally(uri)
                     }
                 }
             }
@@ -148,8 +150,10 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse backgrounds directory")
+                        if (typeof pathManager !== 'undefined') pathManager.ensurePathsExist()
                         var bp = (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/backgrounds" : "/home/user/.minecraft/backgrounds"
-                        Qt.openUrlExternally("file://" + bp)
+                        var uri = bp.indexOf("file://") === 0 ? bp : ("file://" + bp)
+                        Qt.openUrlExternally(uri)
                     }
                 }
             }
@@ -209,8 +213,10 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse icons directory")
+                        if (typeof pathManager !== 'undefined') pathManager.ensurePathsExist()
                         var ip = (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/icons" : "/home/user/.minecraft/icons"
-                        Qt.openUrlExternally("file://" + ip)
+                        var uri = ip.indexOf("file://") === 0 ? ip : ("file://" + ip)
+                        Qt.openUrlExternally(uri)
                     }
                 }
             }
@@ -270,8 +276,10 @@ Rectangle {
 
                     onClicked: {
                         console.log("Browse profiles directory")
+                        if (typeof pathManager !== 'undefined') pathManager.ensurePathsExist()
                         var pp = (typeof pathManager !== 'undefined' && pathManager.profilesDir && pathManager.profilesDir.length) ? pathManager.profilesDir : "/home/user/.minecraft/profiles"
-                        Qt.openUrlExternally("file://" + pp)
+                        var uri = pp.indexOf("file://") === 0 ? pp : ("file://" + pp)
+                        Qt.openUrlExternally(uri)
                     }
                 }
             }
