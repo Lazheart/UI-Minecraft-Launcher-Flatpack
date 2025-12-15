@@ -43,14 +43,20 @@ bool MinecraftLaunch::runGame(const QString &versionPath,
 
     // The client accepts -ifp later when importing
 
-    QString program = client;
-    QStringList finalArgs = args;
+    QString program;
+    QStringList finalArgs;
 
-    // If using mangohud, wrap program with it
+    // If using mangohud, run: mangohud <client> <args>
     if (useMangohud) {
-        finalArgs = args;
-        finalArgs.prepend(program);
         program = QStringLiteral("mangohud");
+        finalArgs = args;
+        finalArgs.prepend(client);
+    } else {
+        // Otherwise run with setsid to detach the client from the launcher
+        // command: setsid <client> <args>
+        program = QStringLiteral("setsid");
+        finalArgs = args;
+        finalArgs.prepend(client);
     }
 
     QProcess *proc = new QProcess();
