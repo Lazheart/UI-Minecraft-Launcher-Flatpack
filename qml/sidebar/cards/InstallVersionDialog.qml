@@ -49,6 +49,8 @@ Dialog {
         errorLabel.text = ""
     }
 
+    property bool installing: false
+
     function cleanFileUrl(url) {
         if (!url)
             return ""
@@ -364,7 +366,7 @@ Dialog {
                         return
                     }
                     errorLabel.text = ""
-                    // Stage files via pathManager so extractor can access them
+                    // Ensure files are staged (if not already staged on select)
                     var apkPath = apkField.text.trim()
                     var stagedApk = pathManager.stageFileForExtraction(apkPath)
                     var stagedIcon = ""
@@ -376,10 +378,18 @@ Dialog {
                         stagedBg = pathManager.stageFileForExtraction(installDialog.backgroundPath)
                     }
 
-                    // Fallback a las rutas originales si stage falla (se intentará de todos modos)
+                    // Fallback a las rutas originales si stage falla
                     var apkToUse = stagedApk && stagedApk.length ? stagedApk : apkPath
                     var iconToUse = stagedIcon && stagedIcon.length ? stagedIcon : installDialog.iconPath
                     var bgToUse = stagedBg && stagedBg.length ? stagedBg : installDialog.backgroundPath
+
+                    // Indicate installing state and disable UI
+                    installDialog.installing = true
+                    installButton.enabled = false
+                    apkButton.enabled = false
+                    iconUploadButton.enabled = false
+                    backgroundUploadButton.enabled = false
+                    installButton.text = "Installing..."
 
                     installDialog.installRequested(
                                 nameField.text.trim(),
@@ -389,7 +399,7 @@ Dialog {
                                 installDialog.useDefaultBackground,
                                 bgToUse
                             )
-                    installDialog.close()
+                    // Do not close the dialog immediately; wait for signals
                 }
             }
         }
@@ -400,7 +410,18 @@ Dialog {
         title: "Select APK file"
         selectExisting: true
         nameFilters: ["Android Package (*.apk)", "All files (*)"]
-        onAccepted: apkField.text = installDialog.cleanFileUrl(apkDialog.fileUrl.toString())
+        onAccepted: {
+            var picked = installDialog.cleanFileUrl(apkDialog.fileUrl.toString())
+            // Try to stage immediately so the file remains available for install
+            var staged = pathManager.stageFileForExtraction(picked)
+            if (staged && staged.length) {
+                apkField.text = staged
+                console.log("[InstallVersionDialog] staged APK:", staged)
+            } else {
+                apkField.text = picked
+                console.log("[InstallVersionDialog] using original APK path:", picked)
+            }
+        }
     }
 
     QtDialogs.FileDialog {
@@ -417,5 +438,32 @@ Dialog {
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
         onAccepted: installDialog.backgroundPath = installDialog.cleanFileUrl(backgroundDialog.fileUrl.toString())
+    }
+
+    Connections {
+        target: minecraftManager
+        function onInstallSucceeded(versionPath) {
+            // Reset installing UI, show success and close
+            installDialog.installing = false
+            installButton.enabled = true
+            apkButton.enabled = true
+            iconUploadButton.enabled = true
+            backgroundUploadButton.enabled = true
+            installButton.text = "INSTALL"
+            installDialog.close()
+        }
+
+        function onInstallFailed(versionPath, reason) {
+            // Show error and allow retry
+            installDialog.installing = false
+            installButton.enabled = true
+            apkButton.enabled = true
+            iconUploadButton.enabled = !installDialog.useDefaultIcon
+            backgroundUploadButton.enabled = !installDialog.useDefaultBackground
+            installButton.text = "INSTALL"
+            var msg = reason && reason.length ? reason : ("Failed to install " + versionPath)
+            errorLabel.text = msg
+            console.log("[InstallVersionDialog] install failed:", versionPath, reason)
+        }
     }
 }
