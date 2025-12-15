@@ -432,11 +432,7 @@ Dialog {
         title: "Select APK file"
         selectExisting: true
         nameFilters: ["Android Package (*.apk)", "All files (*)"]
-        // Use native dialog only when running as Flatpak. When running from
-        // the build (development) the native dialog may expose portal paths
-        // under /run/user/... which can be ephemeral; using the Qt dialog
-        // (`native: false`) returns normal filesystem paths.
-        native: pathManager.isFlatpak
+        // Note: keep default dialog behavior; staging logic will handle portal paths.
         onAccepted: {
             var picked = installDialog.cleanFileUrl(apkDialog.fileUrl.toString())
             // Try to stage immediately so the file remains available for install
@@ -456,7 +452,6 @@ Dialog {
         title: "Select Icon"
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg *.svg)", "All files (*)"]
-        native: pathManager.isFlatpak
         onAccepted: installDialog.iconPath = installDialog.cleanFileUrl(iconDialog.fileUrl.toString())
     }
 
@@ -465,7 +460,6 @@ Dialog {
         title: "Select Background"
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
-        native: pathManager.isFlatpak
         onAccepted: installDialog.backgroundPath = installDialog.cleanFileUrl(backgroundDialog.fileUrl.toString())
     }
 
