@@ -101,6 +101,11 @@ ApplicationWindow {
     Dialog {
         id: notificationDialog
         anchors.centerIn: parent
+
+        // Remove default white frame/background from Dialog
+        background: Rectangle {
+            color: "transparent"
+        }
         
         property string notificationType: "info"
         property string notificationTitle: ""

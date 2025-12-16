@@ -93,7 +93,8 @@ Dialog {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 color: surfaceColor
-                radius: 6
+                radius: 0
+                clip: true
                 border.color: borderColor
                 border.width: 1
 
@@ -129,6 +130,7 @@ Dialog {
                                 width: parent.width
                                 height: 48
                                 radius: 0
+                                clip: true
                                 property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                                 property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
                                 // use delegate 'checked' state for coloring (we'll implement a custom checkbox below)
@@ -177,6 +179,8 @@ Dialog {
                                     anchors.fill: parent
                                     anchors.margins: 10
                                     spacing: 12
+                                    // ensure children are laid out inside the delegate bounds
+                                    clip: true
 
                                     // Custom checkbox visual (thin, compact, green accent when checked)
                                     Rectangle {
