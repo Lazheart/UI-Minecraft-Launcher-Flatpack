@@ -39,24 +39,24 @@ ApplicationWindow {
         target: minecraftManager
 
         function onInstallSucceeded(versionPath) {
-            showNotification("Install Complete", "Version installed: " + versionPath, "info")
+            showNotification("Install Complete", "Version installed: " + versionPath, "info", installVersionDialog)
             console.log("[QML] Install succeeded:", versionPath)
         }
 
         function onInstallFailed(versionPath, reason) {
             var msg = reason && reason.length ? reason : ("Failed to install " + versionPath)
-            showNotification("Install Failed", msg, "error")
+            showNotification("Install Failed", msg, "error", installVersionDialog)
             console.log("[QML] Install failed:", versionPath, reason)
         }
 
         function onImportSucceeded(versionPath, filePath) {
-            showNotification("Import Complete", "Imported: " + filePath + " into " + versionPath, "info")
+            showNotification("Import Complete", "Imported: " + filePath + " into " + versionPath, "info", importWorldsAddonsCard)
             console.log("[QML] Import succeeded:", versionPath, filePath)
         }
 
         function onImportFailed(versionPath, filePath, reason) {
             var msg = reason && reason.length ? reason : ("Failed to import " + filePath)
-            showNotification("Import Failed", msg, "error")
+            showNotification("Import Failed", msg, "error", importWorldsAddonsCard)
             console.log("[QML] Import failed:", versionPath, filePath, reason)
         }
     }
@@ -65,29 +65,64 @@ ApplicationWindow {
         target: minecraftManager
         function onVersionsDeleted(deleted) {
             if (deleted && deleted.length > 0) {
-                showNotification("Success", "Selected versions deleted successfully", "info")
+                showNotification("Success", "Selected versions deleted successfully", "info", deleteVersionDialog)
                 console.log("[QML] Versions deleted:", deleted)
             } else {
-                showNotification("Info", "No versions were deleted", "info")
+                showNotification("Info", "No versions were deleted", "info", deleteVersionDialog)
                 console.log("[QML] versionsDeleted emitted with empty list")
             }
         }
         function onInstallSucceeded(versionPath) {
-            showNotification("Install Complete", "Version installed: " + versionPath, "info")
+            showNotification("Install Complete", "Version installed: " + versionPath, "info", installVersionDialog)
             console.log("[QML] Install succeeded:", versionPath)
         }
 
         function onInstallFailed(versionPath, reason) {
             var msg = reason && reason.length ? reason : ("Failed to install " + versionPath)
-            showNotification("Install Failed", msg, "error")
+            showNotification("Install Failed", msg, "error", installVersionDialog)
             console.log("[QML] Install failed:", versionPath, reason)
         }
     }
     
-    function showNotification(title, message, type) {
+    function showNotification(title, message, type, anchorItem) {
         notificationDialog.notificationTitle = title
         notificationDialog.notificationMessage = message
         notificationDialog.notificationType = type
+
+        // If an anchorItem is provided, position the notification over it (centered);
+        // otherwise center in the main window.
+        try {
+            // Prefer contentItem implicit size (the styled box)
+            var w = notificationDialog.contentItem.implicitWidth || notificationDialog.width || 400
+            var h = notificationDialog.contentItem.implicitHeight || notificationDialog.height || 200
+
+            if (anchorItem) {
+                // If the anchor has a contentItem (it's a Dialog-like component), use that smaller area
+                var anchor = (anchorItem.contentItem !== undefined) ? anchorItem.contentItem : anchorItem
+
+                // center notification over the anchor area
+                var localX = (anchor.width - w) / 2
+                var localY = (anchor.height - h) / 2
+                var p = anchor.mapToItem(mainWindow.contentItem, localX, localY)
+                var nx = p.x
+                var ny = p.y
+
+                // clamp so notification stays inside window
+                nx = Math.max(0, Math.min(nx, mainWindow.width - w))
+                ny = Math.max(0, Math.min(ny, mainWindow.height - h))
+
+                notificationDialog.x = nx
+                notificationDialog.y = ny
+            } else {
+                notificationDialog.x = (mainWindow.width - w) / 2
+                notificationDialog.y = (mainWindow.height - h) / 2
+            }
+        } catch (e) {
+            // fallback: centerIn
+            notificationDialog.x = (mainWindow.width - notificationDialog.width) / 2
+            notificationDialog.y = (mainWindow.height - notificationDialog.height) / 2
+        }
+
         notificationDialog.open()
     }
     
@@ -104,7 +139,11 @@ ApplicationWindow {
 
         // Remove default white frame/background from Dialog
         background: Rectangle {
+            // ensure fully transparent and borderless so no white frame appears
             color: "transparent"
+            border.width: 0
+            border.color: "transparent"
+            radius: 0
         }
         
         property string notificationType: "info"
@@ -116,6 +155,9 @@ ApplicationWindow {
             implicitHeight: 200
             color: surfaceColor
             radius: 10
+            border.width: 0
+            border.color: "transparent"
+            clip: true
             
             ColumnLayout {
                 anchors.fill: parent
@@ -192,7 +234,7 @@ ApplicationWindow {
             for (let i = 0; i < versions.length; i++) {
                 minecraftManager.deleteVersion(versions[i])
             }
-            showNotification("Success", "Selected versions deleted successfully", "info")
+            showNotification("Success", "Selected versions deleted successfully", "info", deleteVersionDialog)
         }
     }
 
@@ -214,7 +256,7 @@ ApplicationWindow {
             }
             
             if (selectedVersion === "") {
-                showNotification("Error", "No version selected", "error")
+                showNotification("Error", "No version selected", "error", importWorldsAddonsCard)
                 console.log("[QML] Import failed: No version selected")
                 return
             }
@@ -226,7 +268,7 @@ ApplicationWindow {
             } else if (type === "Addon") {
                 minecraftManager.importSelected(path, "Addon", selectedVersion)
             } else {
-                showNotification("Error", "Unknown import type: " + type, "error")
+                showNotification("Error", "Unknown import type: " + type, "error", importWorldsAddonsCard)
             }
         }
 
