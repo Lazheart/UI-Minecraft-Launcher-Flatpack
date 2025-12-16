@@ -42,6 +42,13 @@ Dialog {
     x: centeredPosition().x
     y: centeredPosition().y
 
+    onVisibleChanged: {
+        // Clear any previous selections when the dialog opens or closes
+        if (visible) {
+            deleteDialog.selectedVersions = []
+        }
+    }
+
     contentItem: Rectangle {
         color: backgroundColor
         radius: 8
@@ -108,64 +115,100 @@ Dialog {
                             Rectangle {
                                 id: versionItemDelegate
                                 width: parent.width
-                                height: 45
-                                color: itemMouse.containsMouse ? "#3d3d3d" : "transparent"
-
-                                // Soportar modelos que devuelvan una ruta (string)
-                                // o un objeto { name: "1.21.0", path: "/abs/path/to/versions/1.21.0" }
+                                height: 48
+                                radius: 0
                                 property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                                 property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
+                                // use delegate 'checked' state for coloring (we'll implement a custom checkbox below)
+                                property bool checked: false
+                                color: checked ? "#2e1f1f" : (itemMouse.containsMouse ? "#3d3d3d" : "transparent")
 
                                 MouseArea {
                                     id: itemMouse
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     onClicked: {
-                                        versionCheckBox.checked = !versionCheckBox.checked
+                                        // Toggle the delegate checked state (same behavior as clicking the custom checkbox)
+                                        versionItemDelegate.checked = !versionItemDelegate.checked
+                                        if (versionItemDelegate.checked) {
+                                            deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([versionPath])
+                                        } else {
+                                            var newArr = []
+                                            for (var i = 0; i < deleteDialog.selectedVersions.length; ++i) {
+                                                if (deleteDialog.selectedVersions[i] !== versionPath)
+                                                    newArr.push(deleteDialog.selectedVersions[i])
+                                            }
+                                            deleteDialog.selectedVersions = newArr
+                                        }
                                     }
+                                }
+
+                                // background and hover overlays
+                                Rectangle {
+                                    id: itemBackground
+                                    anchors.fill: parent
+                                    // selected uses UI gray (borderColor), non-rounded
+                                    color: checked ? deleteDialog.borderColor : "transparent"
+                                    radius: 0
+                                    z: -1
+                                }
+
+                                Rectangle {
+                                    anchors.fill: parent
+                                    // subtle gray hover using existing borderColor with alpha
+                                    color: itemMouse.containsMouse ? "#3d3d3d22" : "transparent"
+                                    radius: 0
+                                    z: 0
                                 }
 
                                 RowLayout {
                                     anchors.fill: parent
                                     anchors.margins: 10
-                                    spacing: 10
+                                    spacing: 12
 
-                                    CheckBox {
-                                        id: versionCheckBox
+                                    // Custom checkbox visual (thin, compact, green accent when checked)
+                                    Rectangle {
+                                        id: customCheck
+                                        width: 20
+                                        height: 20
+                                        radius: 4
+                                        color: checked ? deleteDialog.accentColor : "transparent"
+                                        border.color: checked ? deleteDialog.accentColor : deleteDialog.borderColor
+                                        border.width: 1
                                         Layout.preferredWidth: 20
                                         Layout.preferredHeight: 20
+                                        z: 1
 
-                                        onCheckedChanged: {
-                                            if (checked) {
-                                                if (deleteDialog.selectedVersions.indexOf(versionPath) === -1) {
-                                                    deleteDialog.selectedVersions.push(versionPath)
+                                        Behavior on color { ColorAnimation { duration: 150 } }
+                                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                                        Text {
+                                            id: checkMark
+                                            anchors.centerIn: parent
+                                            text: "✓"
+                                            color: checked ? "#ffffff" : "transparent"
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                            opacity: checked ? 1 : 0
+                                            Behavior on opacity { NumberAnimation { duration: 120 } }
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            onClicked: {
+                                                // toggle delegate checked state and update selection list
+                                                versionItemDelegate.checked = !versionItemDelegate.checked
+                                                if (versionItemDelegate.checked) {
+                                                    deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([versionPath])
+                                                } else {
+                                                    var newArr = []
+                                                    for (var i = 0; i < deleteDialog.selectedVersions.length; ++i) {
+                                                        if (deleteDialog.selectedVersions[i] !== versionPath)
+                                                            newArr.push(deleteDialog.selectedVersions[i])
+                                                    }
+                                                    deleteDialog.selectedVersions = newArr
                                                 }
-                                            } else {
-                                                var idx = deleteDialog.selectedVersions.indexOf(versionPath)
-                                                if (idx !== -1) deleteDialog.selectedVersions.splice(idx, 1)
                                             }
-                                        }
-
-                                        contentItem: Rectangle {
-                                            width: parent.width
-                                            height: parent.height
-                                            color: parent.checked ? deleteDialog.deleteColor : deleteDialog.surfaceColor
-                                            radius: 3
-                                            border.color: deleteDialog.deleteColor
-                                            border.width: 1
-
-                                            Text {
-                                                visible: parent.color === deleteDialog.deleteColor
-                                                anchors.centerIn: parent
-                                                text: "✓"
-                                                color: "#ffffff"
-                                                font.bold: true
-                                                font.pixelSize: 12
-                                            }
-                                        }
-
-                                        background: Rectangle {
-                                            color: "transparent"
                                         }
                                     }
 
@@ -173,6 +216,7 @@ Dialog {
                                         text: versionName
                                         color: textColor
                                         font.pixelSize: 13
+                                        verticalAlignment: Text.AlignVCenter
                                         Layout.fillWidth: true
                                     }
                                 }
