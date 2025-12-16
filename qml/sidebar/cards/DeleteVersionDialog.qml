@@ -26,6 +26,8 @@ Dialog {
 
     // Lista de versiones seleccionadas para eliminar
     property var selectedVersions: []
+    // Cached list of versions shown in the dialog; refreshed on open and when manager notifies
+    property var versions: []
 
     signal deleteRequested(var versions)
 
@@ -46,6 +48,16 @@ Dialog {
         // Clear any previous selections when the dialog opens or closes
         if (visible) {
             deleteDialog.selectedVersions = []
+            // refresh the list each time the dialog opens
+            deleteDialog.versions = minecraftManager.getAvailableVersions()
+        }
+    }
+
+    // Listen for changes from the C++ side and refresh the local cache
+    Connections {
+        target: minecraftManager
+        onAvailableVersionsChanged: {
+            deleteDialog.versions = minecraftManager.getAvailableVersions()
         }
     }
 
@@ -98,7 +110,7 @@ Dialog {
                             width: parent.width
                             height: 100
                             color: "transparent"
-                            visible: minecraftManager.getAvailableVersions().length === 0
+                            visible: deleteDialog.versions.length === 0
 
                             Text {
                                 anchors.centerIn: parent
@@ -110,7 +122,7 @@ Dialog {
 
                         // Lista de versiones disponibles
                         Repeater {
-                            model: minecraftManager.getAvailableVersions()
+                            model: deleteDialog.versions
 
                             Rectangle {
                                 id: versionItemDelegate
@@ -172,15 +184,16 @@ Dialog {
                                         width: 20
                                         height: 20
                                         radius: 4
-                                        color: checked ? deleteDialog.accentColor : "transparent"
-                                        border.color: checked ? deleteDialog.accentColor : deleteDialog.borderColor
+                                        // keep visible on hover: faint bg and lighter border when not checked
+                                        color: checked ? deleteDialog.accentColor : (itemMouse.containsMouse ? '#151515' : "transparent")
+                                        border.color: checked ? deleteDialog.accentColor : (itemMouse.containsMouse ? "#e0e0e0" : deleteDialog.borderColor)
                                         border.width: 1
                                         Layout.preferredWidth: 20
                                         Layout.preferredHeight: 20
-                                        z: 1
+                                        z: 2
 
-                                        Behavior on color { ColorAnimation { duration: 150 } }
-                                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                                        Behavior on color { ColorAnimation { duration: 120 } }
+                                        Behavior on border.color { ColorAnimation { duration: 120 } }
 
                                         Text {
                                             id: checkMark
