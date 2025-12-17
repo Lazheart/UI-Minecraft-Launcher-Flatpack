@@ -10,13 +10,21 @@ Rectangle {
     property color baseColor: "#171515"
     property color highlightColor: "#302C2C"
     property color listItemBaseColor: "#231f1f"
+    // Color de hover para items de la lista (usar verde como el resto de la UI)
+    property color listItemHoverColor: "#4CAF50"
 
     signal addVersionsRequested()
     signal deleteVersionsRequested()
     signal importWorldsAddonsRequested()
     signal versionSelected(string version)
     
-    property var versionsList: minecraftManager.getAvailableVersions()
+    // Keep an explicit list here and initialize on completion.
+    // Using a stable array for the Repeater model avoids intermittent UI desync.
+    property var versionsList: []
+
+    Component.onCompleted: {
+        sideBar.versionsList = minecraftManager.getAvailableVersions()
+    }
     
     Connections {
         target: minecraftManager
@@ -42,7 +50,11 @@ Rectangle {
                 id: headerMouse
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: versionsMenu.isExpanded = !versionsMenu.isExpanded
+                onClicked: {
+                    // Al hacer click en el encabezado, refrescar la lista
+                    sideBar.versionsList = minecraftManager.getAvailableVersions()
+                    versionsMenu.isExpanded = !versionsMenu.isExpanded
+                }
                 
                 RowLayout {
                     anchors.fill: parent
@@ -121,12 +133,12 @@ Rectangle {
                     spacing: 0
                     
                     // Si no hay versiones
-                        Rectangle {
-                            width: parent.width
-                            height: 80
-                            color: "transparent"
-                        visible: minecraftManager.getAvailableVersions().length === 0
-                        
+                    Rectangle {
+                        width: parent.width
+                        height: 80
+                        color: "transparent"
+                        visible: sideBar.versionsList.length === 0
+
                         Text {
                             anchors.centerIn: parent
                             text: "Not versions Installed"
@@ -139,24 +151,29 @@ Rectangle {
                     }
                     
                     // Lista de versiones (máximo 5)
+                    // Use an array slice as the model so Repeater uses a stable list
                     Repeater {
-                        model: Math.min(sideBar.versionsList.length, 5)
+                        model: sideBar.versionsList ? sideBar.versionsList.slice(0, 5) : []
 
                         Rectangle {
                             id: versionItem
                             width: parent.width
                             height: 40
-                            color: versionMouse.containsMouse ? sideBar.highlightColor : sideBar.listItemBaseColor
+                            color: versionMouse.containsMouse ? sideBar.listItemHoverColor : sideBar.listItemBaseColor
 
                             // Support model entries as string (path) or object {name, path}
-                            property string versionPath: (typeof sideBar.versionsList[index] === 'string') ? sideBar.versionsList[index] : (sideBar.versionsList[index] && sideBar.versionsList[index].path ? sideBar.versionsList[index].path : "")
-                            property string versionName: (typeof sideBar.versionsList[index] === 'string') ? (sideBar.versionsList[index].split("/").pop()) : (sideBar.versionsList[index] && sideBar.versionsList[index].name ? sideBar.versionsList[index].name : (versionPath.split("/").pop()))
+                            property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
+                            property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
 
                             MouseArea {
                                 id: versionMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onClicked: sideBar.versionSelected(versionName)
+                                    onClicked: {
+                                        // Refrescar la lista al seleccionar una versión
+                                        sideBar.versionsList = minecraftManager.getAvailableVersions()
+                                        sideBar.versionSelected(versionName)
+                                    }
                             }
 
                             Text {
