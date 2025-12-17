@@ -318,6 +318,11 @@ ApplicationWindow {
                 onDeleteVersionsRequested: deleteVersionDialog.open()
                 onImportWorldsAddonsRequested: importWorldsAddonsCard.show()
                 onVersionSelected: function(version) {
+                    // Navigate to Home and show the selected version in the HomePage
+                    mainWindow.currentPage = "Home"
+                    stackView.currentIndex = getPageIndex("Home")
+
+                    // Ensure the HomePage instance receives the selected version
                     if (stackView.itemAt(0)) {
                         stackView.itemAt(0).selectedVersion = version
                     }
