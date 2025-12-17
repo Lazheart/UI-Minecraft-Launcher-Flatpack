@@ -303,9 +303,19 @@ Rectangle {
                         Image {
                             id: backgroundImage
                             anchors.fill: parent
-                            source: Media.VersionBackgrounds[selectedVersion] || Media.VersionBackgrounds["1.21.0"]
+                            source: Media.VersionBackgrounds[selectedVersion] || Media.DefaultVersionBackground
                             fillMode: Image.PreserveAspectCrop
                             cache: true
+
+                            onStatusChanged: {
+                                if (status === Image.Error) {
+                                    // If the selected version background key is missing or fails,
+                                    // fallback to the centralized default background.
+                                    if (backgroundImage.source !== Media.DefaultVersionBackground) {
+                                        backgroundImage.source = Media.DefaultVersionBackground
+                                    }
+                                }
+                            }
 
                             Rectangle {
                                 anchors.fill: parent

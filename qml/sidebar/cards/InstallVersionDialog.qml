@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3 as QtDialogs
+import "../../Media.js" as Media
 
 Dialog {
     id: installDialog
@@ -38,8 +39,12 @@ Dialog {
     function resetForm() {
         nameField.text = ""
         apkField.text = ""
-        iconPath = ""
-        backgroundPath = ""
+        // Set default icon and background to the project's recommended defaults
+        // Default icon file (recommended): assets/media/directAccess.png (qrc:/assets/media/directAccess.png)
+        // Use centralized defaults from Media.js so these aren't hardcoded here
+        iconPath = Media.DefaultVersionIcon
+        // Prefer a centralized default background instead of hardcoding a specific version key
+        backgroundPath = Media.DefaultVersionBackground || ""
         useDefaultIcon = true
         useDefaultBackground = true
         iconDefault.checked = true

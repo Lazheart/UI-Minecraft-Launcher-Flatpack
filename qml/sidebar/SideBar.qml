@@ -176,13 +176,43 @@ Rectangle {
                                     }
                             }
 
-                            Text {
+                            RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: 10
-                                text: versionName
-                                color: "#ffffff"
-                                font.pixelSize: 12
-                                verticalAlignment: Text.AlignVCenter
+                                anchors.margins: 6
+                                spacing: 10
+
+                                Rectangle {
+                                    id: versionIconWrapper
+                                    color: "transparent"
+                                    radius: 6
+                                    clip: true
+                                    Layout.preferredWidth: 34
+                                    Layout.preferredHeight: 34
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: versionIconImg
+                                        anchors.fill: parent
+                                        source: Media.DefaultVersionIcon
+                                        fillMode: Image.PreserveAspectFit
+                                        cache: true
+                                        smooth: true
+                                        onStatusChanged: {
+                                            if (status === Image.Error && Media.DefaultVersionIconFallback) {
+                                                versionIconImg.source = Media.DefaultVersionIconFallback
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: versionName
+                                    color: "#ffffff"
+                                    font.pixelSize: 12
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
                             }
                         }
                     }
