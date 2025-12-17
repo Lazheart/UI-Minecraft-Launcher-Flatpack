@@ -92,9 +92,8 @@ Rectangle {
                 text: "Home"
                 isActive: navBar.currentPage === "Home"
                 onClicked: {
-                    navBar.currentPage = "Home"
-                    navBar.navigate("Home")
-                }
+                        navBar.navigate("Home")
+                    }
             }
             
             
@@ -102,7 +101,6 @@ Rectangle {
                 text: "Settings"
                 isActive: navBar.currentPage === "Settings"
                 onClicked: {
-                    navBar.currentPage = "Settings"
                     navBar.navigate("Settings")
                 }
             }
@@ -111,7 +109,6 @@ Rectangle {
                 text: "About"
                 isActive: navBar.currentPage === "About"
                 onClicked: {
-                    navBar.currentPage = "About"
                     navBar.navigate("About")
                 }
             }
