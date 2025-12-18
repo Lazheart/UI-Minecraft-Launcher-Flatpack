@@ -331,6 +331,26 @@ void MinecraftManager::installRequested(const QString &apkPath,
         }
     }
 
+    // Pre-stage user-provided icon/background so we have accessible file paths
+    QString stagedIcon;
+    QString stagedBackground;
+    QString iconToUse = iconPath;
+    QString bgToUse = backgroundPath;
+    if (!useDefaultIcon && !iconPath.isEmpty() && m_pathManager) {
+        stagedIcon = m_pathManager->stageFileForExtraction(iconPath);
+        if (!stagedIcon.isEmpty()) {
+            qDebug() << "[MinecraftManager] Using staged icon for later copy:" << stagedIcon;
+            iconToUse = stagedIcon;
+        }
+    }
+    if (!useDefaultBackground && !backgroundPath.isEmpty() && m_pathManager) {
+        stagedBackground = m_pathManager->stageFileForExtraction(backgroundPath);
+        if (!stagedBackground.isEmpty()) {
+            qDebug() << "[MinecraftManager] Using staged background for later copy:" << stagedBackground;
+            bgToUse = stagedBackground;
+        }
+    }
+
     // Use MinecraftExtract to perform extraction
     MinecraftExtract extractor(m_pathManager);
     QString extractorErr;
@@ -339,6 +359,45 @@ void MinecraftManager::installRequested(const QString &apkPath,
         qWarning() << "Extraction failed:" << extractorErr;
         // Emitir señal de fallo con razón
         QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
+
+        // Si la extracción creó una carpeta parcial, eliminarla para evitar versiones "fantasma"
+        QDir vdirAttempt(versionFolderAttempt);
+        if (vdirAttempt.exists()) {
+            qDebug() << "[MinecraftManager] Removing incomplete version folder due to extraction failure:" << versionFolderAttempt;
+            bool removed = vdirAttempt.removeRecursively();
+            if (!removed) qWarning() << "[MinecraftManager] Failed to remove incomplete version folder:" << versionFolderAttempt;
+        }
+
+        // Intentar limpiar cualquier archivo staged (apk, icon, background) que hayamos creado
+        if (m_pathManager) {
+            QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
+            auto tryRemoveIfStagedLocal = [&](const QString &p) {
+                if (p.isEmpty()) return;
+                QString clean = QDir::cleanPath(p);
+                if (clean.startsWith(QDir(importsDir).absolutePath())) {
+                    qDebug() << "[MinecraftManager] Removing staged file after failed extraction:" << clean;
+                    if (!QFile::remove(clean)) {
+                        qWarning() << "[MinecraftManager] Failed to remove staged file:" << clean;
+                    }
+                } else {
+                    qDebug() << "[MinecraftManager] Not a staged file (skipping):" << clean;
+                }
+            };
+
+            QString apkCleanup = stagedApk.isEmpty() ? apkPath : stagedApk;
+            tryRemoveIfStagedLocal(apkCleanup);
+            if (!useDefaultIcon) {
+                QString iconCleanup = stagedIcon.isEmpty() ? iconPath : stagedIcon;
+                tryRemoveIfStagedLocal(iconCleanup);
+            }
+            if (!useDefaultBackground) {
+                QString bgCleanup = stagedBackground.isEmpty() ? backgroundPath : stagedBackground;
+                tryRemoveIfStagedLocal(bgCleanup);
+            }
+        }
+
+        qDebug() << "[MinecraftManager] installFailed: extraction failed and cleanup attempted for version:" << name;
+        qDebug() << "[MinecraftManager] extraction error message:" << extractorErr;
         emit installFailed(versionFolderAttempt, extractorErr);
         return;
     }
@@ -352,22 +411,22 @@ void MinecraftManager::installRequested(const QString &apkPath,
         return;
     }
 
-    // Copy user-provided icon/background into the version folder (if provided and not default)
-    if (!useDefaultIcon && !iconPath.isEmpty()) {
-        QFileInfo iconFi(iconPath);
+    // Copy user-provided icon/background into the version folder (if provided and not default).
+    if (!useDefaultIcon && !iconToUse.isEmpty()) {
+        QFileInfo iconFi(iconToUse);
         QString destIcon = QDir(versionFolder).filePath(iconFi.fileName());
         if (QFile::exists(destIcon)) QFile::remove(destIcon);
-        bool copied = QFile::copy(iconPath, destIcon);
-        qDebug() << "[MinecraftManager] copy icon" << iconPath << "->" << destIcon << "=>" << copied;
+        bool copied = QFile::copy(iconToUse, destIcon);
+        qDebug() << "[MinecraftManager] copy icon" << iconToUse << "->" << destIcon << "=>" << copied;
         if (!copied) qWarning() << "Failed to copy icon to" << destIcon;
     }
 
-    if (!useDefaultBackground && !backgroundPath.isEmpty()) {
-        QFileInfo bgFi(backgroundPath);
+    if (!useDefaultBackground && !bgToUse.isEmpty()) {
+        QFileInfo bgFi(bgToUse);
         QString destBg = QDir(versionFolder).filePath(bgFi.fileName());
         if (QFile::exists(destBg)) QFile::remove(destBg);
-        bool copied = QFile::copy(backgroundPath, destBg);
-        qDebug() << "[MinecraftManager] copy background" << backgroundPath << "->" << destBg << "=>" << copied;
+        bool copied = QFile::copy(bgToUse, destBg);
+        qDebug() << "[MinecraftManager] copy background" << bgToUse << "->" << destBg << "=>" << copied;
         if (!copied) qWarning() << "Failed to copy background to" << destBg;
     }
 
@@ -398,8 +457,14 @@ void MinecraftManager::installRequested(const QString &apkPath,
         // remove the actual files used for extraction / copy operations
         QString apkCleanup = stagedApk.isEmpty() ? apkPath : stagedApk;
         tryRemoveIfStaged(apkCleanup);
-        if (!useDefaultIcon) tryRemoveIfStaged(iconPath);
-        if (!useDefaultBackground) tryRemoveIfStaged(backgroundPath);
+        if (!useDefaultIcon) {
+            QString iconCleanup = stagedIcon.isEmpty() ? iconPath : stagedIcon;
+            tryRemoveIfStaged(iconCleanup);
+        }
+        if (!useDefaultBackground) {
+            QString bgCleanup = stagedBackground.isEmpty() ? backgroundPath : stagedBackground;
+            tryRemoveIfStaged(bgCleanup);
+        }
     }
 
     emit installSucceeded(versionFolder);

@@ -243,7 +243,7 @@ Dialog {
 
                     RadioButton {
                         id: iconOther
-                        text: "Other"
+                        text: "Add"
                         ButtonGroup.group: iconGroup
                         contentItem: Text {
                             text: iconOther.text
@@ -389,7 +389,7 @@ Dialog {
                 }
                 onClicked: {
                     if (!installButton.enabled) {
-                        errorLabel.text = "Complete todos los campos requeridos"
+                        errorLabel.text = "Complete all required fields before installing."
                         return
                     }
                     errorLabel.text = ""
@@ -457,7 +457,29 @@ Dialog {
         title: "Select Icon"
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg *.svg)", "All files (*)"]
-        onAccepted: installDialog.iconPath = installDialog.cleanFileUrl(iconDialog.fileUrl.toString())
+        onAccepted: {
+            var picked = installDialog.cleanFileUrl(iconDialog.fileUrl.toString())
+            // Try to stage the file immediately so it's available during install
+            try {
+                var staged = pathManager.stageFileForExtraction(picked)
+                if (staged && staged.length) {
+                    installDialog.iconPath = staged
+                    console.log("[InstallVersionDialog] staged icon:", staged)
+                } else {
+                    installDialog.iconPath = picked
+                    console.log("[InstallVersionDialog] using original icon path:", picked)
+                }
+            } catch (e) {
+                installDialog.iconPath = picked
+                console.log("[InstallVersionDialog] icon staging error, using:", picked, e)
+            }
+
+            // Ensure the UI switches to 'Other' so the uploaded icon is used
+            installDialog.useDefaultIcon = false
+            iconDefault.checked = false
+            iconOther.checked = true
+            iconUploadButton.enabled = true
+        }
     }
 
     QtDialogs.FileDialog {
@@ -465,7 +487,28 @@ Dialog {
         title: "Select Background"
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
-        onAccepted: installDialog.backgroundPath = installDialog.cleanFileUrl(backgroundDialog.fileUrl.toString())
+        onAccepted: {
+            var picked = installDialog.cleanFileUrl(backgroundDialog.fileUrl.toString())
+            try {
+                var staged = pathManager.stageFileForExtraction(picked)
+                if (staged && staged.length) {
+                    installDialog.backgroundPath = staged
+                    console.log("[InstallVersionDialog] staged background:", staged)
+                } else {
+                    installDialog.backgroundPath = picked
+                    console.log("[InstallVersionDialog] using original background path:", picked)
+                }
+            } catch (e) {
+                installDialog.backgroundPath = picked
+                console.log("[InstallVersionDialog] background staging error, using:", picked, e)
+            }
+
+            // Ensure the UI switches to 'Add/Other' so the uploaded background is used
+            installDialog.useDefaultBackground = false
+            backgroundDefault.checked = false
+            backgroundOther.checked = true
+            backgroundUploadButton.enabled = true
+        }
     }
 
     Connections {

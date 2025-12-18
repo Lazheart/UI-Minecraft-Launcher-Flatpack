@@ -49,7 +49,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
 
                     Text {
-                        text: "Welcome to Enkidu Launcher"
+                        text: "Welcome to Kon Launcher"
                         font.pixelSize: 32
                         font.bold: true
                         color: "#ffffff"
@@ -136,7 +136,7 @@ Rectangle {
                     spacing: 20
 
                     Text {
-                        text: "Welcome to Enkidu Launcher"
+                        text: "Welcome to Kon Launcher"
                         font.pixelSize: 32
                         font.bold: true
                         color: "#ffffff"
@@ -465,9 +465,9 @@ Rectangle {
                                     Layout.preferredHeight: 70
 
                                     background: Rectangle {
-                                        color: pressed ? "#3d3d3d" : "#2d2d2d"
+                                        color: parent.pressed ? "#3d3d3d" : "#2d2d2d"
                                         radius: 8
-                                        border.color: hovered ? "#4CAF50" : "#555555"
+                                        border.color: parent.hovered ? "#4CAF50" : "#555555"
                                         border.width: 2
                                     }
 

@@ -1,5 +1,3 @@
-.pragma library
-
 // Centralized assets references
 var LogoImage = "qrc:/assets/media/logo.svg"
 var BedrockLogo = "qrc:/assets/media/bedrockLogo.png"
@@ -24,5 +22,4 @@ var VersionBackgrounds = {
 }
 
 // Default background to use when no specific version background is selected.
-// Change this to another key present in `VersionBackgrounds` if you prefer.
-var DefaultVersionBackground = VersionBackgrounds["1.21.0"] || VersionBackgrounds["1.14.2"] || ""
+var DefaultVersionBackground = VersionBackgrounds["1.14.2"] 

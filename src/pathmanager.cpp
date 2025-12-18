@@ -61,6 +61,18 @@ void PathManager::computePaths()
         m_mcpelauncherExtract = "mcpelauncher-extract";
         m_mcpelauncherClient = "mcpelauncher-client";
     }
+
+    // Allow overriding the extractor/client binary via environment variables
+    QByteArray envExtract = qgetenv("MCPELAUNCHER_EXTRACT");
+    if (!envExtract.isEmpty()) {
+        m_mcpelauncherExtract = QString::fromUtf8(envExtract);
+        qDebug() << "[PathManager] MCPELAUNCHER_EXTRACT override:" << m_mcpelauncherExtract;
+    }
+    QByteArray envClient = qgetenv("MCPELAUNCHER_CLIENT");
+    if (!envClient.isEmpty()) {
+        m_mcpelauncherClient = QString::fromUtf8(envClient);
+        qDebug() << "[PathManager] MCPELAUNCHER_CLIENT override:" << m_mcpelauncherClient;
+    }
 }
 
 bool PathManager::isFlatpak() const { return m_isFlatpak; }

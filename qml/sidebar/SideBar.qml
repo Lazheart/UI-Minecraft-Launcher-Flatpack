@@ -188,7 +188,7 @@ Rectangle {
                                     clip: true
                                     Layout.preferredWidth: 34
                                     Layout.preferredHeight: 34
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.alignment: Qt.AlignVCenter
 
                                     Image {
                                         id: versionIconImg
@@ -198,14 +198,19 @@ Rectangle {
                                         cache: true
                                         smooth: true
                                         onStatusChanged: {
-                                            if (status === Image.Error && Media.DefaultVersionIconFallback) {
-                                                versionIconImg.source = Media.DefaultVersionIconFallback
+                                            console.log("[SideBar] versionIconImg status for", versionName, "=", status, "source=", source)
+                                            if (status === Image.Error) {
+                                                if (Media.DefaultVersionIconFallback && versionIconImg.source !== Media.DefaultVersionIconFallback) {
+                                                    console.log("[SideBar] falling back to DefaultVersionIconFallback")
+                                                    versionIconImg.source = Media.DefaultVersionIconFallback
+                                                }
                                             }
                                         }
                                     }
                                 }
 
                                 Text {
+                                    id: versionNameText
                                     text: versionName
                                     color: "#ffffff"
                                     font.pixelSize: 12
