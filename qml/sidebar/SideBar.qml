@@ -191,20 +191,27 @@ Rectangle {
                                     Layout.preferredHeight: 34
                                     Layout.alignment: Qt.AlignVCenter
 
-                                    Image {
-                                        id: versionIconImg
+                                    Rectangle {
                                         anchors.fill: parent
-                                        source: customIcon !== "" ? customIcon : Media.DefaultVersionIcon
-                                        fillMode: Image.PreserveAspectFit
-                                        cache: true
-                                        smooth: true
-                                        onStatusChanged: {
-                                            if (status === Image.Error) {
-                                                console.log("[SideBar] Icon error for", versionName, "source:", source)
-                                                if (customIcon !== "" && source !== Media.DefaultVersionIcon) {
-                                                    versionIconImg.source = Media.DefaultVersionIcon
-                                                } else if (Media.DefaultVersionIconFallback && versionIconImg.source !== Media.DefaultVersionIconFallback) {
-                                                    versionIconImg.source = Media.DefaultVersionIconFallback
+                                        radius: 4
+                                        clip: true
+                                        color: "transparent"
+
+                                        Image {
+                                            id: versionIconImg
+                                            anchors.fill: parent
+                                            source: customIcon !== "" ? customIcon : Media.DefaultVersionIcon
+                                            fillMode: Image.PreserveAspectCrop
+                                            cache: true
+                                            smooth: true
+                                            onStatusChanged: {
+                                                if (status === Image.Error) {
+                                                    console.log("[SideBar] Icon error for", versionName, "source:", source)
+                                                    if (customIcon !== "" && source !== Media.DefaultVersionIcon) {
+                                                        versionIconImg.source = Media.DefaultVersionIcon
+                                                    } else if (Media.DefaultVersionIconFallback && versionIconImg.source !== Media.DefaultVersionIconFallback) {
+                                                        versionIconImg.source = Media.DefaultVersionIconFallback
+                                                    }
                                                 }
                                             }
                                         }
