@@ -47,7 +47,7 @@ Rectangle {
             }
             
             Text {
-                text: "Enkidu Launcher"
+                text: "Kon Launcher"
                 font.pixelSize: 20
                 font.bold: true
                 color: "#ffffff"

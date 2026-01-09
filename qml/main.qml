@@ -17,7 +17,7 @@ ApplicationWindow {
     height: 800
     minimumWidth: 1000
     minimumHeight: 700
-    title: "Enkidu Launcher"
+    title: "Kon Launcher"
     
     readonly property color backgroundColor: "#1e1e1e"
     readonly property color surfaceColor: "#2d2d2d"

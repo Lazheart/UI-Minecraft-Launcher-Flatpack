@@ -193,14 +193,17 @@ Rectangle {
                                     Image {
                                         id: versionIconImg
                                         anchors.fill: parent
-                                        source: Media.DefaultVersionIcon
+                                        source: modelData.icon ? modelData.icon : Media.DefaultVersionIcon
                                         fillMode: Image.PreserveAspectFit
                                         cache: true
                                         smooth: true
                                         onStatusChanged: {
                                             console.log("[SideBar] versionIconImg status for", versionName, "=", status, "source=", source)
                                             if (status === Image.Error) {
-                                                if (Media.DefaultVersionIconFallback && versionIconImg.source !== Media.DefaultVersionIconFallback) {
+                                                if (modelData.icon && source !== Media.DefaultVersionIcon) {
+                                                    console.log("[SideBar] Custom icon error, falling back to DefaultVersionIcon")
+                                                    versionIconImg.source = Media.DefaultVersionIcon
+                                                } else if (Media.DefaultVersionIconFallback && versionIconImg.source !== Media.DefaultVersionIconFallback) {
                                                     console.log("[SideBar] falling back to DefaultVersionIconFallback")
                                                     versionIconImg.source = Media.DefaultVersionIconFallback
                                                 }

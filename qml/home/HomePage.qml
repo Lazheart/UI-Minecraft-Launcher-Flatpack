@@ -11,6 +11,22 @@ Rectangle {
     
     // Señal para abrir el diálogo de instalación
     signal installVersionRequested()
+
+    function getVersionBackground(versionName) {
+        if (!versionName) return Media.DefaultVersionBackground;
+        
+        var versions = minecraftManager.getAvailableVersions();
+        for (var i = 0; i < versions.length; i++) {
+            if (versions[i].name === versionName) {
+                if (versions[i].background) {
+                    return versions[i].background;
+                }
+                break;
+            }
+        }
+        
+        return Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
+    }
     
     ScrollView {
         id: homeScroll
@@ -303,7 +319,7 @@ Rectangle {
                         Image {
                             id: backgroundImage
                             anchors.fill: parent
-                            source: Media.VersionBackgrounds[selectedVersion] || Media.DefaultVersionBackground
+                            source: getVersionBackground(selectedVersion)
                             fillMode: Image.PreserveAspectCrop
                             cache: true
 
