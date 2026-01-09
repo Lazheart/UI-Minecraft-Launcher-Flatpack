@@ -114,7 +114,10 @@ QVariantList MinecraftManager::getAvailableVersions() const {
                 << "custom_icon.svg";
     QStringList icons = vDir.entryList(iconFilters, QDir::Files);
     if (!icons.isEmpty()) {
-      m.insert("icon", "file://" + vDir.absoluteFilePath(icons.first()));
+      QString iconPath = "file://" + vDir.absoluteFilePath(icons.first());
+      m.insert("icon", iconPath);
+      qDebug() << "[MinecraftManager] Found custom icon for" << entry << ":"
+               << iconPath;
     }
 
     // Detect custom background
@@ -123,7 +126,10 @@ QVariantList MinecraftManager::getAvailableVersions() const {
               << "custom_background.jpeg";
     QStringList bgs = vDir.entryList(bgFilters, QDir::Files);
     if (!bgs.isEmpty()) {
-      m.insert("background", "file://" + vDir.absoluteFilePath(bgs.first()));
+      QString bgPath = "file://" + vDir.absoluteFilePath(bgs.first());
+      m.insert("background", bgPath);
+      qDebug() << "[MinecraftManager] Found custom background for" << entry
+               << ":" << bgPath;
     }
 
     list.append(m);

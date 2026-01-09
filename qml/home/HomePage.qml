@@ -19,13 +19,16 @@ Rectangle {
         for (var i = 0; i < versions.length; i++) {
             if (versions[i].name === versionName) {
                 if (versions[i].background) {
+                    console.log("[Home] Found custom background in model for", versionName, ":", versions[i].background);
                     return versions[i].background;
                 }
                 break;
             }
         }
         
-        return Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
+        var fallback = Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
+        console.log("[Home] Using fallback background for", versionName, ":", fallback);
+        return fallback;
     }
     
     ScrollView {

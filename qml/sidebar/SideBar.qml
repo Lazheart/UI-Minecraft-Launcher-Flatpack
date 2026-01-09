@@ -165,6 +165,13 @@ Rectangle {
                             property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                             property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
 
+                            Component.onCompleted: {
+                                if (typeof modelData === 'object') {
+                                    console.log("[SideBar] Item for", versionName, "modelData keys:", Object.keys(modelData))
+                                    console.log("[SideBar] Item for", versionName, "icon path:", modelData.icon)
+                                }
+                            }
+
                             MouseArea {
                                 id: versionMouse
                                 anchors.fill: parent
