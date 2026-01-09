@@ -15,11 +15,11 @@ Rectangle {
     function getVersionBackground(versionName) {
         if (!versionName) return Media.DefaultVersionBackground;
         
-        var versions = minecraftManager.getAvailableVersions();
+        var versions = minecraftManager.availableVersions;
         for (var i = 0; i < versions.length; i++) {
             if (versions[i].name === versionName) {
                 if (versions[i].background) {
-                    console.log("[Home] Found custom background in model for", versionName, ":", versions[i].background);
+                    console.log("[Home] Found custom background for", versionName, ":", versions[i].background);
                     return versions[i].background;
                 }
                 break;
@@ -27,7 +27,6 @@ Rectangle {
         }
         
         var fallback = Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
-        console.log("[Home] Using fallback background for", versionName, ":", fallback);
         return fallback;
     }
     

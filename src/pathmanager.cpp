@@ -1,78 +1,80 @@
 #include "../include/pathmanager.h"
 
-#include <QDir>
-#include <QStandardPaths>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QStandardPaths>
 #include <QUrl>
 
-PathManager::PathManager(QObject *parent)
-    : QObject(parent)
-{
-    computePaths();
-    qDebug() << "[PathManager] computed paths:";
-    qDebug() << "  isFlatpak=" << m_isFlatpak;
-    qDebug() << "  homeDir=" << m_homeDir;
-    qDebug() << "  dataDir=" << m_dataDir;
-    qDebug() << "  launcherDir=" << m_launcherDir;
-    qDebug() << "  versionsDir=" << m_versionsDir;
-    qDebug() << "  profilesDir=" << m_profilesDir;
-    qDebug() << "  logsDir=" << m_logsDir;
-    qDebug() << "  extractor=" << m_mcpelauncherExtract;
-    qDebug() << "  client=" << m_mcpelauncherClient;
+PathManager::PathManager(QObject *parent) : QObject(parent) {
+  computePaths();
+  qDebug() << "[PathManager] computed paths:";
+  qDebug() << "  isFlatpak=" << m_isFlatpak;
+  qDebug() << "  homeDir=" << m_homeDir;
+  qDebug() << "  dataDir=" << m_dataDir;
+  qDebug() << "  launcherDir=" << m_launcherDir;
+  qDebug() << "  versionsDir=" << m_versionsDir;
+  qDebug() << "  profilesDir=" << m_profilesDir;
+  qDebug() << "  logsDir=" << m_logsDir;
+  qDebug() << "  extractor=" << m_mcpelauncherExtract;
+  qDebug() << "  client=" << m_mcpelauncherClient;
 
-    ensurePathsExist();
+  ensurePathsExist();
 }
 
-void PathManager::computePaths()
-{
-    QByteArray flatpak = qgetenv("FLATPAK_ID");
-    m_isFlatpak = !flatpak.isEmpty();
+void PathManager::computePaths() {
+  QByteArray flatpak = qgetenv("FLATPAK_ID");
+  m_isFlatpak = !flatpak.isEmpty();
 
-    m_homeDir = QDir::homePath();
+  m_homeDir = QDir::homePath();
 
-    if (m_isFlatpak) {
-        QByteArray xdg = qgetenv("XDG_DATA_HOME");
-        if (!xdg.isEmpty()) {
-            m_dataDir = QString::fromUtf8(xdg) + "/" + QCoreApplication::applicationName();
-        } else {
-            m_dataDir = QDir::cleanPath(m_homeDir + "/.var/app/org.lazheart.minecraft-launcher/data");
-        }
+  if (m_isFlatpak) {
+    QByteArray xdg = qgetenv("XDG_DATA_HOME");
+    if (!xdg.isEmpty()) {
+      m_dataDir =
+          QString::fromUtf8(xdg) + "/" + QCoreApplication::applicationName();
     } else {
-        // When NOT running as Flatpak, place the data directory next to the
-        // application binary so versions/profiles/logs are created in the
-        // application's folder (matching how you want the local UI to behave).
-        QString appDir = QCoreApplication::applicationDirPath();
-        m_dataDir = QDir::cleanPath(appDir);
+      m_dataDir = QDir::cleanPath(
+          m_homeDir +
+          "/.var/app/org.lazheart.minecraft-launcher/data/minecraft");
     }
+  } else {
+    // When NOT running as Flatpak, place the data directory next to the
+    // application binary so versions/profiles/logs are created in the
+    // application's folder (matching how you want the local UI to behave).
+    QString appDir = QCoreApplication::applicationDirPath();
+    m_dataDir = QDir::cleanPath(appDir);
+  }
 
-    m_launcherDir = QDir::cleanPath(m_dataDir + "/minecraft-bedrock");
-    m_versionsDir = QDir::cleanPath(m_launcherDir + "/versions");
-    m_profilesDir = QDir::cleanPath(m_launcherDir + "/profiles");
-    m_logsDir = QDir::cleanPath(m_launcherDir + "/logs");
-    m_configFile = QDir::cleanPath(m_launcherDir + "/config.json");
+  m_launcherDir = QDir::cleanPath(m_dataDir + "/minecraft-bedrock");
+  m_versionsDir = QDir::cleanPath(m_launcherDir + "/versions");
+  m_profilesDir = QDir::cleanPath(m_launcherDir + "/profiles");
+  m_logsDir = QDir::cleanPath(m_launcherDir + "/logs");
+  m_configFile = QDir::cleanPath(m_launcherDir + "/config.json");
 
-    if (m_isFlatpak) {
-        m_mcpelauncherExtract = "/app/bin/mcpelauncher-extract";
-        m_mcpelauncherClient = "/app/bin/mcpelauncher-client";
-    } else {
-        m_mcpelauncherExtract = "mcpelauncher-extract";
-        m_mcpelauncherClient = "mcpelauncher-client";
-    }
+  if (m_isFlatpak) {
+    m_mcpelauncherExtract = "/app/bin/mcpelauncher-extract";
+    m_mcpelauncherClient = "/app/bin/mcpelauncher-client";
+  } else {
+    m_mcpelauncherExtract = "mcpelauncher-extract";
+    m_mcpelauncherClient = "mcpelauncher-client";
+  }
 
-    // Allow overriding the extractor/client binary via environment variables
-    QByteArray envExtract = qgetenv("MCPELAUNCHER_EXTRACT");
-    if (!envExtract.isEmpty()) {
-        m_mcpelauncherExtract = QString::fromUtf8(envExtract);
-        qDebug() << "[PathManager] MCPELAUNCHER_EXTRACT override:" << m_mcpelauncherExtract;
-    }
-    QByteArray envClient = qgetenv("MCPELAUNCHER_CLIENT");
-    if (!envClient.isEmpty()) {
-        m_mcpelauncherClient = QString::fromUtf8(envClient);
-        qDebug() << "[PathManager] MCPELAUNCHER_CLIENT override:" << m_mcpelauncherClient;
-    }
+  // Allow overriding the extractor/client binary via environment variables
+  QByteArray envExtract = qgetenv("MCPELAUNCHER_EXTRACT");
+  if (!envExtract.isEmpty()) {
+    m_mcpelauncherExtract = QString::fromUtf8(envExtract);
+    qDebug() << "[PathManager] MCPELAUNCHER_EXTRACT override:"
+             << m_mcpelauncherExtract;
+  }
+  QByteArray envClient = qgetenv("MCPELAUNCHER_CLIENT");
+  if (!envClient.isEmpty()) {
+    m_mcpelauncherClient = QString::fromUtf8(envClient);
+    qDebug() << "[PathManager] MCPELAUNCHER_CLIENT override:"
+             << m_mcpelauncherClient;
+  }
 }
 
 bool PathManager::isFlatpak() const { return m_isFlatpak; }
@@ -83,126 +85,145 @@ QString PathManager::versionsDir() const { return m_versionsDir; }
 QString PathManager::profilesDir() const { return m_profilesDir; }
 QString PathManager::logsDir() const { return m_logsDir; }
 QString PathManager::configFile() const { return m_configFile; }
-QString PathManager::mcpelauncherExtract() const { return m_mcpelauncherExtract; }
+QString PathManager::mcpelauncherExtract() const {
+  return m_mcpelauncherExtract;
+}
 QString PathManager::mcpelauncherClient() const { return m_mcpelauncherClient; }
 
-void PathManager::ensurePathsExist() const
-{
-    QDir d;
-    d.mkpath(m_launcherDir);
-    d.mkpath(m_versionsDir);
-    d.mkpath(m_profilesDir);
-    d.mkpath(m_logsDir);
-    // Ensure optional asset dirs exist as well
-    QString backgrounds = QDir(m_dataDir).filePath("backgrounds");
-    QString icons = QDir(m_dataDir).filePath("icons");
-    d.mkpath(backgrounds);
-    d.mkpath(icons);
-    qDebug() << "[PathManager] ensurePathsExist created (or verified) dirs:";
-    qDebug() << "  launcherDir=" << m_launcherDir;
-    qDebug() << "  versionsDir=" << m_versionsDir;
-    qDebug() << "  profilesDir=" << m_profilesDir;
-    qDebug() << "  logsDir=" << m_logsDir;
-    qDebug() << "  backgrounds=" << backgrounds;
-    qDebug() << "  icons=" << icons;
+void PathManager::ensurePathsExist() const {
+  QDir d;
+  d.mkpath(m_launcherDir);
+  d.mkpath(m_versionsDir);
+  d.mkpath(m_profilesDir);
+  d.mkpath(m_logsDir);
+  // Ensure optional asset dirs exist as well
+  QString backgrounds = QDir(m_dataDir).filePath("backgrounds");
+  QString icons = QDir(m_dataDir).filePath("icons");
+  d.mkpath(backgrounds);
+  d.mkpath(icons);
+  qDebug() << "[PathManager] ensurePathsExist created (or verified) dirs:";
+  qDebug() << "  launcherDir=" << m_launcherDir;
+  qDebug() << "  versionsDir=" << m_versionsDir;
+  qDebug() << "  profilesDir=" << m_profilesDir;
+  qDebug() << "  logsDir=" << m_logsDir;
+  qDebug() << "  backgrounds=" << backgrounds;
+  qDebug() << "  icons=" << icons;
 }
 
-QString PathManager::stageFileForExtraction(const QString &originalPath) const
-{
-    if (originalPath.isEmpty()) return QString();
+QString PathManager::stageFileForExtraction(const QString &originalPath) const {
+  if (originalPath.isEmpty())
+    return QString();
 
-    // Clean file:// URL if present
-    QString path = originalPath;
-    if (path.startsWith("file://")) {
-        QUrl u(path);
-        path = u.toLocalFile();
+  // Clean file:// URL if present
+  QString path = originalPath;
+  if (path.startsWith("file://")) {
+    QUrl u(path);
+    path = u.toLocalFile();
+  }
+
+  QFileInfo srcInfo(path);
+  bool srcExists = srcInfo.exists();
+  if (!srcExists) {
+    // Best-effort fallback for portal paths (e.g. Flatpak file chooser)
+    // Some portals expose files under /run/user/... which in some
+    // confinement setups may not be visible to QFileInfo(). In that
+    // case, attempt the copy anyway if the path looks like a portal
+    // path. The copy may still fail if sandboxing prevents access.
+    if (!path.startsWith("/run/user/")) {
+      qWarning()
+          << "[PathManager] stageFileForExtraction: source does not exist:"
+          << path;
+      return QString();
     }
+    qDebug() << "[PathManager] stageFileForExtraction: source not visible to "
+                "QFileInfo(), attempting portal fallback copy:"
+             << path;
+  }
 
-    QFileInfo srcInfo(path);
-    bool srcExists = srcInfo.exists();
-    if (!srcExists) {
-        // Best-effort fallback for portal paths (e.g. Flatpak file chooser)
-        // Some portals expose files under /run/user/... which in some
-        // confinement setups may not be visible to QFileInfo(). In that
-        // case, attempt the copy anyway if the path looks like a portal
-        // path. The copy may still fail if sandboxing prevents access.
-        if (!path.startsWith("/run/user/")) {
-            qWarning() << "[PathManager] stageFileForExtraction: source does not exist:" << path;
-            return QString();
-        }
-        qDebug() << "[PathManager] stageFileForExtraction: source not visible to QFileInfo(), attempting portal fallback copy:" << path;
-    }
+  // If the file is already inside versionsDir or dataDir, return as-is
+  QString abs = QDir::cleanPath(srcInfo.absoluteFilePath());
+  if (abs.startsWith(QDir(m_versionsDir).absolutePath()) ||
+      abs.startsWith(QDir(m_dataDir).absolutePath())) {
+    qDebug() << "[PathManager] stageFileForExtraction: file already in data "
+                "area, returning original:"
+             << abs;
+    return abs;
+  }
 
-    // If the file is already inside versionsDir or dataDir, return as-is
-    QString abs = QDir::cleanPath(srcInfo.absoluteFilePath());
-    if (abs.startsWith(QDir(m_versionsDir).absolutePath()) || abs.startsWith(QDir(m_dataDir).absolutePath())) {
-        qDebug() << "[PathManager] stageFileForExtraction: file already in data area, returning original:" << abs;
-        return abs;
-    }
+  // Create imports dir
+  QString importsDir = QDir(m_dataDir).filePath("imports");
+  QDir().mkpath(importsDir);
 
-    // Create imports dir
-    QString importsDir = QDir(m_dataDir).filePath("imports");
-    QDir().mkpath(importsDir);
+  QString dest = QDir(importsDir).filePath(srcInfo.fileName());
 
-    QString dest = QDir(importsDir).filePath(srcInfo.fileName());
+  // If destination exists, try to generate a unique name
+  if (QFile::exists(dest)) {
+    QString base = srcInfo.completeBaseName();
+    QString ext = srcInfo.suffix();
+    int i = 1;
+    QString tryPath;
+    do {
+      tryPath = QDir(importsDir)
+                    .filePath(QString("%1-%2.%3").arg(base).arg(i).arg(ext));
+      ++i;
+    } while (QFile::exists(tryPath) && i < 10000);
+    dest = tryPath;
+  }
 
-    // If destination exists, try to generate a unique name
-    if (QFile::exists(dest)) {
-        QString base = srcInfo.completeBaseName();
-        QString ext = srcInfo.suffix();
-        int i = 1;
-        QString tryPath;
-        do {
-            tryPath = QDir(importsDir).filePath(QString("%1-%2.%3").arg(base).arg(i).arg(ext));
-            ++i;
-        } while (QFile::exists(tryPath) && i < 10000);
-        dest = tryPath;
-    }
-
-    bool ok = QFile::copy(abs, dest);
-    if (!ok) {
-        qWarning() << "[PathManager] Failed to copy" << abs << "->" << dest << "; attempting stream-based fallback (may still fail due to sandbox)";
-        // Fallback: try to open source and write bytes manually. This can
-        // succeed in cases where QFile::copy fails but reading the file is
-        // possible via QFile (some platform semantics differ).
-        QFile in(abs);
-        if (in.open(QIODevice::ReadOnly)) {
-            QFile out(dest);
-            if (out.open(QIODevice::WriteOnly)) {
-                QByteArray data = in.readAll();
-                qint64 written = out.write(data);
-                out.close();
-                in.close();
-                if (written == data.size()) {
-                    qDebug() << "[PathManager] staged file for extraction via stream fallback:" << abs << "->" << dest;
-                    return QDir::cleanPath(dest);
-                } else {
-                    qWarning() << "[PathManager] Stream fallback write incomplete" << written << "vs" << data.size();
-                }
-            } else {
-                qWarning() << "[PathManager] Failed to open dest for writing:" << dest;
-            }
+  bool ok = QFile::copy(abs, dest);
+  if (!ok) {
+    qWarning()
+        << "[PathManager] Failed to copy" << abs << "->" << dest
+        << "; attempting stream-based fallback (may still fail due to sandbox)";
+    // Fallback: try to open source and write bytes manually. This can
+    // succeed in cases where QFile::copy fails but reading the file is
+    // possible via QFile (some platform semantics differ).
+    QFile in(abs);
+    if (in.open(QIODevice::ReadOnly)) {
+      QFile out(dest);
+      if (out.open(QIODevice::WriteOnly)) {
+        QByteArray data = in.readAll();
+        qint64 written = out.write(data);
+        out.close();
+        in.close();
+        if (written == data.size()) {
+          qDebug()
+              << "[PathManager] staged file for extraction via stream fallback:"
+              << abs << "->" << dest;
+          return QDir::cleanPath(dest);
         } else {
-            qWarning() << "[PathManager] Failed to open source for reading (portal/sandbox may block):" << abs;
+          qWarning() << "[PathManager] Stream fallback write incomplete"
+                     << written << "vs" << data.size();
         }
-        return QString();
+      } else {
+        qWarning() << "[PathManager] Failed to open dest for writing:" << dest;
+      }
+    } else {
+      qWarning() << "[PathManager] Failed to open source for reading "
+                    "(portal/sandbox may block):"
+                 << abs;
     }
+    return QString();
+  }
 
-    qDebug() << "[PathManager] staged file for extraction:" << abs << "->" << dest;
-    return QDir::cleanPath(dest);
+  qDebug() << "[PathManager] staged file for extraction:" << abs << "->"
+           << dest;
+  return QDir::cleanPath(dest);
 }
 
-bool PathManager::removeStagedFile(const QString &path) const
-{
-    if (path.isEmpty()) return false;
-    QString clean = QDir::cleanPath(path);
-    QString importsDir = QDir(m_dataDir).filePath("imports");
-    if (clean.startsWith(QDir(importsDir).absolutePath())) {
-        if (QFile::exists(clean)) {
-            bool ok = QFile::remove(clean);
-            if (!ok) qWarning() << "[PathManager] removeStagedFile: failed to remove" << clean;
-            return ok;
-        }
-    }
+bool PathManager::removeStagedFile(const QString &path) const {
+  if (path.isEmpty())
     return false;
+  QString clean = QDir::cleanPath(path);
+  QString importsDir = QDir(m_dataDir).filePath("imports");
+  if (clean.startsWith(QDir(importsDir).absolutePath())) {
+    if (QFile::exists(clean)) {
+      bool ok = QFile::remove(clean);
+      if (!ok)
+        qWarning() << "[PathManager] removeStagedFile: failed to remove"
+                   << clean;
+      return ok;
+    }
+  }
+  return false;
 }

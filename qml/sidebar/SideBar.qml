@@ -164,11 +164,14 @@ Rectangle {
                             // Support model entries as string (path) or object {name, path}
                             property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                             property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
+                            property string customIcon: (modelData && typeof modelData === 'object' && modelData.icon) ? modelData.icon : ""
 
                             Component.onCompleted: {
                                 if (typeof modelData === 'object') {
-                                    console.log("[SideBar] Item for", versionName, "modelData keys:", Object.keys(modelData))
-                                    console.log("[SideBar] Item for", versionName, "icon path:", modelData.icon)
+                                    console.log("[SideBar] Item for", versionName, "modelData:", JSON.stringify(modelData))
+                                    console.log("[SideBar] Icon path from modelData:", modelData.icon)
+                                } else {
+                                    console.log("[SideBar] Item for", versionName, "modelData is not an object:", typeof modelData)
                                 }
                             }
 
@@ -200,18 +203,19 @@ Rectangle {
                                     Image {
                                         id: versionIconImg
                                         anchors.fill: parent
-                                        source: modelData.icon ? modelData.icon : Media.DefaultVersionIcon
+                                        source: customIcon !== "" ? customIcon : Media.DefaultVersionIcon
                                         fillMode: Image.PreserveAspectFit
                                         cache: true
                                         smooth: true
                                         onStatusChanged: {
-                                            console.log("[SideBar] versionIconImg status for", versionName, "=", status, "source=", source)
+                                            if (status === Image.Ready) {
+                                                console.log("[SideBar] Icon loaded for", versionName, ":", source)
+                                            }
                                             if (status === Image.Error) {
-                                                if (modelData.icon && source !== Media.DefaultVersionIcon) {
-                                                    console.log("[SideBar] Custom icon error, falling back to DefaultVersionIcon")
+                                                console.log("[SideBar] Icon error for", versionName, "source:", source)
+                                                if (customIcon !== "" && source !== Media.DefaultVersionIcon) {
                                                     versionIconImg.source = Media.DefaultVersionIcon
                                                 } else if (Media.DefaultVersionIconFallback && versionIconImg.source !== Media.DefaultVersionIconFallback) {
-                                                    console.log("[SideBar] falling back to DefaultVersionIconFallback")
                                                     versionIconImg.source = Media.DefaultVersionIconFallback
                                                 }
                                             }
