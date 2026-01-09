@@ -166,15 +166,6 @@ Rectangle {
                             property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
                             property string customIcon: (modelData && typeof modelData === 'object' && modelData.icon) ? modelData.icon : ""
 
-                            Component.onCompleted: {
-                                if (typeof modelData === 'object') {
-                                    console.log("[SideBar] Item for", versionName, "modelData:", JSON.stringify(modelData))
-                                    console.log("[SideBar] Icon path from modelData:", modelData.icon)
-                                } else {
-                                    console.log("[SideBar] Item for", versionName, "modelData is not an object:", typeof modelData)
-                                }
-                            }
-
                             MouseArea {
                                 id: versionMouse
                                 anchors.fill: parent
@@ -208,9 +199,6 @@ Rectangle {
                                         cache: true
                                         smooth: true
                                         onStatusChanged: {
-                                            if (status === Image.Ready) {
-                                                console.log("[SideBar] Icon loaded for", versionName, ":", source)
-                                            }
                                             if (status === Image.Error) {
                                                 console.log("[SideBar] Icon error for", versionName, "source:", source)
                                                 if (customIcon !== "" && source !== Media.DefaultVersionIcon) {

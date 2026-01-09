@@ -25,28 +25,56 @@ PathManager::PathManager(QObject *parent) : QObject(parent) {
 }
 
 void PathManager::computePaths() {
-  QByteArray flatpak = qgetenv("FLATPAK_ID");
-  m_isFlatpak = !flatpak.isEmpty();
-
+  m_isFlatpak = !qgetenv("FLATPAK_ID").isEmpty();
   m_homeDir = QDir::homePath();
 
-  if (m_isFlatpak) {
-    QByteArray xdg = qgetenv("XDG_DATA_HOME");
-    if (!xdg.isEmpty()) {
-      m_dataDir =
-          QString::fromUtf8(xdg) + "/" + QCoreApplication::applicationName();
-    } else {
-      m_dataDir = QDir::cleanPath(
-          m_homeDir +
-          "/.var/app/org.lazheart.minecraft-launcher/data/minecraft");
-    }
-  } else {
-    // When NOT running as Flatpak, place the data directory next to the
-    // application binary so versions/profiles/logs are created in the
-    // application's folder (matching how you want the local UI to behave).
-    QString appDir = QCoreApplication::applicationDirPath();
-    m_dataDir = QDir::cleanPath(appDir);
+  // 1. Variable de Entorno
+  QByteArray envDataDir = qgetenv("MINECRAFT_DATA_DIR");
+  if (!envDataDir.isEmpty()) {
+    m_dataDir = QString::fromUtf8(envDataDir);
+    qDebug() << "[PathManager] Using MINECRAFT_DATA_DIR override:" << m_dataDir;
   }
+  // 2. Modo terminal/Portátil (Si existe carpeta 'data' local o estamos en
+  // 'build')
+  else {
+    QString appDirPath = QCoreApplication::applicationDirPath();
+    // Verificamos si estamos en una carpeta de build o si hay una carpeta
+    // 'data' al lado del ejecutable
+    bool isDev =
+        appDirPath.contains("/build") || QDir(appDirPath).exists("data");
+
+    if (isDev && !m_isFlatpak) {
+      m_dataDir = QDir(appDirPath).filePath("data");
+      qDebug()
+          << "[PathManager] Terminal/Dev mode detected, using local data dir:"
+          << m_dataDir;
+    } else if (m_isFlatpak) {
+      // 3. Flatpak
+      QByteArray xdg = qgetenv("XDG_DATA_HOME");
+      QString base;
+      if (!xdg.isEmpty()) {
+        base = QString::fromUtf8(xdg);
+      } else {
+        base = m_homeDir + "/.var/app/org.lazheart.minecraft-launcher/data";
+      }
+      // Aseguramos que termine en /minecraft para consistencia con los datos
+      // existentes del usuario
+      m_dataDir = QDir::cleanPath(base + "/minecraft");
+      qDebug() << "[PathManager] Flatpak detected, using data dir:"
+               << m_dataDir;
+    } else {
+      // 4. Nativo (Carpeta de datos estándar del sistema)
+      m_dataDir =
+          QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+      if (m_dataDir.isEmpty()) {
+        m_dataDir = QDir::cleanPath(m_homeDir + "/.minecraft-launcher");
+      }
+      qDebug() << "[PathManager] Native mode, using AppDataLocation:"
+               << m_dataDir;
+    }
+  }
+
+  m_dataDir = QDir::cleanPath(m_dataDir);
 
   m_launcherDir = QDir::cleanPath(m_dataDir + "/minecraft-bedrock");
   m_versionsDir = QDir::cleanPath(m_launcherDir + "/versions");
