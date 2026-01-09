@@ -52,18 +52,27 @@ Rectangle {
                     border.color: "#555555"
                     border.width: 1
 
-                    TextInput {
-                        id: versionsInput
+                    ScrollView {
                         anchors {
                             fill: parent
                             leftMargin: 10
                             rightMargin: 10
                         }
-                        verticalAlignment: TextInput.AlignVCenter
-                        color: "#b0b0b0"
-                        font.pixelSize: 11
-                        readOnly: true
-                        text: (typeof pathManager !== 'undefined' && pathManager.versionsDir && pathManager.versionsDir.length) ? pathManager.versionsDir : "/home/user/.minecraft/versions"
+                        clip: true
+                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+                        
+                        TextInput {
+                            id: versionsInput
+                            width: Math.max(parent.width, contentWidth)
+                            height: parent.height
+                            verticalAlignment: TextInput.AlignVCenter
+                            color: "#b0b0b0"
+                            font.pixelSize: 11
+                            readOnly: true
+                            selectByMouse: true
+                            text: (typeof pathManager !== 'undefined' && pathManager.versionsDir && pathManager.versionsDir.length) ? pathManager.versionsDir : "/home/user/.minecraft/versions"
+                        }
                     }
                 }
 
@@ -115,18 +124,27 @@ Rectangle {
                     border.color: "#555555"
                     border.width: 1
 
-                    TextInput {
-                        id: backgroundsInput
+                    ScrollView {
                         anchors {
                             fill: parent
                             leftMargin: 10
                             rightMargin: 10
                         }
-                        verticalAlignment: TextInput.AlignVCenter
-                        color: "#b0b0b0"
-                        font.pixelSize: 11
-                        readOnly: true
-                        text: (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/backgrounds" : "/home/user/.minecraft/backgrounds"
+                        clip: true
+                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+
+                        TextInput {
+                            id: backgroundsInput
+                            width: Math.max(parent.width, contentWidth)
+                            height: parent.height
+                            verticalAlignment: TextInput.AlignVCenter
+                            color: "#b0b0b0"
+                            font.pixelSize: 11
+                            readOnly: true
+                            selectByMouse: true
+                            text: (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/backgrounds" : "/home/user/.minecraft/backgrounds"
+                        }
                     }
                 }
 
@@ -178,18 +196,27 @@ Rectangle {
                     border.color: "#555555"
                     border.width: 1
 
-                    TextInput {
-                        id: iconsInput
+                    ScrollView {
                         anchors {
                             fill: parent
                             leftMargin: 10
                             rightMargin: 10
                         }
-                        verticalAlignment: TextInput.AlignVCenter
-                        color: "#b0b0b0"
-                        font.pixelSize: 11
-                        readOnly: true
-                        text: (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/icons" : "/home/user/.minecraft/icons"
+                        clip: true
+                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+
+                        TextInput {
+                            id: iconsInput
+                            width: Math.max(parent.width, contentWidth)
+                            height: parent.height
+                            verticalAlignment: TextInput.AlignVCenter
+                            color: "#b0b0b0"
+                            font.pixelSize: 11
+                            readOnly: true
+                            selectByMouse: true
+                            text: (typeof pathManager !== 'undefined' && pathManager.dataDir && pathManager.dataDir.length) ? pathManager.dataDir + "/icons" : "/home/user/.minecraft/icons"
+                        }
                     }
                 }
 
@@ -241,18 +268,27 @@ Rectangle {
                     border.color: "#555555"
                     border.width: 1
 
-                    TextInput {
-                        id: profilesInput
+                    ScrollView {
                         anchors {
                             fill: parent
                             leftMargin: 10
                             rightMargin: 10
                         }
-                        verticalAlignment: TextInput.AlignVCenter
-                        color: "#b0b0b0"
-                        font.pixelSize: 11
-                        readOnly: true
-                        text: (typeof pathManager !== 'undefined' && pathManager.profilesDir && pathManager.profilesDir.length) ? pathManager.profilesDir : "/home/user/.minecraft/profiles"
+                        clip: true
+                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+
+                        TextInput {
+                            id: profilesInput
+                            width: Math.max(parent.width, contentWidth)
+                            height: parent.height
+                            verticalAlignment: TextInput.AlignVCenter
+                            color: "#b0b0b0"
+                            font.pixelSize: 11
+                            readOnly: true
+                            selectByMouse: true
+                            text: (typeof pathManager !== 'undefined' && pathManager.profilesDir && pathManager.profilesDir.length) ? pathManager.profilesDir : "/home/user/.minecraft/profiles"
+                        }
                     }
                 }
 
