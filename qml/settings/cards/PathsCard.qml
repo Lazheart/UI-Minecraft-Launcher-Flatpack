@@ -65,7 +65,7 @@ Rectangle {
                         TextInput {
                             id: versionsInput
                             width: Math.max(parent.width, contentWidth)
-                            height: parent.height
+                            height: 35
                             verticalAlignment: TextInput.AlignVCenter
                             color: "#b0b0b0"
                             font.pixelSize: 11
@@ -137,7 +137,7 @@ Rectangle {
                         TextInput {
                             id: backgroundsInput
                             width: Math.max(parent.width, contentWidth)
-                            height: parent.height
+                            height: 35
                             verticalAlignment: TextInput.AlignVCenter
                             color: "#b0b0b0"
                             font.pixelSize: 11
@@ -209,7 +209,7 @@ Rectangle {
                         TextInput {
                             id: iconsInput
                             width: Math.max(parent.width, contentWidth)
-                            height: parent.height
+                            height: 35
                             verticalAlignment: TextInput.AlignVCenter
                             color: "#b0b0b0"
                             font.pixelSize: 11
@@ -281,7 +281,7 @@ Rectangle {
                         TextInput {
                             id: profilesInput
                             width: Math.max(parent.width, contentWidth)
-                            height: parent.height
+                            height: 35
                             verticalAlignment: TextInput.AlignVCenter
                             color: "#b0b0b0"
                             font.pixelSize: 11
