@@ -303,251 +303,262 @@ Rectangle {
             id: versionSelectedComponent
 
             Item {
+                id: rootSelected
                 width: parent ? parent.width : 0
-                implicitWidth: selectedLayout.implicitWidth
-                implicitHeight: selectedLayout.implicitHeight
+                height: Math.max(homeScroll.availableHeight, 500) // Ensure it fills at least the screen
 
-                ColumnLayout {
-                    id: selectedLayout
+                // Background Image
+                Rectangle {
                     anchors.fill: parent
-                    spacing: 0
+                    color: "#1e1e1e"
+                    z: 0
 
-                    // Background Image
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 350
-                        color: "#1e1e1e"
+                    Image {
+                        id: backgroundImage
+                        anchors.fill: parent
+                        source: getVersionBackground(selectedVersion)
+                        fillMode: Image.PreserveAspectCrop
+                        cache: true
 
-                        Image {
-                            id: backgroundImage
-                            anchors.fill: parent
-                            source: getVersionBackground(selectedVersion)
-                            fillMode: Image.PreserveAspectCrop
-                            cache: true
-
-                            onStatusChanged: {
-                                if (status === Image.Error) {
-                                    // If the selected version background key is missing or fails,
-                                    // fallback to the centralized default background.
-                                    if (backgroundImage.source !== Media.DefaultVersionBackground) {
-                                        backgroundImage.source = Media.DefaultVersionBackground
-                                    }
+                        onStatusChanged: {
+                            if (status === Image.Error) {
+                                if (backgroundImage.source !== Media.DefaultVersionBackground) {
+                                    backgroundImage.source = Media.DefaultVersionBackground
                                 }
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: "black"
-                                opacity: 0.3
                             }
                         }
 
-                        // Header with title and import button
-                        RowLayout {
+                        Rectangle {
                             anchors.fill: parent
-                            anchors.margins: 30
-                            spacing: 20
-
-                            ColumnLayout {
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                spacing: 10
-
-                                Text {
-                                    text: "Welcome to Enkidu Launcher"
-                                    font.pixelSize: 32
-                                    font.bold: true
-                                    color: "#ffffff"
-                                    Layout.alignment: Qt.AlignBottom
-                                }
-
-                                Text {
-                                    text: "Minecraft " + selectedVersion
-                                    font.pixelSize: 24
-                                    color: "#4CAF50"
-                                    font.bold: true
-                                }
-                            }
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
+                            color: "black"
+                            opacity: 0.5 // Increased opacity for better visibility of buttons
                         }
                     }
+                }
 
-                    // Content area
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                // Header Area (Back Button)
+                Item {
+                    id: headerArea
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 80
+                    z: 10 // Ensure it's on top
+
+                    Button {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.leftMargin: 30
+                        width: 160
+                        height: 40
+                        text: "← Back to Home"
+                        
+                        background: Rectangle {
+                            color: parent.pressed ? "#3d3d3d" : "#1e1e1e"
+                            radius: 20
+                            border.color: parent.hovered ? "#4CAF50" : "#555555"
+                            border.width: 1
+                            opacity: 0.9
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            font.pixelSize: 14
+                            color: "#ffffff"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        onClicked: {
+                            selectedVersion = ""
+                        }
+                    }
+                }
+
+                // Center Content (Version Info, Title)
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: 20
+                    z: 1
+
+                    Text {
+                        text: "Welcome to Enkidu Launcher"
+                        font.pixelSize: 32
+                        font.bold: true
+                        color: "#ffffff"
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Text {
+                        text: "Minecraft " + selectedVersion
+                        font.pixelSize: 24
+                        color: "#4CAF50"
+                        font.bold: true
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    
+                    // Version Info Box
+                    Rectangle {
+                        Layout.preferredWidth: 400
+                        Layout.preferredHeight: 120
+                        color: "#2d2d2d"
+                        radius: 8
+                        opacity: 0.9
 
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 30
-                            spacing: 20
+                            anchors.margins: 20
+                            spacing: 10
 
-                            // Status rectangle
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 150
-                                color: "#2d2d2d"
-                                radius: 8
-
-                                ColumnLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: 20
-                                    spacing: 10
-
-                                    Text {
-                                        text: "Version Information"
-                                        font.pixelSize: 18
-                                        font.bold: true
-                                        color: "#ffffff"
-                                    }
-
-                                    GridLayout {
-                                        columns: 2
-                                        columnSpacing: 15
-                                        rowSpacing: 8
-                                        Layout.fillWidth: true
-
-                                        Text {
-                                            text: "Selected:"
-                                            color: "#b0b0b0"
-                                        }
-                                        Text {
-                                            text: "Minecraft " + selectedVersion
-                                            color: "#4CAF50"
-                                            font.bold: true
-                                        }
-
-                                        Text {
-                                            text: "Current:"
-                                            color: "#b0b0b0"
-                                        }
-                                        Text {
-                                            text: minecraftManager.installedVersion || "Latest"
-                                            color: "#ffffff"
-                                        }
-                                    }
-                                }
+                            Text {
+                                text: "Version Information"
+                                font.pixelSize: 16
+                                font.bold: true
+                                color: "#ffffff"
                             }
 
-                            Item { Layout.fillHeight: true }
-
-                            // Action buttons at bottom
-                            ColumnLayout {
+                            GridLayout {
+                                columns: 2
+                                columnSpacing: 15
+                                rowSpacing: 8
                                 Layout.fillWidth: true
-                                spacing: 15
 
-                                // Play button
-                                Button {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 70
-                                    enabled: !minecraftManager.isRunning
-
-                                    background: Rectangle {
-                                        color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#555555"
-                                        radius: 8
-                                    }
-
-                                    contentItem: RowLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: 10
-                                        spacing: 15
-
-                                        Image {
-                                            Layout.preferredWidth: 40
-                                            Layout.preferredHeight: 40
-                                            source: Media.PlayIcon
-                                            fillMode: Image.PreserveAspectFit
-                                        }
-
-                                        Text {
-                                            text: "PLAY"
-                                            font.pixelSize: 20
-                                            font.bold: true
-                                            color: parent.parent.enabled ? "#ffffff" : "#888888"
-                                            Layout.fillWidth: true
-                                        }
-                                    }
-
-                                    onClicked: {
-                                        console.log("[Home] Launching game with version:", selectedVersion, "and profile:", profileManager.currentProfile)
-                                        minecraftManager.runGame(selectedVersion, "", profileManager.currentProfile)
-                                    }
+                                Text {
+                                    text: "Selected:"
+                                    color: "#b0b0b0"
+                                }
+                                Text {
+                                    text: "Minecraft " + selectedVersion
+                                    color: "#4CAF50"
+                                    font.bold: true
                                 }
 
-                                // Graphic options button
-                                Button {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 70
-
-                                    background: Rectangle {
-                                        color: parent.pressed ? "#3d3d3d" : "#2d2d2d"
-                                        radius: 8
-                                        border.color: parent.hovered ? "#4CAF50" : "#555555"
-                                        border.width: 2
-                                    }
-
-                                    contentItem: RowLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: 10
-                                        spacing: 15
-
-                                        Image {
-                                            Layout.preferredWidth: 40
-                                            Layout.preferredHeight: 40
-                                            source: Media.DropperIcon
-                                            fillMode: Image.PreserveAspectFit
-                                        }
-
-                                        Text {
-                                            text: "Graphic Options"
-                                            font.pixelSize: 18
-                                            color: "#ffffff"
-                                            font.bold: true
-                                            Layout.fillWidth: true
-                                        }
-                                    }
-
-                                    onClicked: {
-                                        console.log("[Home] Opening graphic options for version:", selectedVersion)
-                                    }
+                                Text {
+                                    text: "Current:"
+                                    color: "#b0b0b0"
+                                }
+                                Text {
+                                    text: minecraftManager.installedVersion || "Latest"
+                                    color: "#ffffff"
                                 }
                             }
                         }
                     }
+                }
 
-                    // Back button area
-                    Rectangle {
-                        Layout.fillWidth: true
+                // Footer Area (Play/Stop & Options)
+                RowLayout {
+                    id: footerArea
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottomMargin: 40
+                    spacing: 20
+                    z: 10
+
+                    // Play/Stop Button
+                    Button {
+                        id: actionButton
+                        Layout.preferredWidth: 200
                         Layout.preferredHeight: 60
-                        color: "#2d2d2d"
-                        radius: 8
+                        
+                        property bool isGameRunning: minecraftManager.isRunning
+                        
+                        text: isGameRunning ? "STOP" : "PLAY"
+                        
+                        background: Rectangle {
+                            color: parent.isGameRunning ? 
+                                   (parent.pressed ? "#d32f2f" : "#f44336") : // Red for Stop
+                                   (parent.pressed ? "#388E3C" : "#4CAF50")   // Green for Play
+                            radius: 30
+                        }
 
-                        Button {
-                            anchors.fill: parent
-                            anchors.margins: 10
-                            text: "← Back to Home"
+                        contentItem: RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 10
 
-                            background: Rectangle {
-                                color: parent.pressed ? "#3d3d3d" : "#1e1e1e"
-                                radius: 4
-                                border.color: parent.hovered ? "#4CAF50" : "#555555"
-                                border.width: 1
+                            // Custom drawn icon
+                            Canvas {
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                onPaint: {
+                                    var ctx = getContext("2d");
+                                    ctx.reset();
+                                    ctx.fillStyle = "#ffffff";
+                                    
+                                    if (actionButton.isGameRunning) {
+                                        // Draw Square (Stop)
+                                        ctx.fillRect(0, 0, width, height);
+                                    } else {
+                                        // Draw Triangle (Play)
+                                        ctx.beginPath();
+                                        ctx.moveTo(0, 0);
+                                        ctx.lineTo(width, height / 2);
+                                        ctx.lineTo(0, height);
+                                        ctx.closePath();
+                                        ctx.fill();
+                                    }
+                                }
+                                // Repaint when running state changes
+                                onVisibleChanged: requestPaint()
+                                Connections {
+                                    target: actionButton
+                                    function onIsGameRunningChanged() { actionButton.contentItem.children[0].requestPaint() }
+                                }
                             }
 
-                            contentItem: Text {
-                                text: parent.text
-                                font.pixelSize: 14
+                            Text {
+                                text: parent.parent.text
+                                font.pixelSize: 18
+                                font.bold: true
                                 color: "#ffffff"
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+
+                        onClicked: {
+                            if (isGameRunning) {
+                                console.log("[Home] Stopping game")
+                                minecraftManager.stopGame()
+                            } else {
+                                console.log("[Home] Launching game version:", selectedVersion)
+                                minecraftManager.runGame(selectedVersion, "", profileManager.currentProfile)
+                            }
+                        }
+                    }
+
+                    // Graphic Options Button
+                    Button {
+                        Layout.preferredWidth: 200
+                        Layout.preferredHeight: 60
+                        
+                        background: Rectangle {
+                            color: parent.pressed ? "#3d3d3d" : "#2d2d2d"
+                            radius: 30
+                            border.color: parent.hovered ? "#4CAF50" : "#555555"
+                            border.width: 1
+                            opacity: 0.9
+                        }
+
+                        contentItem: RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 10
+
+                            Image {
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                                source: Media.DropperIcon
+                                fillMode: Image.PreserveAspectFit
                             }
 
-                            onClicked: {
-                                selectedVersion = ""
+                            Text {
+                                text: "Graphic Options"
+                                font.pixelSize: 16
+                                color: "#ffffff"
+                                font.bold: true
                             }
+                        }
+
+                        onClicked: {
+                            console.log("[Home] Opening graphic options")
                         }
                     }
                 }
