@@ -327,12 +327,6 @@ Rectangle {
                                 }
                             }
                         }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            color: "black"
-                            opacity: 0.5 // Increased opacity for better visibility of buttons
-                        }
                     }
                 }
 
@@ -355,7 +349,7 @@ Rectangle {
                         
                         background: Rectangle {
                             color: parent.pressed ? "#3d3d3d" : "#1e1e1e"
-                            radius: 20
+                            radius: 8
                             border.color: parent.hovered ? "#4CAF50" : "#555555"
                             border.width: 1
                             opacity: 0.9
@@ -447,19 +441,20 @@ Rectangle {
                 }
 
                 // Footer Area (Play/Stop & Options)
-                RowLayout {
+                ColumnLayout {
                     id: footerArea
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottomMargin: 40
-                    spacing: 20
+                    spacing: 15
                     z: 10
-
+                    
                     // Play/Stop Button
                     Button {
                         id: actionButton
-                        Layout.preferredWidth: 200
+                        Layout.preferredWidth: 250
                         Layout.preferredHeight: 60
+                        Layout.alignment: Qt.AlignHCenter
                         
                         property bool isGameRunning: minecraftManager.isRunning
                         
@@ -469,48 +464,59 @@ Rectangle {
                             color: parent.isGameRunning ? 
                                    (parent.pressed ? "#d32f2f" : "#f44336") : // Red for Stop
                                    (parent.pressed ? "#388E3C" : "#4CAF50")   // Green for Play
-                            radius: 30
+                            radius: 8
                         }
 
-                        contentItem: RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 10
-
-                            // Custom drawn icon
-                            Canvas {
-                                Layout.preferredWidth: 20
-                                Layout.preferredHeight: 20
-                                onPaint: {
-                                    var ctx = getContext("2d");
-                                    ctx.reset();
-                                    ctx.fillStyle = "#ffffff";
+                        contentItem: Item {
+                            anchors.fill: parent
+                            
+                            Row {
+                                anchors.centerIn: parent
+                                spacing: 15
+                                
+                                // Custom drawn icon
+                                Canvas {
+                                    width: 30
+                                    height: 30
+                                    anchors.verticalCenter: parent.verticalCenter
                                     
-                                    if (actionButton.isGameRunning) {
-                                        // Draw Square (Stop)
-                                        ctx.fillRect(0, 0, width, height);
-                                    } else {
-                                        // Draw Triangle (Play)
-                                        ctx.beginPath();
-                                        ctx.moveTo(0, 0);
-                                        ctx.lineTo(width, height / 2);
-                                        ctx.lineTo(0, height);
-                                        ctx.closePath();
-                                        ctx.fill();
+                                    onPaint: {
+                                        var ctx = getContext("2d");
+                                        ctx.reset();
+                                        ctx.fillStyle = "#ffffff";
+                                        
+                                        if (actionButton.isGameRunning) {
+                                            // Draw Square (Stop)
+                                            ctx.fillRect(0, 0, width, height);
+                                        } else {
+                                            // Draw Triangle (Play)
+                                            ctx.beginPath();
+                                            ctx.moveTo(0, 0);
+                                            ctx.lineTo(width, height / 2);
+                                            ctx.lineTo(0, height);
+                                            ctx.closePath();
+                                            ctx.fill();
+                                        }
+                                    }
+                                    // Repaint when running state changes
+                                    onVisibleChanged: requestPaint()
+                                    Connections {
+                                        target: actionButton
+                                        function onIsGameRunningChanged() { 
+                                            var canvas = parent.children[0]
+                                            canvas.requestPaint()
+                                        }
                                     }
                                 }
-                                // Repaint when running state changes
-                                onVisibleChanged: requestPaint()
-                                Connections {
-                                    target: actionButton
-                                    function onIsGameRunningChanged() { actionButton.contentItem.children[0].requestPaint() }
-                                }
-                            }
 
-                            Text {
-                                text: parent.parent.text
-                                font.pixelSize: 18
-                                font.bold: true
-                                color: "#ffffff"
+                                Text {
+                                    text: actionButton.text
+                                    font.pixelSize: 24
+                                    font.bold: true
+                                    font.letterSpacing: 5
+                                    color: "#ffffff"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
                             }
                         }
 
@@ -528,32 +534,39 @@ Rectangle {
                     // Graphic Options Button
                     Button {
                         Layout.preferredWidth: 200
-                        Layout.preferredHeight: 60
+                        Layout.preferredHeight: 40
+                        Layout.alignment: Qt.AlignHCenter
                         
                         background: Rectangle {
                             color: parent.pressed ? "#3d3d3d" : "#2d2d2d"
-                            radius: 30
+                            radius: 8
                             border.color: parent.hovered ? "#4CAF50" : "#555555"
                             border.width: 1
                             opacity: 0.9
                         }
 
-                        contentItem: RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 10
+                        contentItem: Item {
+                            anchors.fill: parent
+                            
+                            Row {
+                                anchors.centerIn: parent
+                                spacing: 8
+                                
+                                Image {
+                                    width: 16
+                                    height: 16
+                                    source: Media.DropperIcon
+                                    fillMode: Image.PreserveAspectFit
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
 
-                            Image {
-                                Layout.preferredWidth: 24
-                                Layout.preferredHeight: 24
-                                source: Media.DropperIcon
-                                fillMode: Image.PreserveAspectFit
-                            }
-
-                            Text {
-                                text: "Graphic Options"
-                                font.pixelSize: 16
-                                color: "#ffffff"
-                                font.bold: true
+                                Text {
+                                    text: "Graphic Options"
+                                    font.pixelSize: 13
+                                    color: "#ffffff"
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
                             }
                         }
 
