@@ -1,8 +1,10 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.15
 
 Rectangle {
+    id: cardRoot
     color: "#252525"
     radius: 16
     border.color: "#363636"
@@ -12,11 +14,23 @@ Rectangle {
     Layout.fillWidth: true
 
     Image {
+        id: bgImage
         anchors.fill: parent
         source: "qrc:/assets/backgrounds/Minecraft_village.jpg"
         fillMode: Image.PreserveAspectCrop
         opacity: 0.35
         smooth: true
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: mask
+        }
+    }
+
+    Rectangle {
+        id: mask
+        anchors.fill: parent
+        radius: 16
+        visible: false
     }
 
     Rectangle {
