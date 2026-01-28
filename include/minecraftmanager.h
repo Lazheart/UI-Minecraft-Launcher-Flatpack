@@ -12,18 +12,20 @@ class MinecraftManager : public QObject {
   Q_OBJECT
   Q_PROPERTY(QString installedVersion READ installedVersion NOTIFY
                  installedVersionChanged)
-  Q_PROPERTY(
-      bool isInstalled READ checkInstallation NOTIFY availableVersionsChanged)
+  Q_PROPERTY(bool isInstalled READ isInstalled NOTIFY isInstalledChanged)
   Q_PROPERTY(bool isRunning READ isRunning NOTIFY isRunningChanged)
   Q_PROPERTY(QString status READ status NOTIFY statusChanged)
-  Q_PROPERTY(QVariantList availableVersions READ getAvailableVersions NOTIFY
+  Q_PROPERTY(QVariantList availableVersions READ availableVersions NOTIFY
                  availableVersionsChanged)
 public:
   explicit MinecraftManager(PathManager *paths = nullptr,
                             QObject *parent = nullptr);
 
-  // Devuelve una lista de objetos { name, path } para cada versión disponible
-  Q_INVOKABLE QVariantList getAvailableVersions() const;
+  // Devuelve la lista cacheada de versiones
+  QVariantList availableVersions() const { return m_availableVersions; }
+
+  // Fuerza un escaneo del directorio de versiones y actualiza la cache
+  Q_INVOKABLE QVariantList getAvailableVersions();
 
   // Elimina una versión (ruta completa) y opcionalmente su perfil asociado
   Q_INVOKABLE void deleteVersion(const QString &versionPath,
@@ -37,7 +39,8 @@ public:
                                     const QString &backgroundPath);
 
   // Comportamientos mínimos/auxiliares (stubs) que pueden ampliarse
-  Q_INVOKABLE bool checkInstallation() const;
+  Q_INVOKABLE bool isInstalled() const { return m_isInstalled; }
+  Q_INVOKABLE bool checkInstallation();
   Q_INVOKABLE bool isRunning() const;
   Q_INVOKABLE QString status() const;
 
@@ -60,6 +63,7 @@ public:
 signals:
   void availableVersionsChanged();
   void installedVersionChanged();
+  void isInstalledChanged();
   void isRunningChanged();
   void statusChanged();
   // Señal emitida después de borrar una o varias versiones (listas de rutas
@@ -75,6 +79,8 @@ signals:
 
 private:
   QString m_installedVersion;
+  bool m_isInstalled = false;
+  QVariantList m_availableVersions;
   QString versionsDir() const;
   PathManager *m_pathManager = nullptr;
   QProcess *m_gameProcess = nullptr;

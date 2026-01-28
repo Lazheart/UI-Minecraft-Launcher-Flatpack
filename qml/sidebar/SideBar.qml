@@ -20,19 +20,15 @@ Rectangle {
     
     // Keep an explicit list here and initialize on completion.
     // Using a stable array for the Repeater model avoids intermittent UI desync.
-    property var versionsList: []
+    // List of versions, bound to the manager's property for automatic updates
+    property var versionsList: minecraftManager.availableVersions
 
     Component.onCompleted: {
-        sideBar.versionsList = minecraftManager.getAvailableVersions()
+        // Initial refresh of the cache if needed
+        minecraftManager.getAvailableVersions()
     }
     
-    Connections {
-        target: minecraftManager
-        function onAvailableVersionsChanged() {
-            // Actualizar la lista de versiones
-            sideBar.versionsList = minecraftManager.getAvailableVersions()
-        }
-    }
+    // No need for Connections onAvailableVersionsChanged anymore as property binding handles it
     
     ColumnLayout {
         anchors.fill: parent
@@ -52,7 +48,7 @@ Rectangle {
                 hoverEnabled: true
                 onClicked: {
                     // Al hacer click en el encabezado, refrescar la lista
-                    sideBar.versionsList = minecraftManager.getAvailableVersions()
+                    minecraftManager.getAvailableVersions()
                     versionsMenu.isExpanded = !versionsMenu.isExpanded
                 }
                 
@@ -172,7 +168,7 @@ Rectangle {
                                 hoverEnabled: true
                                     onClicked: {
                                         // Refrescar la lista al seleccionar una versión
-                                        sideBar.versionsList = minecraftManager.getAvailableVersions()
+                                        minecraftManager.getAvailableVersions()
                                         sideBar.versionSelected(versionName)
                                     }
                             }

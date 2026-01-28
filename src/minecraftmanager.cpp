@@ -58,6 +58,7 @@ MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
   }
 
   // Try to detect an installed version at startup so QML bindings work
+  checkInstallation();
   QVariantList avail = getAvailableVersions();
   if (!avail.isEmpty()) {
     QVariantMap first = avail.first().toMap();
@@ -88,7 +89,7 @@ QString MinecraftManager::versionsDir() const {
   return QDir::cleanPath(appData + "/versions");
 }
 
-QVariantList MinecraftManager::getAvailableVersions() const {
+QVariantList MinecraftManager::getAvailableVersions() {
   QVariantList list;
   QString dirPath = versionsDir();
 
@@ -96,7 +97,12 @@ QVariantList MinecraftManager::getAvailableVersions() const {
 
   QDir dir(dirPath);
   if (!dir.exists()) {
-    return list; // vacío
+    checkInstallation();
+    if (m_availableVersions != list) {
+        m_availableVersions = list;
+        emit availableVersionsChanged();
+    }
+    return m_availableVersions;
   }
 
   QStringList entries =
@@ -116,8 +122,6 @@ QVariantList MinecraftManager::getAvailableVersions() const {
     if (!icons.isEmpty()) {
       QString iconPath = "file://" + vDir.absoluteFilePath(icons.first());
       m.insert("icon", iconPath);
-      qDebug() << "[MinecraftManager] Found custom icon for" << entry << ":"
-               << iconPath;
     }
 
     // Detect custom background
@@ -128,8 +132,6 @@ QVariantList MinecraftManager::getAvailableVersions() const {
     if (!bgs.isEmpty()) {
       QString bgPath = "file://" + vDir.absoluteFilePath(bgs.first());
       m.insert("background", bgPath);
-      qDebug() << "[MinecraftManager] Found custom background for" << entry
-               << ":" << bgPath;
     }
 
     list.append(m);
@@ -137,16 +139,28 @@ QVariantList MinecraftManager::getAvailableVersions() const {
 
   qDebug() << "[MinecraftManager] Found" << list.size() << "versions";
 
-  return list;
+  if (m_availableVersions != list) {
+    m_availableVersions = list;
+    emit availableVersionsChanged();
+  }
+
+  checkInstallation();
+  return m_availableVersions;
 }
 
-bool MinecraftManager::checkInstallation() const {
+bool MinecraftManager::checkInstallation() {
   // Stub simple: comprobar que existe al menos una versión
   QDir dir(versionsDir());
   qDebug() << "[MinecraftManager] checkInstallation() using versionsDir:"
            << versionsDir();
-  return dir.exists() &&
-         !dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).isEmpty();
+  bool installed = dir.exists() &&
+                   !dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).isEmpty();
+
+  if (installed != m_isInstalled) {
+    m_isInstalled = installed;
+    emit isInstalledChanged();
+  }
+  return m_isInstalled;
 }
 
 bool MinecraftManager::isRunning() const {
@@ -301,6 +315,7 @@ void MinecraftManager::deleteVersion(const QString &versionPath,
   }
 
   emit availableVersionsChanged();
+  checkInstallation();
 
   QVariantList deletedList;
   if (removed)
@@ -528,6 +543,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
   m_installedVersion = name;
   emit installedVersionChanged();
   emit availableVersionsChanged();
+  checkInstallation();
   qDebug() << "[MinecraftManager] installRequested completed for" << name
            << "folder:" << versionFolder;
 

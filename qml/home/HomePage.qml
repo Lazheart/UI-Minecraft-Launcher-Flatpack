@@ -16,57 +16,48 @@ Rectangle {
         if (!versionName) return Media.DefaultVersionBackground;
         
         var versions = minecraftManager.availableVersions;
-        for (var i = 0; i < versions.length; i++) {
-            if (versions[i].name === versionName) {
-                if (versions[i].background) {
-                    console.log("[Home] Found custom background for", versionName, ":", versions[i].background);
-                    return versions[i].background;
-                }
-                break;
+        var count = versions.length;
+        for (var i = 0; i < count; i++) {
+            var v = versions[i];
+            if (v.name === versionName && v.background) {
+                return v.background;
             }
         }
         
-        var fallback = Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
-        return fallback;
+        return Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
     }
     
     ScrollView {
         id: homeScroll
         anchors.fill: parent
         clip: true
-        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        Item {
-            id: contentRoot
-            // Width: allow horizontal scrolling if needed
-            width: Math.max(homeScroll.availableWidth, contentLoader.implicitWidth)
-            // Height: use contentLoader's implicitHeight to enable vertical scrolling
-            height: contentLoader.implicitHeight
-
-            Loader {
-                id: contentLoader
-                // NO anchors.fill - use width binding instead
-                width: parent.width
-                // implicitHeight is automatically calculated from the loaded item
-                sourceComponent: minecraftManager.isInstalled ? (selectedVersion !== "" ? versionSelectedComponent : installedComponent) : emptyComponent
-            }
+        Loader {
+            id: contentLoader
+            width: homeScroll.availableWidth
+            sourceComponent: minecraftManager.isInstalled ? (selectedVersion !== "" ? versionSelectedComponent : dashboardComponent) : emptyComponent
         }
 
         Component {
             id: emptyComponent
 
             Item {
+                id: emptyRoot
                 width: parent ? parent.width : emptyColumn.implicitWidth
+                // Use explicit height based on content or available scroll area
+                height: Math.max(homeScroll.availableHeight, emptyColumn.implicitHeight + 80)
                 implicitWidth: emptyColumn.implicitWidth
-                implicitHeight: emptyColumn.implicitHeight
+                implicitHeight: emptyColumn.implicitHeight + 80
 
                 Column {
                     id: emptyColumn
                     width: Math.min(parent.width - 40, 420)
                     spacing: 20
                     anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: Math.max(40, (parent.height - implicitHeight) / 2)
 
                     Text {
                         text: "Welcome to Kon Launcher"
@@ -141,162 +132,319 @@ Rectangle {
         }
 
         Component {
-            id: installedComponent
+            id: dashboardComponent
 
             Item {
+                id: dashboardRoot
                 width: parent ? parent.width : 0
-                implicitWidth: installedColumn.implicitWidth
-                implicitHeight: installedColumn.implicitHeight
+                height: implicitHeight
+                implicitWidth: dashboardLayout.implicitWidth
+                implicitHeight: dashboardLayout.implicitHeight + 80
 
                 ColumnLayout {
-                    id: installedColumn
+                    id: dashboardLayout
+                    anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.margins: 30
-                    spacing: 20
+                    anchors.margins: 40
+                    spacing: 30
 
-                    Text {
-                        text: "Welcome to Kon Launcher"
-                        font.pixelSize: 32
-                        font.bold: true
-                        color: "#ffffff"
-                        Layout.topMargin: 20
-                        Layout.alignment: Qt.AlignHCenter
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-
-                    Rectangle {
+                    // 1. Welcome Header
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 150
-                        color: "#2d2d2d"
-                        radius: 8
+                        Layout.topMargin: 20
+                        spacing: 8
 
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: 10
+                        Text {
+                            text: "Hola, " + (profileManager ? profileManager.currentProfile : "Usuario")
+                            font.pixelSize: 32
+                            font.bold: true
+                            color: "#ffffff"
+                        }
 
-                            Text {
-                                text: "Minecraft Status"
-                                font.pixelSize: 18
-                                font.bold: true
-                                color: "#ffffff"
-                            }
-
-                            GridLayout {
-                                columns: 2
-                                columnSpacing: 15
-                                rowSpacing: 8
-                                Layout.fillWidth: true
-
-                                Text {
-                                    text: "Installed:"
-                                    color: "#b0b0b0"
-                                }
-                                Text {
-                                    text: "Yes"
-                                    color: "#4CAF50"
-                                    font.bold: true
-                                }
-
-                                Text {
-                                    text: "Version:"
-                                    color: "#b0b0b0"
-                                }
-                                Text {
-                                    text: minecraftManager.installedVersion || "Latest"
-                                    color: "#ffffff"
-                                }
-                            }
+                        Text {
+                            text: "Bienvenido de nuevo a Kon Launcher. ¿Qué quieres jugar hoy?"
+                            font.pixelSize: 16
+                            color: "#b0b0b0"
                         }
                     }
 
+                    // 2. Quick Launch & Stats Row
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 15
+                        spacing: 20
 
-                        Button {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 60
-                            text: "PLAY"
-                            enabled: !minecraftManager.isRunning
-
-                            background: Rectangle {
-                                color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#555555"
-                                radius: 8
-                            }
-
-                            contentItem: Text {
-                                text: parent.text
-                                font.pixelSize: 18
-                                font.bold: true
-                                color: parent.enabled ? "#ffffff" : "#888888"
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            onClicked: {
-                                var version = minecraftManager.installedVersion
-                                console.log("[Home] Launching game with version:", version, "and profile:", profileManager.currentProfile)
-                                minecraftManager.runGame(version, "", profileManager.currentProfile)
-                            }
-                        }
-
-                        Button {
-                            Layout.preferredWidth: 150
-                            Layout.preferredHeight: 60
-                            text: "STOP"
-                            enabled: minecraftManager.isRunning
-
-                            background: Rectangle {
-                                color: parent.enabled ? (parent.pressed ? "#d32f2f" : "#f44336") : "#555555"
-                                radius: 8
-                            }
-
-                            contentItem: Text {
-                                text: parent.text
-                                font.pixelSize: 16
-                                font.bold: true
-                                color: parent.enabled ? "#ffffff" : "#888888"
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            onClicked: {
-                                console.log("[Home] Stopping game")
-                                minecraftManager.stopGame()
-                            }
-                        }
-                    }
-
+                    // Quick Launch Card
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 80
-                        color: minecraftManager.isRunning ? "#1b5e20" : "#3d3d3d"
-                        radius: 8
+                        Layout.preferredHeight: 180
+                        color: "#2d2d2d"
+                        radius: 12
+                        clip: true
 
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 15
-                            spacing: 5
+                            anchors.margins: 25
+                            spacing: 15
 
-                            Text {
-                                text: "Current Status"
-                                font.pixelSize: 14
-                                font.bold: true
-                                color: "#ffffff"
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    
+                                    ColumnLayout {
+                                        spacing: 5
+                                        Text {
+                                            text: "LISTO PARA JUGAR"
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                            color: "#4CAF50"
+                                            font.letterSpacing: 1.5
+                                        }
+                                        Text {
+                                            text: "Minecraft " + (minecraftManager.installedVersion || "Latest")
+                                            font.pixelSize: 24
+                                            font.bold: true
+                                            color: "#ffffff"
+                                        }
+                                    }
+
+                                    Item { Layout.fillWidth: true }
+
+                                    // Status Badge
+                                    Rectangle {
+                                        Layout.preferredWidth: 100
+                                        Layout.preferredHeight: 30
+                                        color: minecraftManager.isRunning ? "#1b5e20" : "#3d3d3d"
+                                        radius: 15
+                                        
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: minecraftManager.isRunning ? "EJECUTANDO" : "DETENIDO"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                            color: minecraftManager.isRunning ? "#81C784" : "#b0b0b0"
+                                        }
+                                    }
+                                }
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 15
+
+                                    Button {
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 50
+                                        text: "JUGAR AHORA"
+                                        enabled: !minecraftManager.isRunning
+
+                                        background: Rectangle {
+                                            color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#444444"
+                                            radius: 8
+                                        }
+
+                                        contentItem: Row {
+                                            spacing: 10
+                                            anchors.centerIn: parent
+                                            Text {
+                                                text: "▶"
+                                                font.pixelSize: 16
+                                                color: "#ffffff"
+                                                visible: !minecraftManager.isRunning
+                                            }
+                                            Text {
+                                                text: parent.parent.text
+                                                font.pixelSize: 16
+                                                font.bold: true
+                                                color: parent.parent.enabled ? "#ffffff" : "#888888"
+                                            }
+                                        }
+
+                                        onClicked: {
+                                            var version = minecraftManager.installedVersion
+                                            minecraftManager.runGame(version, "", profileManager.currentProfile)
+                                        }
+                                    }
+
+                                    Button {
+                                        Layout.preferredWidth: 60
+                                        Layout.preferredHeight: 50
+                                        visible: minecraftManager.isRunning
+                                        
+                                        background: Rectangle {
+                                            color: parent.pressed ? "#d32f2f" : "#f44336"
+                                            radius: 8
+                                        }
+                                        
+                                        contentItem: Text {
+                                            text: "■"
+                                            font.pixelSize: 20
+                                            color: "white"
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        
+                                        onClicked: minecraftManager.stopGame()
+                                    }
+                                }
                             }
+                        }
 
-                            Text {
-                                text: (typeof minecraftManager !== 'undefined') ? minecraftManager.status : ""
-                                font.pixelSize: 16
-                                color: minecraftManager.isRunning ? "#81C784" : "#b0b0b0"
-                                font.bold: true
+                        // Stats Card
+                        Rectangle {
+                            Layout.preferredWidth: 250
+                            Layout.preferredHeight: 180
+                            color: "#1e1e1e"
+                            radius: 12
+                            border.color: "#333333"
+                            border.width: 1
+
+                            ColumnLayout {
+                                anchors.fill: parent
+                                anchors.margins: 20
+                                spacing: 15
+
+                                Text {
+                                    text: "INSTALACIONES"
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                    color: "#888888"
+                                }
+
+                                Text {
+                                    text: minecraftManager.availableVersions.length
+                                    font.pixelSize: 48
+                                    font.bold: true
+                                    color: "#ffffff"
+                                }
+
+                                Text {
+                                    text: "Versiones cargadas"
+                                    font.pixelSize: 14
+                                    color: "#666666"
+                                }
                             }
                         }
                     }
 
-                    Item { Layout.fillHeight: true }
+                    // 3. Installed Versions Gallery
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 20
+
+                        Text {
+                            text: "Tus Versiones"
+                            font.pixelSize: 20
+                            font.bold: true
+                            color: "#ffffff"
+                        }
+
+                        Flow {
+                            id: galleryFlow
+                            Layout.fillWidth: true
+                            // Flow's childrenRect.height is expensive, but for now we need some height.
+                            // Let's use implicitHeight which should be calculated by Flow
+                            Layout.preferredHeight: implicitHeight
+                            spacing: 15
+                            
+                            // Explicitly bind width to parent to help Flow calculate layout
+                            width: parent.width
+
+                            Repeater {
+                                model: minecraftManager.availableVersions
+                                
+                                delegate: Item {
+                                    width: 160
+                                    height: 220
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: "#2d2d2d"
+                                        radius: 10
+                                        border.color: mouseArea.containsMouse ? "#4CAF50" : "transparent"
+                                        border.width: 2
+                                        clip: true
+
+                                        Column {
+                                            anchors.fill: parent
+                                            spacing: 0
+
+                                            // Version Image Placeholder/Background
+                                            Rectangle {
+                                                width: parent.width
+                                                height: 120
+                                                color: "#3d3d3d"
+                                                
+                                                Image {
+                                                    anchors.fill: parent
+                                                    source: modelData.background || Media.DefaultVersionBackground
+                                                    fillMode: Image.PreserveAspectCrop
+                                                    opacity: 0.6
+                                                    asynchronous: true
+                                                }
+                                                
+                                                Rectangle {
+                                                    anchors.centerIn: parent
+                                                    width: 48
+                                                    height: 48
+                                                    color: "#222"
+                                                    radius: 8
+                                                    opacity: 0.8
+                                                    
+                                                    Image {
+                                                        anchors.fill: parent
+                                                        anchors.margins: 8
+                                                        source: Media.DefaultVersionIcon
+                                                        fillMode: Image.PreserveAspectFit
+                                                    }
+                                                }
+                                            }
+
+                                            // Version Text
+                                            Column {
+                                                width: parent.width
+                                                padding: 12
+                                                spacing: 4
+
+                                                Text {
+                                                    text: modelData.name
+                                                    font.pixelSize: 16
+                                                    font.bold: true
+                                                    color: "#ffffff"
+                                                    elide: Text.ElideRight
+                                                    width: parent.width - 24
+                                                }
+
+                                                Text {
+                                                    text: "Minecraft"
+                                                    font.pixelSize: 12
+                                                    color: "#888888"
+                                                }
+                                            }
+                                        }
+
+                                        MouseArea {
+                                            id: mouseArea
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                selectedVersion = modelData.name
+                                            }
+                                        }
+
+                                        // Hover effect overlay
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            color: "white"
+                                            opacity: mouseArea.containsMouse ? 0.05 : 0
+                                            radius: 10
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Item { Layout.fillHeight: true; Layout.preferredHeight: 40 }
                 }
             }
         }
@@ -307,8 +455,9 @@ Rectangle {
             Item {
                 id: rootSelected
                 width: parent ? parent.width : 0
-                // Height grows based on content, with minimum of viewport height
+                // Height covers at least the viewport to avoid black gaps
                 height: Math.max(homeScroll.availableHeight, contentColumn.implicitHeight)
+                implicitHeight: contentColumn.implicitHeight
 
                 // Background Image
                 Rectangle {
@@ -321,6 +470,7 @@ Rectangle {
                         anchors.fill: parent
                         source: getVersionBackground(selectedVersion)
                         fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
                         cache: true
 
                         onStatusChanged: {
@@ -340,11 +490,12 @@ Rectangle {
                     }
                 }
 
-                // Main content column to properly calculate implicitHeight
+                // Main content column
                 ColumnLayout {
                     id: contentColumn
-                    anchors.fill: parent
+                    width: parent.width
                     spacing: 0
+                    // No anchors.fill to allow implicitHeight to work correctly
 
                     // Header Area (Back Button + Graphic Options)
                     Item {
@@ -540,39 +691,11 @@ Rectangle {
                                     anchors.centerIn: parent
                                     spacing: 15
                                     
-                                    // Custom drawn icon
-                                    Canvas {
-                                        width: 30
-                                        height: 30
+                                    Text {
+                                        text: actionButton.isGameRunning ? "■" : "▶"
+                                        font.pixelSize: 24
+                                        color: "#ffffff"
                                         anchors.verticalCenter: parent.verticalCenter
-                                        
-                                        onPaint: {
-                                            var ctx = getContext("2d");
-                                            ctx.reset();
-                                            ctx.fillStyle = "#ffffff";
-                                            
-                                            if (actionButton.isGameRunning) {
-                                                // Draw Square (Stop)
-                                                ctx.fillRect(0, 0, width, height);
-                                            } else {
-                                                // Draw Triangle (Play)
-                                                ctx.beginPath();
-                                                ctx.moveTo(0, 0);
-                                                ctx.lineTo(width, height / 2);
-                                                ctx.lineTo(0, height);
-                                                ctx.closePath();
-                                                ctx.fill();
-                                            }
-                                        }
-                                        // Repaint when running state changes
-                                        onVisibleChanged: requestPaint()
-                                        Connections {
-                                            target: actionButton
-                                            function onIsGameRunningChanged() { 
-                                                var canvas = parent.children[0]
-                                                canvas.requestPaint()
-                                            }
-                                        }
                                     }
 
                                     Text {
