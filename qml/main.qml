@@ -348,6 +348,7 @@ ApplicationWindow {
                         Layout.fillHeight: true
                         visible: mainWindow.sidebarVisible
                         clip: true
+                        z: 10 // Ensure styling over content
 
                         Behavior on Layout.preferredWidth {
                             NumberAnimation { duration: 300 }
@@ -374,6 +375,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         currentIndex: 0
+                        clip: true // Prevent content from spilling into Sidebar
                         
                         HomePage { 
                             onInstallVersionRequested: installVersionDialog.open()

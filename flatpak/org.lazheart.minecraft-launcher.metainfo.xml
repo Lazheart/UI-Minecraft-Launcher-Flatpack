@@ -2,7 +2,7 @@
 <component type="desktop-application">
   <id>org.lazheart.minecraft-launcher</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>MIT</project_license>
+  <project_license>GNU General Public License v3.0</project_license>
   
   <name>Minecraft Bedrock Launcher</name>
   <summary>Lanzador no oficial de Minecraft Bedrock Edition en Linux</summary>
