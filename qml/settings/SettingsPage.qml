@@ -69,11 +69,13 @@ Rectangle {
         id: scrollView
         anchors.fill: parent
         clip: true
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         contentHeight: contentLayout.implicitHeight + 80
+        contentWidth: Math.max(scrollView.availableWidth, contentLayout.implicitWidth + 80)
 
         Item {
-            width: scrollView.width
+            width: Math.max(scrollView.availableWidth, contentLayout.implicitWidth + 80)
             height: Math.max(scrollView.height, contentLayout.implicitHeight + 80)
 
             ColumnLayout {
@@ -94,14 +96,17 @@ Rectangle {
                     Layout.fillWidth: true
                 }
 
-                // Primera fila: Language y Profiles lado a lado
-                RowLayout {
+                // Primera fila: Language y Profiles adaptable (GridLayout)
+                GridLayout {
                     Layout.fillWidth: true
-                    spacing: 20
+                    columns: contentLayout.width > 1100 ? 2 : 1
+                    rowSpacing: 20
+                    columnSpacing: 20
 
                     LanguageCard {
                         id: languageCard
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                         onLanguageChanged: (language) => {
                             settingsPage.currentLanguage = language
                             // Persist to profile manager for current profile
@@ -111,7 +116,9 @@ Rectangle {
 
                     ProfilesCard {
                         id: profilesCard
-                        Layout.preferredWidth: 300
+                        Layout.preferredWidth: parent.columns === 2 ? 300 : -1
+                        Layout.fillWidth: parent.columns === 1
+                        Layout.alignment: Qt.AlignTop
                         settingsPageRef: settingsPage
                     }
                 }
@@ -126,7 +133,6 @@ Rectangle {
                     id: visualCard
                     Layout.fillWidth: true
                     onScaleChanged: (scale) => {
-                        settingsPage.scale = scale
                         settingsPage.currentScale = scale
                         profileManager.updateProfile(profileManager.currentProfile, { scale: scale })
                     }

@@ -34,10 +34,13 @@ Rectangle {
         id: homeScroll
         anchors.fill: parent
         clip: true
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
         Item {
             id: contentRoot
-            width: homeScroll.availableWidth
+            // Allow content to exceed available width to enable horizontal scrolling
+            width: Math.max(homeScroll.availableWidth, contentLoader.implicitWidth)
             height: Math.max(homeScroll.availableHeight, contentLoader.implicitHeight)
 
             Loader {
@@ -376,7 +379,7 @@ Rectangle {
                     z: 1
 
                     Text {
-                        text: "Welcome to Enkidu Launcher"
+                        text: "Welcome to Kon Launcher"
                         font.pixelSize: 32
                         font.bold: true
                         color: "#ffffff"
@@ -575,6 +578,8 @@ Rectangle {
                         }
                     }
                 }
+
+
             }
         }
     }

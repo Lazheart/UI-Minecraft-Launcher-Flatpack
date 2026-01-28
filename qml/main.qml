@@ -28,11 +28,6 @@ ApplicationWindow {
     property string currentPage: "Home"
     property bool sidebarVisible: true
     
-    Component.onCompleted: {
-        console.log("[QML] Launcher iniciado")
-        console.log("[QML] Versión:", minecraftManager.getLauncherVersion())
-        minecraftManager.checkInstallation()
-    }
     
     // Replaced launcherBackend (removed). Use minecraftManager signals for install/import notifications.
     Connections {
@@ -277,11 +272,41 @@ ApplicationWindow {
         }
     }
     
+    // Global UI Scale property
+    property real uiScale: 1.0
+
+    // Escuchar cambios en el perfil para el Global Zoom
+    Connections {
+        target: profileManager
+        function onCurrentProfileChanged(profile) {
+            updateGlobalScale(profile)
+        }
+        function onProfilesChanged() {
+            updateGlobalScale(profileManager.currentProfile)
+        }
+    }
+
+    Component.onCompleted: {
+        console.log("[QML] Launcher iniciado")
+        console.log("[QML] Versión:", minecraftManager.getLauncherVersion())
+        minecraftManager.checkInstallation()
+        updateGlobalScale(profileManager.currentProfile)
+    }
+
+    function updateGlobalScale(profileName) {
+        var profileData = profileManager.getProfile(profileName)
+        if (profileData && profileData.scale) {
+            mainWindow.uiScale = profileData.scale
+        } else {
+            mainWindow.uiScale = 1.0
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
         
-        // NavBar
+        // NavBar - Fixed Scale
         NavBar {
             id: navBar
             Layout.fillWidth: true
@@ -295,52 +320,68 @@ ApplicationWindow {
             
             onToggleSidebar: mainWindow.sidebarVisible = !mainWindow.sidebarVisible
         }
-        
-        // Contenedor principal: SideBar + Contenido
-        RowLayout {
+
+        // Content Wrapper - Scalable & Clipped
+        Item {
+            id: contentWrapper
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 0
-            
-            // SideBar
-            SideBar {
-                id: sideBar
-                Layout.preferredWidth: mainWindow.sidebarVisible ? 280 : 0
-                Layout.fillHeight: true
-                visible: mainWindow.sidebarVisible
-                clip: true
+            clip: true // Prevent overlap with NavBar
 
-                Behavior on Layout.preferredWidth {
-                    NumberAnimation { duration: 300 }
-                }
+            // Scalable Container
+            Item {
+                anchors.centerIn: parent
+                // Inverse scale dimensions to fill parent visually
+                width: parent.width / mainWindow.uiScale
+                height: parent.height / mainWindow.uiScale
+                scale: mainWindow.uiScale
+                
+                // Contenedor principal: SideBar + Contenido
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 0
+                    
+                    // SideBar
+                    SideBar {
+                        id: sideBar
+                        Layout.preferredWidth: mainWindow.sidebarVisible ? 280 : 0
+                        Layout.fillHeight: true
+                        visible: mainWindow.sidebarVisible
+                        clip: true
 
-                onAddVersionsRequested: installVersionDialog.open()
-                onDeleteVersionsRequested: deleteVersionDialog.open()
-                onImportWorldsAddonsRequested: importWorldsAddonsCard.show()
-                onVersionSelected: function(version) {
-                    // Navigate to Home and show the selected version in the HomePage
-                    mainWindow.currentPage = "Home"
-                    stackView.currentIndex = getPageIndex("Home")
+                        Behavior on Layout.preferredWidth {
+                            NumberAnimation { duration: 300 }
+                        }
 
-                    // Ensure the HomePage instance receives the selected version
-                    if (stackView.itemAt(0)) {
-                        stackView.itemAt(0).selectedVersion = version
+                        onAddVersionsRequested: installVersionDialog.open()
+                        onDeleteVersionsRequested: deleteVersionDialog.open()
+                        onImportWorldsAddonsRequested: importWorldsAddonsCard.show()
+                        onVersionSelected: function(version) {
+                            // Navigate to Home and show the selected version in the HomePage
+                            mainWindow.currentPage = "Home"
+                            stackView.currentIndex = getPageIndex("Home")
+
+                            // Ensure the HomePage instance receives the selected version
+                            if (stackView.itemAt(0)) {
+                                stackView.itemAt(0).selectedVersion = version
+                            }
+                        }
+                    }
+                    
+                    // Contenido principal
+                    StackLayout {
+                        id: stackView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        currentIndex: 0
+                        
+                        HomePage { 
+                            onInstallVersionRequested: installVersionDialog.open()
+                        }
+                        SettingsPage { }
+                        AboutPage { }
                     }
                 }
-            }
-            
-            // Contenido principal
-            StackLayout {
-                id: stackView
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                currentIndex: 0
-                
-                HomePage { 
-                    onInstallVersionRequested: installVersionDialog.open()
-                }
-                SettingsPage { }
-                AboutPage { }
             }
         }
     }
