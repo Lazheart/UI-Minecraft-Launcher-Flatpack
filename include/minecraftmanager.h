@@ -12,6 +12,8 @@ class MinecraftManager : public QObject {
   Q_OBJECT
   Q_PROPERTY(QString installedVersion READ installedVersion NOTIFY
                  installedVersionChanged)
+  Q_PROPERTY(QString lastActiveVersion READ lastActiveVersion NOTIFY
+                 lastActiveVersionChanged)
   Q_PROPERTY(bool isInstalled READ isInstalled NOTIFY isInstalledChanged)
   Q_PROPERTY(bool isRunning READ isRunning NOTIFY isRunningChanged)
   Q_PROPERTY(QString status READ status NOTIFY statusChanged)
@@ -57,12 +59,14 @@ public:
                                   bool useMangohud = false);
 
   QString installedVersion() const { return m_installedVersion; }
+  QString lastActiveVersion() const { return m_lastActiveVersion; }
 
   Q_INVOKABLE QString getLauncherVersion() const;
 
 signals:
   void availableVersionsChanged();
   void installedVersionChanged();
+  void lastActiveVersionChanged();
   void isInstalledChanged();
   void isRunningChanged();
   void statusChanged();
@@ -79,6 +83,7 @@ signals:
 
 private:
   QString m_installedVersion;
+  QString m_lastActiveVersion;
   bool m_isInstalled = false;
   QVariantList m_availableVersions;
   QString versionsDir() const;

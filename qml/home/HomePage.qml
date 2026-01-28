@@ -200,7 +200,7 @@ Rectangle {
                                             font.letterSpacing: 1.5
                                         }
                                         Text {
-                                            text: "Minecraft " + (minecraftManager.installedVersion || "Latest")
+                                            text: "Minecraft " + (minecraftManager.lastActiveVersion || "Latest")
                                             font.pixelSize: 24
                                             font.bold: true
                                             color: "#ffffff"
@@ -392,8 +392,9 @@ Rectangle {
                                                     Image {
                                                         anchors.fill: parent
                                                         anchors.margins: 8
-                                                        source: Media.DefaultVersionIcon
+                                                        source: modelData.icon || Media.DefaultVersionIcon
                                                         fillMode: Image.PreserveAspectFit
+                                                        asynchronous: true
                                                     }
                                                 }
                                             }
@@ -414,9 +415,16 @@ Rectangle {
                                                 }
 
                                                 Text {
-                                                    text: "Minecraft"
+                                                    text: "Minecraft " + modelData.name
                                                     font.pixelSize: 12
                                                     color: "#888888"
+                                                }
+
+                                                Text {
+                                                    text: modelData.installDate || ""
+                                                    font.pixelSize: 10
+                                                    color: "#666666"
+                                                    font.italic: true
                                                 }
                                             }
                                         }

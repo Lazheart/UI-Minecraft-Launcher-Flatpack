@@ -89,6 +89,13 @@ QString MinecraftManager::versionsDir() const {
   return QDir::cleanPath(appData + "/versions");
 }
 
+#include <QDateTime>
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+
 QVariantList MinecraftManager::getAvailableVersions() {
   QVariantList list;
   QString dirPath = versionsDir();
@@ -107,12 +114,30 @@ QVariantList MinecraftManager::getAvailableVersions() {
 
   QStringList entries =
       dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+  
+  QDateTime latestDate;
+  QString candidateLastVersion;
+
   for (const QString &entry : entries) {
     QString fullPath = QDir(dirPath).filePath(entry);
+    QFileInfo vInfo(fullPath);
     QDir vDir(fullPath);
     QVariantMap m;
     m.insert("name", entry);
     m.insert("path", vDir.absolutePath());
+
+    // Installation Date (DD/MM/YY)
+    QDateTime birthTime = vInfo.birthTime();
+    if (!birthTime.isValid()) birthTime = vInfo.lastModified();
+    m.insert("installDate", birthTime.toString("dd/MM/yy"));
+
+    // Track latest for m_lastActiveVersion if not set
+    if (m_lastActiveVersion.isEmpty()) {
+        if (!latestDate.isValid() || birthTime > latestDate) {
+            latestDate = birthTime;
+            candidateLastVersion = entry;
+        }
+    }
 
     // Detect custom icon
     QStringList iconFilters;
@@ -138,6 +163,11 @@ QVariantList MinecraftManager::getAvailableVersions() {
   }
 
   qDebug() << "[MinecraftManager] Found" << list.size() << "versions";
+
+  if (m_lastActiveVersion.isEmpty() && !candidateLastVersion.isEmpty()) {
+      m_lastActiveVersion = candidateLastVersion;
+      emit lastActiveVersionChanged();
+  }
 
   if (m_availableVersions != list) {
     m_availableVersions = list;
@@ -203,12 +233,18 @@ bool MinecraftManager::runGame(const QString &versionPath,
     vfi.setFile(fullVersionPath);
   }
 
+  // Update last active version
+  QString versionName = vfi.fileName();
+  if (m_lastActiveVersion != versionName) {
+    m_lastActiveVersion = versionName;
+    emit lastActiveVersionChanged();
+  }
+
   if (!QDir(fullVersionPath).exists()) {
     qWarning() << "runGame: version path does not exist:" << fullVersionPath;
     return false;
   }
 
-  QString versionName = vfi.fileName();
   QString profilePath =
       QDir(m_pathManager->profilesDir()).filePath(versionName);
 
@@ -578,6 +614,13 @@ void MinecraftManager::installRequested(const QString &apkPath,
           stagedBackground.isEmpty() ? backgroundPath : stagedBackground;
       tryRemoveIfStaged(bgCleanup);
     }
+  }
+
+  // Update last active version with the newly installed version
+  QString versionName = QFileInfo(versionFolder).fileName();
+  if (m_lastActiveVersion != versionName) {
+    m_lastActiveVersion = versionName;
+    emit lastActiveVersionChanged();
   }
 
   emit installSucceeded(versionFolder);
