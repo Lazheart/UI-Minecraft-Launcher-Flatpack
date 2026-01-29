@@ -9,6 +9,16 @@ Rectangle {
     // Property to track selected version
     property string selectedVersion: ""
     
+    // Get full data for the selected version
+    property var selectedVersionData: {
+        if (selectedVersion === "") return null;
+        var versions = minecraftManager.availableVersions;
+        for (var i = 0; i < versions.length; i++) {
+            if (versions[i].name === selectedVersion) return versions[i];
+        }
+        return null;
+    }
+    
     // Señal para abrir el diálogo de instalación
     signal installVersionRequested()
 
@@ -420,7 +430,7 @@ Rectangle {
                                                 }
 
                                                 Text {
-                                                    text: "Minecraft " + modelData.name
+                                                    text: modelData.tag || modelData.name
                                                     font.pixelSize: 12
                                                     color: "#888888"
                                                 }
@@ -654,17 +664,26 @@ Rectangle {
                                             color: "#b0b0b0"
                                         }
                                         Text {
-                                            text: "Minecraft " + selectedVersion
+                                            text: selectedVersion
                                             color: "#4CAF50"
                                             font.bold: true
                                         }
 
                                         Text {
-                                            text: "Current:"
+                                            text: "Tag:"
                                             color: "#b0b0b0"
                                         }
                                         Text {
-                                            text: minecraftManager.installedVersion || "Latest"
+                                            text: (selectedVersionData && selectedVersionData.tag) ? selectedVersionData.tag : "None"
+                                            color: "#ffffff"
+                                        }
+
+                                        Text {
+                                            text: "Created:"
+                                            color: "#b0b0b0"
+                                        }
+                                        Text {
+                                            text: (selectedVersionData && selectedVersionData.installDate) ? selectedVersionData.installDate : "Unknown"
                                             color: "#ffffff"
                                         }
                                     }
