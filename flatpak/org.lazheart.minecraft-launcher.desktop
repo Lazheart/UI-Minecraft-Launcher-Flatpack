@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Minecraft Bedrock Launcher
+Comment=Lanzador no oficial de Minecraft Bedrock Edition para Linux
+Exec=minecraft-launcher-gui
+Icon=org.lazheart.minecraft-launcher
+Terminal=false
+Categories=Game;Utility;
+StartupNotify=true
+Keywords=Minecraft;Bedrock;Launcher;Linux;

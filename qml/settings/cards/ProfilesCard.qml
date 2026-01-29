@@ -1,0 +1,203 @@
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+
+Rectangle {
+    id: profilesCard
+    color: "#2d2d2d"
+    radius: 8
+    border.color: "#3d3d3d"
+    border.width: 1
+    Layout.preferredWidth: 300
+    Layout.preferredHeight: 200
+
+    // Referencia a SettingsPage para acceder a los valores actuales
+    property var settingsPageRef: null
+
+    ColumnLayout {
+        anchors {
+            fill: parent
+            margins: 20
+        }
+        spacing: 15
+
+        Text {
+            text: "PROFILES"
+            color: "#ffffff"
+            font.pixelSize: 16
+            font.bold: true
+            font.capitalization: Font.AllUppercase
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 10
+
+            ListView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                model: profileManager.profiles
+                spacing: 8
+                clip: true
+
+                delegate: Rectangle {
+                    width: parent.width
+                    height: 70
+                    color: modelData.name === profileManager.currentProfile ? "#4CAF50" : "#1e1e1e"
+                    radius: 4
+                    border.color: modelData.name === profileManager.currentProfile ? "#4CAF50" : "#555555"
+                    border.width: 2
+
+                    ColumnLayout {
+                        anchors {
+                            fill: parent
+                            margins: 10
+                        }
+                        spacing: 4
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            // Área clickeable para seleccionar el perfil
+                            MouseArea {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                onClicked: {
+                                    profileManager.currentProfile = modelData.name
+                                    
+                                    // Aplicar la configuración del perfil seleccionado
+                                    var language = modelData.language || "EN"
+                                    var theme = modelData.theme || "DARK"
+                                    var scale = modelData.scale || 1.0
+
+                                    // Guardar la configuración en el ProfileManager
+                                    profileManager.updateProfile(modelData.name, { language: language, theme: theme, scale: scale })
+
+                                    // Actualizar la UI con los valores del perfil
+                                    if (settingsPageRef) {
+                                        settingsPageRef.currentLanguage = language
+                                        settingsPageRef.currentTheme = theme
+                                        settingsPageRef.currentScale = scale
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    anchors {
+                                        fill: parent
+                                        margins: 0
+                                    }
+                                    spacing: 0
+
+                                    Text {
+                                        text: modelData.name
+                                        color: modelData.name === profileManager.currentProfile ? "#1e1e1e" : "#ffffff"
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: {
+                                            var info = []
+                                            if (modelData.language) info.push(modelData.language)
+                                            if (modelData.theme) info.push(modelData.theme)
+                                            if (modelData.scale) info.push(modelData.scale + "x")
+                                            return info.length > 0 ? info.join(" | ") : "Version: " + (modelData.version || "latest")
+                                        }
+                                        color: modelData.name === profileManager.currentProfile ? "#2d2d2d" : "#b0b0b0"
+                                        font.pixelSize: 10
+                                    }
+                                }
+                            }
+
+                            Button {
+                                text: "✕"
+                                visible: modelData.name !== "Default"
+                                Layout.preferredWidth: 30
+                                Layout.preferredHeight: 30
+
+                                background: Rectangle {
+                                    color: parent.pressed ? "#d32f2f" : "#f44336"
+                                    radius: 3
+                                }
+
+                                contentItem: Text {
+                                    text: parent.text
+                                    color: "#ffffff"
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                onClicked: {
+                                    if (modelData.name !== "Default") {
+                                        profileManager.removeProfile(modelData.name)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
+                spacing: 5
+
+                TextField {
+                    id: newProfileInput
+                    Layout.fillWidth: true
+                    placeholderText: "New profile"
+
+                    background: Rectangle {
+                        color: "#1e1e1e"
+                        radius: 3
+                        border.color: parent.activeFocus ? "#4CAF50" : "#555555"
+                        border.width: 1
+                    }
+
+                    color: "#ffffff"
+                    font.pixelSize: 11
+                }
+
+                Button {
+                    text: "+"
+                    Layout.preferredWidth: 35
+
+                    background: Rectangle {
+                        color: parent.pressed ? "#388E3C" : "#4CAF50"
+                        radius: 3
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        font.pixelSize: 14
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+
+                    onClicked: {
+                        if (newProfileInput.text.trim() !== "") {
+                            // Obtener los valores actuales de SettingsPage
+                            var language = settingsPageRef ? settingsPageRef.currentLanguage : "EN"
+                            var theme = settingsPageRef ? settingsPageRef.currentTheme : "DARK"
+                            var scale = settingsPageRef ? settingsPageRef.currentScale : 1.0
+                            
+                            profileManager.addProfileWithSettings(
+                                newProfileInput.text.trim(),
+                                language,
+                                theme,
+                                scale
+                            )
+                            newProfileInput.text = ""
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

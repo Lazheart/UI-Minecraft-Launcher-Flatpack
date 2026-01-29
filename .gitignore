@@ -1,0 +1,4 @@
+.vscode/
+build/
+testListVersion.sh
+testDeleteVersion.sh
