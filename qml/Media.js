@@ -2,8 +2,6 @@
 var LogoImage = "qrc:/assets/media/logo.svg"
 var BedrockLogo = "qrc:/assets/media/bedrockLogo.png"
 var TrashIcon = "qrc:/assets/icons/trash.ico"
-var PlayIcon = "qrc:/assets/icons/play.jpg"
-var SettingsIcon = "qrc:/assets/icons/setting.jpg"
 // Default icon used next to installed versions (located in `assets/media/directAccess.png`)
 var DefaultVersionIcon = "qrc:/assets/media/directAccess.png"
 // Fallback icon in case `directAccess.png` is not available
