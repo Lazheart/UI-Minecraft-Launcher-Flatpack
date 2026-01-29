@@ -223,10 +223,17 @@ Dialog {
                     readOnly: true
                     
                     background: Rectangle {
-                        color: "#231f1f"
-                        border.color: "#4CAF50"
+                        color: "#111111"
+                        border.color: filePathInputMouse.containsMouse ? "#4CAF50" : "#3d3d3d"
                         border.width: 1
                         radius: 6
+                        
+                        MouseArea {
+                            id: filePathInputMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: fileDialog.open()
+                        }
                     }
 
                     color: "#ffffff"
@@ -239,6 +246,7 @@ Dialog {
                     text: "Browse"
                     Layout.preferredWidth: 100
 
+                    Layout.preferredHeight: 40
                     background: Rectangle {
                         color: browseButton.pressed ? "#45a049" : "#4CAF50"
                         radius: 6
@@ -262,80 +270,69 @@ Dialog {
                 Layout.fillWidth: true
                 spacing: 8
 
-                Text {
-                    text: "Target Version"
-                    color: "#b0b0b0"
-                    font.pixelSize: 13
-                }
-
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 10
-
-                    ComboBox {
-                        id: versionCombo
-                        Layout.fillWidth: true
-                        model: versionsListModel
-                        textRole: "text"
-                        implicitHeight: 40
+                    Text {
+                        text: "Target Version"
+                        color: "#b0b0b0"
                         font.pixelSize: 13
-
-                        onCurrentIndexChanged: {
-                            if (currentIndex >= 0 && currentIndex < versionsListModel.count) {
-                                selectedVersionPath = versionsListModel.get(currentIndex).path
-                            } else {
-                                selectedVersionPath = ""
-                            }
-                            importError = ""
-                        }
-
-                        background: Rectangle {
-                            color: "#231f1f"
-                            border.color: "#4CAF50"
-                            border.width: versionCombo.activeFocus ? 2 : 1
-                            radius: 6
-                            implicitHeight: 36
-                        }
-
-                        contentItem: Text {
-                            text: versionCombo.displayText
-                            color: "#ffffff"
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            elide: Text.ElideRight
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            font.pixelSize: 13
-                        }
-
-                        // Simple indicator shaped like the rest of the UI
-                        indicator: Rectangle {
-                            width: 28
-                            height: 28
-                            radius: 6
-                            color: "transparent"
-                            border.color: "#4CAF50"
-                            border.width: 1
-                            anchors.right: parent.right
-                            anchors.rightMargin: 6
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "▾"
-                                color: "#ffffff"
-                                font.pixelSize: 12
-                            }
-                        }
                     }
-
                     Text {
                         id: noVersionsLabel
                         visible: versionsListModel.count === 0
                         color: "#ff6b6b"
                         text: "No versions installed. Install a version first."
                         font.pixelSize: 12
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
+
+                ComboBox {
+                    id: versionCombo
+                    Layout.fillWidth: true
+                    model: versionsListModel
+                    textRole: "text"
+                    implicitHeight: 40
+                    font.pixelSize: 13
+                    enabled: versionsListModel.count > 0
+                    opacity: enabled ? 1.0 : 0.5
+
+                    onCurrentIndexChanged: {
+                        if (currentIndex >= 0 && currentIndex < versionsListModel.count) {
+                            selectedVersionPath = versionsListModel.get(currentIndex).path
+                        } else {
+                            selectedVersionPath = ""
+                        }
+                        importError = ""
+                    }
+
+                    background: Rectangle {
+                        color: "#111111"
+                        border.color: (versionCombo.activeFocus || versionComboMouse.containsMouse) ? "#4CAF50" : "#3d3d3d"
+                        border.width: versionCombo.activeFocus ? 2 : 1
+                        radius: 6
+                        implicitHeight: 36
+                        
+                        MouseArea {
+                            id: versionComboMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: if (versionCombo.enabled) versionCombo.popup.open()
+                        }
+                    }
+
+                    contentItem: Text {
+                        text: versionCombo.displayText
+                        color: "#ffffff"
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignLeft
+                        elide: Text.ElideRight
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 13
                     }
                 }
             }
@@ -367,7 +364,7 @@ Dialog {
                     background: Rectangle {
                         color: parent.pressed ? "#3d3d3d" : "#302C2C"
                         radius: 6
-                        border.color: "#4CAF50"
+                        border.color: parent.hovered ? "#4CAF50" : "transparent"
                         border.width: 1
                     }
 

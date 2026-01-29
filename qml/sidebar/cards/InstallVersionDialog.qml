@@ -11,18 +11,18 @@ Dialog {
     dim: true
     closePolicy: Popup.CloseOnEscape
     padding: 0
-    implicitWidth: 480
-    implicitHeight: 640
+    implicitWidth: 550
+    implicitHeight: 650
 
     // Item that defines the visual area where the dialog should be centered.
     property Item anchorItem: null
 
-    property color backgroundColor: '#292929'
-    property color surfaceColor: "#2d2d2d"
+    property color backgroundColor: '#1a1a1a'
+    property color surfaceColor: "#1a1a1a"
     property color accentColor: "#4CAF50"
     property color textColor: "#ffffff"
-    property color secondaryTextColor: "#c7c7c7"
-    property color borderColor: "#3d3d3d"
+    property color secondaryTextColor: "#b0b0b0"
+    property color borderColor: "#4CAF50"
 
     property string iconPath: ""
     property string backgroundPath: ""
@@ -106,10 +106,8 @@ Dialog {
     }
 
     background: Rectangle {
-        radius: 8
-        color: surfaceColor
-        border.color: borderColor
-        border.width: 1
+        color: "#1a1a1a"
+        radius: 16
         clip: true
     }
 
@@ -118,15 +116,15 @@ Dialog {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 26
-            spacing: 18
+            anchors.margins: 25
+            spacing: 20
 
             Text {
                 text: "Install Version"
-                font.pixelSize: 28
+                color: "#ffffff"
+                font.pixelSize: 20
                 font.bold: true
-                color: textColor
-                Layout.alignment: Qt.AlignHCenter
+                Layout.fillWidth: true
             }
 
             // Name field
@@ -135,7 +133,7 @@ Dialog {
                 spacing: 6
 
                 Text {
-                    text: "Name"
+                    text: "NAME"
                     color: textColor
                     font.pixelSize: 16
                     font.bold: true
@@ -145,13 +143,15 @@ Dialog {
                     id: nameField
                     Layout.fillWidth: true
                     placeholderText: "Enter version name"
-                    color: textColor
+                    color: "#ffffff"
                     selectByMouse: true
+                    padding: 12
+                    font.pixelSize: 13
                     background: Rectangle {
-                        radius: 6
-                        color: "#1a1a1a"
-                        border.color: nameField.activeFocus ? accentColor : borderColor
+                        color: "#111111"
+                        border.color: nameField.activeFocus ? accentColor : "#3d3d3d"
                         border.width: nameField.activeFocus ? 2 : 1
+                        radius: 6
                     }
                 }
             }
@@ -175,14 +175,24 @@ Dialog {
                     TextField {
                         id: apkField
                         Layout.fillWidth: true
-                        placeholderText: "Select APK file"
-                        color: textColor
+                        Layout.preferredHeight: 40
+                        placeholderText: "Select APK file..."
+                        color: "#ffffff"
                         readOnly: true
+                        padding: 12
+                        font.pixelSize: 13
                         background: Rectangle {
-                            radius: 6
-                            color: '#232222'
-                            border.color: borderColor
+                            color: "#111111"
+                            border.color: apkMouse.containsMouse ? accentColor : "#3d3d3d"
                             border.width: 1
+                            radius: 6
+                            
+                            MouseArea {
+                                id: apkMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: apkDialog.open()
+                            }
                         }
                     }
 
@@ -190,15 +200,18 @@ Dialog {
                         id: apkButton
                         text: "Browse"
                         Layout.preferredWidth: 100
+                        Layout.preferredHeight: 40
                         background: Rectangle {
+                            color: apkButton.pressed ? "#45a049" : "#4CAF50"
                             radius: 6
-                            color: apkButton.pressed ? Qt.darker(accentColor, 1.5) : accentColor
                         }
                         contentItem: Text {
-                            text: parent.text
-                            color: textColor
+                            text: apkButton.text
+                            color: "#ffffff"
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 12
+                            font.bold: true
                         }
                         onClicked: apkDialog.open()
                     }
@@ -213,7 +226,7 @@ Dialog {
                 RowLayout {
                     spacing: 8
                     Text {
-                        text: "Tag"
+                        text: "TAG"
                         color: textColor
                         font.pixelSize: 16
                         font.bold: true
@@ -228,8 +241,8 @@ Dialog {
                             implicitWidth: 20
                             implicitHeight: 20
                             radius: 4
-                            color: "#1a1a1a"
-                            border.color: tagCheckBox.checked ? accentColor : borderColor
+                            color: "#111111"
+                            border.color: tagCheckBox.checked ? accentColor : (tagCheckBoxMouse.containsMouse ? accentColor : "#3d3d3d")
                             Rectangle {
                                 width: 12
                                 height: 12
@@ -238,6 +251,12 @@ Dialog {
                                 radius: 2
                                 color: accentColor
                                 visible: tagCheckBox.checked
+                            }
+                            MouseArea {
+                                id: tagCheckBoxMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: tagCheckBox.checked = !tagCheckBox.checked
                             }
                         }
                         onCheckedChanged: {
@@ -249,6 +268,7 @@ Dialog {
                 ComboBox {
                     id: tagComboBox
                     Layout.fillWidth: true
+                    implicitHeight: 40
                     model: (typeof versionsApiHandler !== 'undefined' && versionsApiHandler) ? versionsApiHandler.versions : []
                     currentIndex: -1
                     enabled: tagCheckBox.checked
@@ -256,9 +276,16 @@ Dialog {
                     
                     background: Rectangle {
                         radius: 6
-                        color: tagCheckBox.checked ? "#1a1a1a" : "#111111"
-                        border.color: borderColor
+                        color: "#111111"
+                        border.color: tagComboBox.activeFocus || tagComboBoxMouse.containsMouse ? accentColor : "#3d3d3d"
                         border.width: 1
+                        
+                        MouseArea {
+                            id: tagComboBoxMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: if (tagComboBox.enabled) tagComboBox.popup.open()
+                        }
                     }
                     
                     contentItem: Text {
@@ -292,6 +319,9 @@ Dialog {
                         model: ListModel { id: iconModel }
                         textRole: "name"
                         currentIndex: 0
+                        implicitHeight: 40
+                        font.pixelSize: 13
+                        
                         onActivated: {
                             if (currentText === "Other...") {
                                 iconDialog.open()
@@ -302,23 +332,32 @@ Dialog {
                         }
 
                         background: Rectangle {
+                            color: "#111111"
+                            border.color: (iconComboBox.activeFocus || iconComboBoxMouse.containsMouse) ? accentColor : "#3d3d3d"
+                            border.width: 1
                             radius: 6
-                            color: "#1a1a1a"
-                            border.color: borderColor
+                            
+                            MouseArea {
+                                id: iconComboBoxMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: iconComboBox.popup.open()
+                            }
                         }
+                        
                         contentItem: Text {
                             text: iconComboBox.displayText
-                            color: textColor
-                            leftPadding: 10
+                            color: "#ffffff"
                             verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
                     }
 
                     Rectangle {
                         width: 40
                         height: 40
-                        radius: 10
-                        color: "#1a1a1a"
+                        radius: 6
+                        color: '#ef121212'
                         clip: true
                         Image {
                             anchors.fill: parent
@@ -352,6 +391,9 @@ Dialog {
                         model: ListModel { id: backgroundModel }
                         textRole: "name"
                         currentIndex: 0
+                        implicitHeight: 40
+                        font.pixelSize: 13
+                        
                         onActivated: {
                             if (currentText === "Other...") {
                                 backgroundDialog.open()
@@ -362,23 +404,32 @@ Dialog {
                         }
 
                         background: Rectangle {
+                            color: "#111111"
+                            border.color: (backgroundComboBox.activeFocus || backgroundComboBoxMouse.containsMouse) ? accentColor : "#3d3d3d"
+                            border.width: 1
                             radius: 6
-                            color: "#1a1a1a"
-                            border.color: borderColor
+                            
+                            MouseArea {
+                                id: backgroundComboBoxMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: backgroundComboBox.popup.open()
+                            }
                         }
+                        
                         contentItem: Text {
                             text: backgroundComboBox.displayText
-                            color: textColor
-                            leftPadding: 10
+                            color: "#ffffff"
                             verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
                     }
 
                     Rectangle {
-                        width: 80
-                        height: 45
+                        width: 60
+                        height: 40
                         radius: 10
-                        color: "#1a1a1a"
+                        color: '#1e1e1e'
                         clip: true
                         Image {
                             anchors.fill: parent
@@ -401,26 +452,53 @@ Dialog {
             Item { Layout.fillHeight: true }
 
             RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 12
+                Layout.fillWidth: true
+                spacing: 10
+
+                Button {
+                    text: "Cancel"
+                    Layout.fillWidth: true
+
+                    background: Rectangle {
+                        color: parent.pressed ? "#3d3d3d" : "#302C2C"
+                        radius: 6
+                        border.color: parent.hovered ? accentColor : "transparent"
+                        border.width: 1
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 12
+                    }
+
+                    onClicked: {
+                        installDialog.close()
+                    }
+                }
 
                 Button {
                     id: installButton
-                    Layout.preferredWidth: 160
-                    text: "INSTALL"
+                    Layout.fillWidth: true
+                    text: "Install"
                     enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
+                    
                     background: Rectangle {
+                        color: installButton.enabled ? (installButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
                         radius: 6
-                        color: installButton.enabled ? (installButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
                     }
+
                     contentItem: Text {
-                        text: parent.text
-                        font.pixelSize: 16
-                        font.bold: true
-                        color: installButton.enabled ? textColor : "#999999"
+                        text: installButton.text
+                        color: "#ffffff"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 12
+                        font.bold: true
                     }
+                    
                     onClicked: {
                         if (!installButton.enabled) {
                             errorLabel.text = "Complete all required fields before installing."

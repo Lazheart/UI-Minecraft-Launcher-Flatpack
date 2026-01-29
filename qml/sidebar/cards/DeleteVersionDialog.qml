@@ -10,18 +10,18 @@ Dialog {
     dim: true
     closePolicy: Popup.CloseOnEscape
     padding: 0
-    implicitWidth: 500
-    implicitHeight: 400
+    implicitWidth: 550
+    implicitHeight: 450
 
     // Item that defines the visual area where the dialog should be centered.
     property Item anchorItem: null
 
-    property color backgroundColor: '#292929'
-    property color surfaceColor: "#2d2d2d"
+    property color backgroundColor: '#1a1a1a'
+    property color surfaceColor: "#1a1a1a"
     property color accentColor: "#4CAF50"
     property color textColor: "#ffffff"
-    property color secondaryTextColor: "#c7c7c7"
-    property color borderColor: "#3d3d3d"
+    property color secondaryTextColor: "#b0b0b0"
+    property color borderColor: "#4CAF50"
     property color deleteColor: "#f44336"
 
     // Lista de versiones seleccionadas para eliminar
@@ -44,46 +44,36 @@ Dialog {
     x: centeredPosition().x
     y: centeredPosition().y
 
-    onVisibleChanged: {
-        // Clear any previous selections when the dialog opens or closes
-        if (visible) {
-            deleteDialog.selectedVersions = []
-            // refresh the list each time the dialog opens
-            deleteDialog.versions = minecraftManager.getAvailableVersions()
-        }
-    }
-
-    // Listen for changes from the C++ side and refresh the local cache
-    Connections {
-        target: minecraftManager
-        onAvailableVersionsChanged: {
-            deleteDialog.versions = minecraftManager.getAvailableVersions()
-        }
+    background: Rectangle {
+        color: "#1a1a1a"
+        radius: 16
+        clip: true
     }
 
     contentItem: Rectangle {
-        color: backgroundColor
-        radius: 8
+        color: "#1a1a1a"
+        radius: 16
+        clip: true
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 15
+            anchors.margins: 25
+            spacing: 20
 
             // Título
             Text {
                 text: "Delete Versions"
+                color: "#ffffff"
                 font.pixelSize: 20
                 font.bold: true
-                color: textColor
                 Layout.fillWidth: true
             }
 
             // Descripción
             Text {
                 text: "Select the versions you want to delete:"
-                font.pixelSize: 12
-                color: secondaryTextColor
+                font.pixelSize: 13
+                color: "#b0b0b0"
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
@@ -92,11 +82,19 @@ Dialog {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: surfaceColor
-                radius: 0
+                color: "#111111"
+                radius: 6
                 clip: true
-                border.color: borderColor
+                border.color: listMouse.containsMouse ? accentColor : "transparent"
                 border.width: 1
+                
+                MouseArea {
+                    id: listMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    // Propagate clicks to the list components
+                    onPressed: mouse.accepted = false
+                }
 
                 ScrollView {
                     anchors.fill: parent
@@ -133,9 +131,9 @@ Dialog {
                                 clip: true
                                 property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                                 property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
-                                // use delegate 'checked' state for coloring (we'll implement a custom checkbox below)
+                                // item check state and color behavior
                                 property bool checked: false
-                                color: checked ? "#2e1f1f" : (itemMouse.containsMouse ? "#3d3d3d" : "transparent")
+                                color: checked ? "#2e1f1f" : (itemMouse.containsMouse ? "#302C2C" : "transparent")
 
                                 MouseArea {
                                     id: itemMouse
@@ -231,7 +229,7 @@ Dialog {
 
                                     Text {
                                         text: versionName
-                                        color: textColor
+                                        color: "#ffffff"
                                         font.pixelSize: 13
                                         verticalAlignment: Text.AlignVCenter
                                         Layout.fillWidth: true
@@ -253,15 +251,15 @@ Dialog {
                     Layout.fillWidth: true
 
                     background: Rectangle {
-                        color: parent.pressed ? "#3d3d3d" : surfaceColor
-                        radius: 4
-                        border.color: borderColor
+                        color: parent.pressed ? "#3d3d3d" : "#302C2C"
+                        radius: 6
+                        border.color: parent.hovered ? accentColor : "transparent"
                         border.width: 1
                     }
 
                     contentItem: Text {
                         text: parent.text
-                        color: textColor
+                        color: "#ffffff"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12
@@ -279,8 +277,8 @@ Dialog {
                     enabled: deleteDialog.selectedVersions.length > 0
 
                     background: Rectangle {
-                        color: parent.enabled ? (parent.pressed ? "#d32f2f" : deleteColor) : "#888888"
-                        radius: 4
+                        color: parent.enabled ? (parent.pressed ? "#d32f2f" : "#f44336") : "#555555"
+                        radius: 6
                     }
 
                     contentItem: Text {
@@ -304,10 +302,20 @@ Dialog {
         }
     }
 
-    background: Rectangle {
-        color: surfaceColor
-        radius: 8
-        border.color: borderColor
-        border.width: 1
+    onVisibleChanged: {
+        // Clear any previous selections when the dialog opens or closes
+        if (visible) {
+            deleteDialog.selectedVersions = []
+            // refresh the list each time the dialog opens
+            deleteDialog.versions = minecraftManager.getAvailableVersions()
+        }
+    }
+
+    // Listen for changes from the C++ side and refresh the local cache
+    Connections {
+        target: minecraftManager
+        function onAvailableVersionsChanged() {
+            deleteDialog.versions = minecraftManager.getAvailableVersions()
+        }
     }
 }
