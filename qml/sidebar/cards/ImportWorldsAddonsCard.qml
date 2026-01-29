@@ -32,6 +32,19 @@ Dialog {
     property string selectedVersionPath: ""
     property string importError: ""
 
+    function centeredPosition() {
+        if (!parent)
+            return Qt.point(0, 0)
+        if (!anchorItem)
+            return Qt.point((parent.width - width) / 2, (parent.height - height) / 2)
+        return anchorItem.mapToItem(parent,
+                                    (anchorItem.width - width) / 2,
+                                    (anchorItem.height - height) / 2)
+    }
+
+    x: centeredPosition().x
+    y: centeredPosition().y
+
     function rebuildVersions() {
         versionsListModel.clear();
         var versions = minecraftManager.getAvailableVersions();
@@ -360,6 +373,7 @@ Dialog {
                 Button {
                     text: "Cancel"
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 45
 
                     background: Rectangle {
                         color: parent.pressed ? "#3d3d3d" : "#302C2C"
@@ -385,11 +399,14 @@ Dialog {
                 }
 
                 Button {
+                    id: importButton
                     text: "Import"
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 45
+                    enabled: selectedVersionPath !== ""
 
                     background: Rectangle {
-                        color: parent.pressed ? "#45a049" : "#4CAF50"
+                        color: importButton.enabled ? (importButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
                         radius: 6
                     }
 

@@ -249,6 +249,7 @@ Dialog {
                 Button {
                     text: "Cancel"
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 45
 
                     background: Rectangle {
                         color: parent.pressed ? "#3d3d3d" : "#302C2C"
@@ -274,6 +275,7 @@ Dialog {
                 Button {
                     text: "Delete Selected"
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 45
                     enabled: deleteDialog.selectedVersions.length > 0
 
                     background: Rectangle {

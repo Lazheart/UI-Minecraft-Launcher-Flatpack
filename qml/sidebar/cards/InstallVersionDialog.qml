@@ -458,6 +458,7 @@ Dialog {
                 Button {
                     text: "Cancel"
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 45
 
                     background: Rectangle {
                         color: parent.pressed ? "#3d3d3d" : "#302C2C"
@@ -482,6 +483,7 @@ Dialog {
                 Button {
                     id: installButton
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 45
                     text: "Install"
                     enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     

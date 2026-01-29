@@ -236,7 +236,7 @@ ApplicationWindow {
     ImportWorldsAddonsCard {
         id: importWorldsAddonsCard
         parent: mainWindow.contentItem
-        anchors.centerIn: Overlay.overlay
+        anchorItem: stackView
         
         onImportRequested: function(path, type) {
             // Get the currently selected version from HomePage
