@@ -676,8 +676,8 @@ Rectangle {
                             
                             // Version Info Box
                             Rectangle {
-                                Layout.preferredWidth: 450
-                                Layout.preferredHeight: 120
+                                Layout.preferredWidth: 500
+                                Layout.preferredHeight: 160
                                 color: "#2d2d2d"
                                 radius: 8
                                 opacity: 0.9
