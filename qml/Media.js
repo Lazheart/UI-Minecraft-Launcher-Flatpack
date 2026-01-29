@@ -19,5 +19,14 @@ var VersionBackgrounds = {
     "caveandcliffs": "qrc:/assets/backgrounds/Minecraf_caveandcliffs.jpg"
 }
 
+var StandardBackgrounds = [
+    { name: "Default", path: "qrc:/assets/backgrounds/Minecraf_1.14.2.jpg" },
+    { name: "Cave and Clifs", path: "qrc:/assets/backgrounds/Minecraf_caveandcliffs.jpg" },
+    { name: "Clasic Windows", path: "qrc:/assets/backgrounds/Minecraft_1.14.3.jpg" },
+    { name: "Clasic Xbox", path: "qrc:/assets/backgrounds/Minecraft_1.14.jpg" },
+    { name: "Buzzy Bees", path: "qrc:/assets/backgrounds/Minecraft_bee.jpg" },
+    { name: "The Original", path: "qrc:/assets/backgrounds/Minecraft_village.jpg" }
+]
+
 // Default background to use when no specific version background is selected.
 var DefaultVersionBackground = VersionBackgrounds["1.14.2"] 

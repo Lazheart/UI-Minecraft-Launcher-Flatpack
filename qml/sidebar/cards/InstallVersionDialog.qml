@@ -205,16 +205,19 @@ Dialog {
                 spacing: 6
 
                 RowLayout {
-                    Layout.fillWidth: true
+                    spacing: 8
                     Text {
                         text: "Tag"
                         color: textColor
                         font.pixelSize: 16
                         font.bold: true
+                        Layout.alignment: Qt.AlignVCenter
                     }
                     CheckBox {
                         id: tagCheckBox
                         checked: false
+                        padding: 0
+                        Layout.alignment: Qt.AlignVCenter
                         indicator: Rectangle {
                             implicitWidth: 20
                             implicitHeight: 20
@@ -308,7 +311,7 @@ Dialog {
                     Rectangle {
                         width: 40
                         height: 40
-                        radius: 4
+                        radius: 10
                         color: "#1a1a1a"
                         Image {
                             anchors.fill: parent
@@ -367,8 +370,9 @@ Dialog {
                     Rectangle {
                         width: 80
                         height: 45
-                        radius: 4
+                        radius: 10
                         color: "#1a1a1a"
+                        clip: true
                         Image {
                             anchors.fill: parent
                             source: installDialog.backgroundPath.startsWith("/") ? "file://" + installDialog.backgroundPath : installDialog.backgroundPath
@@ -457,7 +461,9 @@ Dialog {
         iconModel.append({ "name": "Other...", "path": "" })
 
         backgroundModel.clear()
-        backgroundModel.append({ "name": "Default", "path": Media.DefaultVersionBackground })
+        for (var k = 0; k < Media.StandardBackgrounds.length; k++) {
+            backgroundModel.append(Media.StandardBackgrounds[k])
+        }
         var customBgs = pathManager.listCustomBackgrounds()
         for (var j = 0; j < customBgs.length; j++) {
             backgroundModel.append({ "name": customBgs[j], "path": pathManager.dataDir + "/backgrounds/" + customBgs[j] })
