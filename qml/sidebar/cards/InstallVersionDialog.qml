@@ -51,6 +51,12 @@ Dialog {
         errorLabel.text = ""
     }
 
+    function stripExtension(filename) {
+        if (!filename) return ""
+        var lastDot = filename.lastIndexOf('.')
+        return (lastDot > 0) ? filename.substring(0, lastDot) : filename
+    }
+
     property bool installing: false
 
     function cleanFileUrl(url) {
@@ -243,7 +249,7 @@ Dialog {
                 ComboBox {
                     id: tagComboBox
                     Layout.fillWidth: true
-                    model: versionsApiHandler.versions
+                    model: (typeof versionsApiHandler !== 'undefined' && versionsApiHandler) ? versionsApiHandler.versions : []
                     currentIndex: -1
                     enabled: tagCheckBox.checked
                     displayText: currentIndex === -1 ? "Select a version" : currentText
@@ -313,6 +319,7 @@ Dialog {
                         height: 40
                         radius: 10
                         color: "#1a1a1a"
+                        clip: true
                         Image {
                             anchors.fill: parent
                             anchors.margins: 4
@@ -456,7 +463,7 @@ Dialog {
         
         var customIcons = pathManager.listCustomIcons()
         for (var i = 0; i < customIcons.length; i++) {
-            iconModel.append({ "name": customIcons[i], "path": pathManager.dataDir + "/icons/" + customIcons[i] })
+            iconModel.append({ "name": stripExtension(customIcons[i]), "path": pathManager.dataDir + "/icons/" + customIcons[i] })
         }
         iconModel.append({ "name": "Other...", "path": "" })
 
@@ -466,7 +473,7 @@ Dialog {
         }
         var customBgs = pathManager.listCustomBackgrounds()
         for (var j = 0; j < customBgs.length; j++) {
-            backgroundModel.append({ "name": customBgs[j], "path": pathManager.dataDir + "/backgrounds/" + customBgs[j] })
+            backgroundModel.append({ "name": stripExtension(customBgs[j]), "path": pathManager.dataDir + "/backgrounds/" + customBgs[j] })
         }
         backgroundModel.append({ "name": "Other...", "path": "" })
     }
@@ -538,16 +545,18 @@ Dialog {
             // Select the newly added item
             if (targetType === "icon") {
                 var fileName = sourcePath.substring(sourcePath.lastIndexOf('/') + 1)
+                var nameNoExt = stripExtension(fileName)
                 for (var i = 0; i < iconModel.count; i++) {
-                    if (iconModel.get(i).name === fileName) {
+                    if (iconModel.get(i).name === nameNoExt) {
                         iconComboBox.currentIndex = i
                         break
                     }
                 }
             } else {
                 var fileNameBg = sourcePath.substring(sourcePath.lastIndexOf('/') + 1)
+                var nameBgNoExt = stripExtension(fileNameBg)
                 for (var j = 0; j < backgroundModel.count; j++) {
-                    if (backgroundModel.get(j).name === fileNameBg) {
+                    if (backgroundModel.get(j).name === nameBgNoExt) {
                         backgroundComboBox.currentIndex = j
                         break
                     }
