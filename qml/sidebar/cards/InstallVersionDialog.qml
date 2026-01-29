@@ -39,20 +39,14 @@ Dialog {
     function resetForm() {
         nameField.text = ""
         apkField.text = ""
-        // Set default icon and background to the project's recommended defaults
-        // Default icon file (recommended): assets/media/directAccess.png (qrc:/assets/media/directAccess.png)
-        // Use centralized defaults from Media.js so these aren't hardcoded here
+        refreshModels()
         iconPath = Media.DefaultVersionIcon
-        // Prefer a centralized default background instead of hardcoding a specific version key
         backgroundPath = Media.DefaultVersionBackground || ""
         useDefaultIcon = true
         useDefaultBackground = true
-        iconDefault.checked = true
-        backgroundDefault.checked = true
-        iconUploadButton.enabled = false
-        backgroundUploadButton.enabled = false
-        tagNo.checked = true
-        tagSelectorContainer.visible = false
+        iconComboBox.currentIndex = 0
+        backgroundComboBox.currentIndex = 0
+        tagCheckBox.checked = false
         tagComboBox.currentIndex = -1
         errorLabel.text = ""
     }
@@ -156,13 +150,13 @@ Dialog {
                 }
             }
 
-            // APK route
+            // APK section
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 6
 
                 Text {
-                    text: "APK ROUTE"
+                    text: "APK"
                     color: textColor
                     font.pixelSize: 16
                     font.bold: true
@@ -205,10 +199,72 @@ Dialog {
                 }
             }
 
+            // Tag section
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 6
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text {
+                        text: "Tag"
+                        color: textColor
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+                    CheckBox {
+                        id: tagCheckBox
+                        checked: false
+                        indicator: Rectangle {
+                            implicitWidth: 20
+                            implicitHeight: 20
+                            radius: 4
+                            color: "#1a1a1a"
+                            border.color: tagCheckBox.checked ? accentColor : borderColor
+                            Rectangle {
+                                width: 12
+                                height: 12
+                                x: 4
+                                y: 4
+                                radius: 2
+                                color: accentColor
+                                visible: tagCheckBox.checked
+                            }
+                        }
+                        onCheckedChanged: {
+                            if (checked) versionsApiHandler.fetchVersions()
+                        }
+                    }
+                }
+
+                ComboBox {
+                    id: tagComboBox
+                    Layout.fillWidth: true
+                    model: versionsApiHandler.versions
+                    currentIndex: -1
+                    enabled: tagCheckBox.checked
+                    displayText: currentIndex === -1 ? "Select a version" : currentText
+                    
+                    background: Rectangle {
+                        radius: 6
+                        color: tagCheckBox.checked ? "#1a1a1a" : "#111111"
+                        border.color: borderColor
+                        border.width: 1
+                    }
+                    
+                    contentItem: Text {
+                        text: tagComboBox.displayText
+                        color: tagCheckBox.checked ? textColor : secondaryTextColor
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: 10
+                    }
+                }
+            }
+
             // Icon section
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 12
+                spacing: 6
 
                 Text {
                     text: "ICON"
@@ -217,68 +273,49 @@ Dialog {
                     font.bold: true
                 }
 
-                ButtonGroup { id: iconGroup }
-
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 20
+                    spacing: 12
 
-                    RadioButton {
-                        id: iconDefault
-                        text: "Default"
-                        checked: true
-                        ButtonGroup.group: iconGroup
-                        contentItem: Text {
-                            text: iconDefault.text
-                            font: iconDefault.font
-                            color: iconDefault.enabled ? textColor : secondaryTextColor
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            leftPadding: iconDefault.indicator ? iconDefault.indicator.width + iconDefault.spacing : 0
-                            rightPadding: iconDefault.rightPadding
+                    ComboBox {
+                        id: iconComboBox
+                        Layout.fillWidth: true
+                        model: ListModel { id: iconModel }
+                        textRole: "name"
+                        currentIndex: 0
+                        onActivated: {
+                            if (currentText === "Other...") {
+                                iconDialog.open()
+                            } else {
+                                installDialog.iconPath = iconModel.get(currentIndex).path
+                                installDialog.useDefaultIcon = (currentText === "Default")
+                            }
                         }
-                        onToggled: if (checked) {
-                            installDialog.useDefaultIcon = true
-                            iconUploadButton.enabled = false
-                            installDialog.iconPath = ""
-                        }
-                    }
 
-                    RadioButton {
-                        id: iconOther
-                        text: "Add"
-                        ButtonGroup.group: iconGroup
-                        contentItem: Text {
-                            text: iconOther.text
-                            font: iconOther.font
-                            color: iconOther.enabled ? textColor : secondaryTextColor
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            leftPadding: iconOther.indicator ? iconOther.indicator.width + iconOther.spacing : 0
-                            rightPadding: iconOther.rightPadding
-                        }
-                        onToggled: if (checked) {
-                            installDialog.useDefaultIcon = false
-                            iconUploadButton.enabled = true
-                        }
-                    }
-
-                    Button {
-                        id: iconUploadButton
-                        Layout.preferredWidth: 140
-                        enabled: false
-                        text: installDialog.iconPath === "" ? "Upload Here" : "Change"
                         background: Rectangle {
                             radius: 6
-                            color: enabled ? (iconUploadButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
+                            color: "#1a1a1a"
+                            border.color: borderColor
                         }
                         contentItem: Text {
-                            text: parent.text
-                            color: enabled ? textColor : "#999999"
-                            horizontalAlignment: Text.AlignHCenter
+                            text: iconComboBox.displayText
+                            color: textColor
+                            leftPadding: 10
                             verticalAlignment: Text.AlignVCenter
                         }
-                        onClicked: iconDialog.open()
+                    }
+
+                    Rectangle {
+                        width: 40
+                        height: 40
+                        radius: 4
+                        color: "#1a1a1a"
+                        Image {
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            source: installDialog.iconPath.startsWith("/") ? "file://" + installDialog.iconPath : installDialog.iconPath
+                            fillMode: Image.PreserveAspectFit
+                        }
                     }
                 }
             }
@@ -286,7 +323,7 @@ Dialog {
             // Background section
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 12
+                spacing: 6
 
                 Text {
                     text: "BACKGROUND"
@@ -295,159 +332,48 @@ Dialog {
                     font.bold: true
                 }
 
-                ButtonGroup { id: backgroundGroup }
-
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 20
-
-                    RadioButton {
-                        id: backgroundDefault
-                        text: "Default"
-                        checked: true
-                        ButtonGroup.group: backgroundGroup
-                        contentItem: Text {
-                            text: backgroundDefault.text
-                            font: backgroundDefault.font
-                            color: backgroundDefault.enabled ? textColor : secondaryTextColor
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            leftPadding: backgroundDefault.indicator ? backgroundDefault.indicator.width + backgroundDefault.spacing : 0
-                            rightPadding: backgroundDefault.rightPadding
-                        }
-                        onToggled: if (checked) {
-                            installDialog.useDefaultBackground = true
-                            backgroundUploadButton.enabled = false
-                            installDialog.backgroundPath = ""
-                        }
-                    }
-
-                    RadioButton {
-                        id: backgroundOther
-                        text: "Add"
-                        ButtonGroup.group: backgroundGroup
-                        contentItem: Text {
-                            text: backgroundOther.text
-                            font: backgroundOther.font
-                            color: backgroundOther.enabled ? textColor : secondaryTextColor
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            leftPadding: backgroundOther.indicator ? backgroundOther.indicator.width + backgroundOther.spacing : 0
-                            rightPadding: backgroundOther.rightPadding
-                        }
-                        onToggled: if (checked) {
-                            installDialog.useDefaultBackground = false
-                            backgroundUploadButton.enabled = true
-                        }
-                    }
-
-                    Button {
-                        id: backgroundUploadButton
-                        Layout.preferredWidth: 140
-                        enabled: false
-                        text: installDialog.backgroundPath === "" ? "Upload Here" : "Change"
-                        background: Rectangle {
-                            radius: 6
-                            color: enabled ? (backgroundUploadButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
-                        }
-                        contentItem: Text {
-                            text: parent.text
-                            color: enabled ? textColor : "#999999"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        onClicked: backgroundDialog.open()
-                    }
-                }
-            }
-            // Tag section
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 12
-
-                Text {
-                    text: "Tag"
-                    color: textColor
-                    font.pixelSize: 16
-                    font.bold: true
-                }
-
-                ButtonGroup { id: tagGroup }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 20
-
-                    RadioButton {
-                        id: tagNo
-                        text: "No"
-                        checked: true
-                        ButtonGroup.group: tagGroup
-                        contentItem: Text {
-                            text: tagNo.text
-                            font: tagNo.font
-                            color: tagNo.enabled ? textColor : secondaryTextColor
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            leftPadding: tagNo.indicator ? tagNo.indicator.width + tagNo.spacing : 0
-                        }
-                        onToggled: if (checked) {
-                            tagSelectorContainer.visible = false
-                        }
-                    }
-
-                    RadioButton {
-                        id: tagYes
-                        text: "Yes"
-                        ButtonGroup.group: tagGroup
-                        contentItem: Text {
-                            text: tagYes.text
-                            font: tagYes.font
-                            color: tagYes.enabled ? textColor : secondaryTextColor
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignLeft
-                            leftPadding: tagYes.indicator ? tagYes.indicator.width + tagYes.spacing : 0
-                        }
-                        onToggled: if (checked) {
-                            tagSelectorContainer.visible = true
-                            versionsApiHandler.fetchVersions()
-                        }
-                    }
-                }
-
-                ColumnLayout {
-                    id: tagSelectorContainer
-                    Layout.fillWidth: true
-                    visible: false
-                    spacing: 6
+                    spacing: 12
 
                     ComboBox {
-                        id: tagComboBox
+                        id: backgroundComboBox
                         Layout.fillWidth: true
-                        model: versionsApiHandler.versions
-                        currentIndex: -1
-                        displayText: currentIndex === -1 ? "Select a version" : currentText
-                        
+                        model: ListModel { id: backgroundModel }
+                        textRole: "name"
+                        currentIndex: 0
+                        onActivated: {
+                            if (currentText === "Other...") {
+                                backgroundDialog.open()
+                            } else {
+                                installDialog.backgroundPath = backgroundModel.get(currentIndex).path
+                                installDialog.useDefaultBackground = (currentText === "Default")
+                            }
+                        }
+
                         background: Rectangle {
                             radius: 6
                             color: "#1a1a1a"
                             border.color: borderColor
-                            border.width: 1
                         }
-                        
                         contentItem: Text {
-                            text: tagComboBox.displayText
+                            text: backgroundComboBox.displayText
                             color: textColor
-                            verticalAlignment: Text.AlignVCenter
                             leftPadding: 10
+                            verticalAlignment: Text.AlignVCenter
                         }
                     }
-                    
-                    Text {
-                        text: versionsApiHandler.isLoading ? "Loading versions..." : ""
-                        color: secondaryTextColor
-                        font.pixelSize: 12
-                        visible: versionsApiHandler.isLoading
+
+                    Rectangle {
+                        width: 80
+                        height: 45
+                        radius: 4
+                        color: "#1a1a1a"
+                        Image {
+                            anchors.fill: parent
+                            source: installDialog.backgroundPath.startsWith("/") ? "file://" + installDialog.backgroundPath : installDialog.backgroundPath
+                            fillMode: Image.PreserveAspectCrop
+                        }
                     }
                 }
             }
@@ -463,68 +389,80 @@ Dialog {
 
             Item { Layout.fillHeight: true }
 
-            Button {
-                id: installButton
+            RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 160
-                text: "INSTALL"
-                enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (installDialog.useDefaultIcon || installDialog.iconPath !== "") && (installDialog.useDefaultBackground || installDialog.backgroundPath !== "") && (tagNo.checked || tagComboBox.currentIndex !== -1)
-                background: Rectangle {
-                    radius: 6
-                    color: installButton.enabled ? (installButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
-                }
-                contentItem: Text {
-                    text: parent.text
-                    font.pixelSize: 16
-                    font.bold: true
-                    color: installButton.enabled ? textColor : "#999999"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: {
-                    if (!installButton.enabled) {
-                        errorLabel.text = "Complete all required fields before installing."
-                        return
-                    }
-                    errorLabel.text = ""
-                    // Ensure files are staged (if not already staged on select)
-                    var apkPath = apkField.text.trim()
-                    var stagedApk = pathManager.stageFileForExtraction(apkPath)
-                    var stagedIcon = ""
-                    var stagedBg = ""
-                    if (!installDialog.useDefaultIcon && installDialog.iconPath) {
-                        stagedIcon = pathManager.stageFileForExtraction(installDialog.iconPath)
-                    }
-                    if (!installDialog.useDefaultBackground && installDialog.backgroundPath) {
-                        stagedBg = pathManager.stageFileForExtraction(installDialog.backgroundPath)
-                    }
+                spacing: 12
 
-                    // Fallback a las rutas originales si stage falla
-                    var apkToUse = stagedApk && stagedApk.length ? stagedApk : apkPath
-                    var iconToUse = stagedIcon && stagedIcon.length ? stagedIcon : installDialog.iconPath
-                    var bgToUse = stagedBg && stagedBg.length ? stagedBg : installDialog.backgroundPath
+                Button {
+                    id: installButton
+                    Layout.preferredWidth: 160
+                    text: "INSTALL"
+                    enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
+                    background: Rectangle {
+                        radius: 6
+                        color: installButton.enabled ? (installButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        font.pixelSize: 16
+                        font.bold: true
+                        color: installButton.enabled ? textColor : "#999999"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    onClicked: {
+                        if (!installButton.enabled) {
+                            errorLabel.text = "Complete all required fields before installing."
+                            return
+                        }
+                        errorLabel.text = ""
+                        // Ensure files are staged
+                        var apkPath = apkField.text.trim()
+                        var stagedApk = pathManager.stageFileForExtraction(apkPath)
+                        
+                        var iconToUse = installDialog.iconPath
+                        var bgToUse = installDialog.backgroundPath
 
-                    // Indicate installing state and disable UI
-                    installDialog.installing = true
-                    installButton.enabled = false
-                    apkButton.enabled = false
-                    iconUploadButton.enabled = false
-                    backgroundUploadButton.enabled = false
-                    installButton.text = "Installing..."
+                        // Indicate installing state and disable UI
+                        installDialog.installing = true
+                        installButton.enabled = false
+                        apkButton.enabled = false
+                        installButton.text = "Installing..."
 
-                    installDialog.installRequested(
-                                nameField.text.trim(),
-                                apkToUse,
-                                installDialog.useDefaultIcon,
-                                iconToUse,
-                                installDialog.useDefaultBackground,
-                                bgToUse,
-                                tagYes.checked ? tagComboBox.currentText : ""
-                            )
-                    // Do not close the dialog immediately; wait for signals
+                        installDialog.installRequested(
+                                    nameField.text.trim(),
+                                    stagedApk && stagedApk.length ? stagedApk : apkPath,
+                                    installDialog.useDefaultIcon,
+                                    iconToUse,
+                                    installDialog.useDefaultBackground,
+                                    bgToUse,
+                                    tagCheckBox.checked ? tagComboBox.currentText : ""
+                                )
+                    }
                 }
             }
         }
+    }
+
+    function refreshModels() {
+        iconModel.clear()
+        iconModel.append({ "name": "Default", "path": Media.DefaultVersionIcon })
+        iconModel.append({ "name": "Bedrock", "path": Media.BedrockLogo })
+        iconModel.append({ "name": "Java", "path": "qrc:/assets/media/logo.svg" })
+        
+        var customIcons = pathManager.listCustomIcons()
+        for (var i = 0; i < customIcons.length; i++) {
+            iconModel.append({ "name": customIcons[i], "path": pathManager.dataDir + "/icons/" + customIcons[i] })
+        }
+        iconModel.append({ "name": "Other...", "path": "" })
+
+        backgroundModel.clear()
+        backgroundModel.append({ "name": "Default", "path": Media.DefaultVersionBackground })
+        var customBgs = pathManager.listCustomBackgrounds()
+        for (var j = 0; j < customBgs.length; j++) {
+            backgroundModel.append({ "name": customBgs[j], "path": pathManager.dataDir + "/backgrounds/" + customBgs[j] })
+        }
+        backgroundModel.append({ "name": "Other...", "path": "" })
     }
 
     QtDialogs.FileDialog {
@@ -532,18 +470,10 @@ Dialog {
         title: "Select APK file"
         selectExisting: true
         nameFilters: ["Android Package (*.apk)", "All files (*)"]
-        // Note: keep default dialog behavior; staging logic will handle portal paths.
         onAccepted: {
             var picked = installDialog.cleanFileUrl(apkDialog.fileUrl.toString())
-            // Try to stage immediately so the file remains available for install
             var staged = pathManager.stageFileForExtraction(picked)
-            if (staged && staged.length) {
-                apkField.text = staged
-                console.log("[InstallVersionDialog] staged APK:", staged)
-            } else {
-                apkField.text = picked
-                console.log("[InstallVersionDialog] using original APK path:", picked)
-            }
+            apkField.text = staged && staged.length ? staged : picked
         }
     }
 
@@ -554,26 +484,11 @@ Dialog {
         nameFilters: ["Images (*.png *.jpg *.jpeg *.svg)", "All files (*)"]
         onAccepted: {
             var picked = installDialog.cleanFileUrl(iconDialog.fileUrl.toString())
-            // Try to stage the file immediately so it's available during install
-            try {
-                var staged = pathManager.stageFileForExtraction(picked)
-                if (staged && staged.length) {
-                    installDialog.iconPath = staged
-                    console.log("[InstallVersionDialog] staged icon:", staged)
-                } else {
-                    installDialog.iconPath = picked
-                    console.log("[InstallVersionDialog] using original icon path:", picked)
-                }
-            } catch (e) {
-                installDialog.iconPath = picked
-                console.log("[InstallVersionDialog] icon staging error, using:", picked, e)
-            }
-
-            // Ensure the UI switches to 'Other' so the uploaded icon is used
+            installDialog.iconPath = picked
             installDialog.useDefaultIcon = false
-            iconDefault.checked = false
-            iconOther.checked = true
-            iconUploadButton.enabled = true
+            saveAssetDialog.targetType = "icon"
+            saveAssetDialog.sourcePath = picked
+            saveAssetDialog.open()
         }
     }
 
@@ -584,52 +499,73 @@ Dialog {
         nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
         onAccepted: {
             var picked = installDialog.cleanFileUrl(backgroundDialog.fileUrl.toString())
-            try {
-                var staged = pathManager.stageFileForExtraction(picked)
-                if (staged && staged.length) {
-                    installDialog.backgroundPath = staged
-                    console.log("[InstallVersionDialog] staged background:", staged)
-                } else {
-                    installDialog.backgroundPath = picked
-                    console.log("[InstallVersionDialog] using original background path:", picked)
-                }
-            } catch (e) {
-                installDialog.backgroundPath = picked
-                console.log("[InstallVersionDialog] background staging error, using:", picked, e)
-            }
-
-            // Ensure the UI switches to 'Add/Other' so the uploaded background is used
+            installDialog.backgroundPath = picked
             installDialog.useDefaultBackground = false
-            backgroundDefault.checked = false
-            backgroundOther.checked = true
-            backgroundUploadButton.enabled = true
+            saveAssetDialog.targetType = "background"
+            saveAssetDialog.sourcePath = picked
+            saveAssetDialog.open()
+        }
+    }
+
+    Dialog {
+        id: saveAssetDialog
+        title: "Save Asset?"
+        standardButtons: Dialog.Yes | Dialog.No
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        property string targetType: ""
+        property string sourcePath: ""
+
+        Text {
+            text: "Do you want to save this " + saveAssetDialog.targetType + " for future versions?"
+            color: textColor
+        }
+
+        onAccepted: {
+            if (targetType === "icon") {
+                pathManager.saveCustomIcon(sourcePath)
+            } else {
+                pathManager.saveCustomBackground(sourcePath)
+            }
+            refreshModels()
+            // Select the newly added item
+            if (targetType === "icon") {
+                var fileName = sourcePath.substring(sourcePath.lastIndexOf('/') + 1)
+                for (var i = 0; i < iconModel.count; i++) {
+                    if (iconModel.get(i).name === fileName) {
+                        iconComboBox.currentIndex = i
+                        break
+                    }
+                }
+            } else {
+                var fileNameBg = sourcePath.substring(sourcePath.lastIndexOf('/') + 1)
+                for (var j = 0; j < backgroundModel.count; j++) {
+                    if (backgroundModel.get(j).name === fileNameBg) {
+                        backgroundComboBox.currentIndex = j
+                        break
+                    }
+                }
+            }
         }
     }
 
     Connections {
         target: minecraftManager
         function onInstallSucceeded(versionPath) {
-            // Reset installing UI, show success and close
             installDialog.installing = false
             installButton.enabled = true
             apkButton.enabled = true
-            iconUploadButton.enabled = true
-            backgroundUploadButton.enabled = true
             installButton.text = "INSTALL"
             installDialog.close()
         }
 
         function onInstallFailed(versionPath, reason) {
-            // Show error and allow retry
             installDialog.installing = false
             installButton.enabled = true
             apkButton.enabled = true
-            iconUploadButton.enabled = !installDialog.useDefaultIcon
-            backgroundUploadButton.enabled = !installDialog.useDefaultBackground
             installButton.text = "INSTALL"
-            var msg = reason && reason.length ? reason : ("Failed to install " + versionPath)
-            errorLabel.text = msg
-            console.log("[InstallVersionDialog] install failed:", versionPath, reason)
+            errorLabel.text = reason && reason.length ? reason : ("Failed to install " + versionPath)
         }
     }
 }

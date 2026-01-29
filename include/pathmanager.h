@@ -42,6 +42,12 @@ public:
     Q_INVOKABLE QString stageFileForExtraction(const QString &originalPath) const;
     Q_INVOKABLE bool removeStagedFile(const QString &path) const;
 
+    // Custom icons and backgrounds management
+    Q_INVOKABLE QStringList listCustomIcons() const;
+    Q_INVOKABLE QStringList listCustomBackgrounds() const;
+    Q_INVOKABLE bool saveCustomIcon(const QString &sourcePath) const;
+    Q_INVOKABLE bool saveCustomBackground(const QString &sourcePath) const;
+
 signals:
     void changed();
 

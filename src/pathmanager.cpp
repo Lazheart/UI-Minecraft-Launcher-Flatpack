@@ -255,3 +255,51 @@ bool PathManager::removeStagedFile(const QString &path) const {
   }
   return false;
 }
+
+QStringList PathManager::listCustomIcons() const {
+  QString iconsDir = QDir(m_dataDir).filePath("icons");
+  QDir d(iconsDir);
+  return d.entryList(QStringList() << "*.png" << "*.jpg" << "*.jpeg" << "*.svg",
+                     QDir::Files);
+}
+
+QStringList PathManager::listCustomBackgrounds() const {
+  QString backgroundsDir = QDir(m_dataDir).filePath("backgrounds");
+  QDir d(backgroundsDir);
+  return d.entryList(QStringList() << "*.png" << "*.jpg" << "*.jpeg",
+                     QDir::Files);
+}
+
+bool PathManager::saveCustomIcon(const QString &sourcePath) const {
+  if (sourcePath.isEmpty())
+    return false;
+  QString path = sourcePath;
+  if (path.startsWith("file://")) {
+    QUrl u(path);
+    path = u.toLocalFile();
+  }
+  QFileInfo info(path);
+  QString iconsDir = QDir(m_dataDir).filePath("icons");
+  QDir().mkpath(iconsDir);
+  QString dest = QDir(iconsDir).filePath(info.fileName());
+  if (QFile::exists(dest))
+    return true; // Already exists
+  return QFile::copy(path, dest);
+}
+
+bool PathManager::saveCustomBackground(const QString &sourcePath) const {
+  if (sourcePath.isEmpty())
+    return false;
+  QString path = sourcePath;
+  if (path.startsWith("file://")) {
+    QUrl u(path);
+    path = u.toLocalFile();
+  }
+  QFileInfo info(path);
+  QString backgroundsDir = QDir(m_dataDir).filePath("backgrounds");
+  QDir().mkpath(backgroundsDir);
+  QString dest = QDir(backgroundsDir).filePath(info.fileName());
+  if (QFile::exists(dest))
+    return true; // Already exists
+  return QFile::copy(path, dest);
+}
