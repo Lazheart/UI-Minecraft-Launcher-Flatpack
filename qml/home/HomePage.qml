@@ -156,14 +156,14 @@ Rectangle {
                         spacing: 8
 
                         Text {
-                            text: "Hola, " + (profileManager ? profileManager.currentProfile : "Usuario")
+                            text: "Hello, " + (profileManager ? profileManager.currentProfile : "User")
                             font.pixelSize: 32
                             font.bold: true
                             color: "#ffffff"
                         }
 
                         Text {
-                            text: "Bienvenido de nuevo a Kon Launcher. ¿Qué quieres jugar hoy?"
+                            text: "Welcome back to Kon Launcher. What do you want to play today?"
                             font.pixelSize: 16
                             color: "#b0b0b0"
                         }
@@ -193,7 +193,7 @@ Rectangle {
                                     ColumnLayout {
                                         spacing: 5
                                         Text {
-                                            text: "LISTO PARA JUGAR"
+                                            text: "READY TO PLAY"
                                             font.pixelSize: 12
                                             font.bold: true
                                             color: "#4CAF50"
@@ -231,9 +231,10 @@ Rectangle {
                                     spacing: 15
 
                                     Button {
+                                        id: actionButtonHome
                                         Layout.fillWidth: true
                                         Layout.preferredHeight: 50
-                                        text: "JUGAR AHORA"
+                                        text: "START GAME"
                                         enabled: !minecraftManager.isRunning
 
                                         background: Rectangle {
@@ -241,20 +242,24 @@ Rectangle {
                                             radius: 8
                                         }
 
-                                        contentItem: Row {
-                                            spacing: 10
-                                            anchors.centerIn: parent
-                                            Text {
-                                                text: "▶"
-                                                font.pixelSize: 16
-                                                color: "#ffffff"
-                                                visible: !minecraftManager.isRunning
-                                            }
-                                            Text {
-                                                text: parent.parent.text
-                                                font.pixelSize: 16
-                                                font.bold: true
-                                                color: parent.parent.enabled ? "#ffffff" : "#888888"
+                                        contentItem: Item {
+                                            Row {
+                                                anchors.centerIn: parent
+                                                spacing: 10
+                                                Text {
+                                                    text: "▶"
+                                                    font.pixelSize: 16
+                                                    color: "#ffffff"
+                                                    visible: !minecraftManager.isRunning
+                                                    verticalAlignment: Text.AlignVCenter
+                                                }
+                                                Text {
+                                                    text: actionButtonHome.text
+                                                    font.pixelSize: 16
+                                                    font.bold: true
+                                                    color: actionButtonHome.enabled ? "#ffffff" : "#888888"
+                                                    verticalAlignment: Text.AlignVCenter
+                                                }
                                             }
                                         }
 
@@ -303,7 +308,7 @@ Rectangle {
                                 spacing: 15
 
                                 Text {
-                                    text: "INSTALACIONES"
+                                    text: "INSTALLED VERSIONS"
                                     font.pixelSize: 12
                                     font.bold: true
                                     color: "#888888"
@@ -317,7 +322,7 @@ Rectangle {
                                 }
 
                                 Text {
-                                    text: "Versiones cargadas"
+                                    text: "Versions loaded"
                                     font.pixelSize: 14
                                     color: "#666666"
                                 }
@@ -331,7 +336,7 @@ Rectangle {
                         spacing: 20
 
                         Text {
-                            text: "Tus Versiones"
+                            text: "Your Versions"
                             font.pixelSize: 20
                             font.bold: true
                             color: "#ffffff"
@@ -502,8 +507,9 @@ Rectangle {
                 ColumnLayout {
                     id: contentColumn
                     width: parent.width
+                    height: parent.height
                     spacing: 0
-                    // No anchors.fill to allow implicitHeight to work correctly
+                    // No anchors.fill to avoid circular height dependency
 
                     // Header Area (Back Button + Graphic Options)
                     Item {
@@ -598,7 +604,8 @@ Rectangle {
                         ColumnLayout {
                             anchors.left: parent.left
                             anchors.leftMargin: 60
-                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 40
                             spacing: 20
                             z: 1
 
