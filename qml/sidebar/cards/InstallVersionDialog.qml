@@ -227,7 +227,7 @@ Dialog {
                     spacing: 8
                     Text {
                         text: "TAG"
-                        color: textColor
+                        color: tagCheckBox.checked ? textColor : secondaryTextColor
                         font.pixelSize: 16
                         font.bold: true
                         Layout.alignment: Qt.AlignVCenter
@@ -238,17 +238,17 @@ Dialog {
                         padding: 0
                         Layout.alignment: Qt.AlignVCenter
                         indicator: Rectangle {
-                            implicitWidth: 20
-                            implicitHeight: 20
-                            radius: 4
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 3
                             color: "#111111"
                             border.color: tagCheckBox.checked ? accentColor : (tagCheckBoxMouse.containsMouse ? accentColor : "#3d3d3d")
                             Rectangle {
-                                width: 12
-                                height: 12
-                                x: 4
-                                y: 4
-                                radius: 2
+                                width: 9
+                                height: 9
+                                x: 3.5
+                                y: 3.5
+                                radius: 1.5
                                 color: accentColor
                                 visible: tagCheckBox.checked
                             }
