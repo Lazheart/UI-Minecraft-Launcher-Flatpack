@@ -12,7 +12,7 @@ Dialog {
     closePolicy: Popup.CloseOnEscape
     padding: 0
     implicitWidth: 480
-    implicitHeight: 560
+    implicitHeight: 640
 
     // Item that defines the visual area where the dialog should be centered.
     property Item anchorItem: null
@@ -51,6 +51,9 @@ Dialog {
         backgroundDefault.checked = true
         iconUploadButton.enabled = false
         backgroundUploadButton.enabled = false
+        tagNo.checked = true
+        tagSelectorContainer.visible = false
+        tagComboBox.currentIndex = -1
         errorLabel.text = ""
     }
 
@@ -357,6 +360,97 @@ Dialog {
                     }
                 }
             }
+            // Tag section
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                Text {
+                    text: "Tag"
+                    color: textColor
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+
+                ButtonGroup { id: tagGroup }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 20
+
+                    RadioButton {
+                        id: tagNo
+                        text: "No"
+                        checked: true
+                        ButtonGroup.group: tagGroup
+                        contentItem: Text {
+                            text: tagNo.text
+                            font: tagNo.font
+                            color: tagNo.enabled ? textColor : secondaryTextColor
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            leftPadding: tagNo.indicator ? tagNo.indicator.width + tagNo.spacing : 0
+                        }
+                        onToggled: if (checked) {
+                            tagSelectorContainer.visible = false
+                        }
+                    }
+
+                    RadioButton {
+                        id: tagYes
+                        text: "Yes"
+                        ButtonGroup.group: tagGroup
+                        contentItem: Text {
+                            text: tagYes.text
+                            font: tagYes.font
+                            color: tagYes.enabled ? textColor : secondaryTextColor
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            leftPadding: tagYes.indicator ? tagYes.indicator.width + tagYes.spacing : 0
+                        }
+                        onToggled: if (checked) {
+                            tagSelectorContainer.visible = true
+                            versionsApiHandler.fetchVersions()
+                        }
+                    }
+                }
+
+                ColumnLayout {
+                    id: tagSelectorContainer
+                    Layout.fillWidth: true
+                    visible: false
+                    spacing: 6
+
+                    ComboBox {
+                        id: tagComboBox
+                        Layout.fillWidth: true
+                        model: versionsApiHandler.versions
+                        currentIndex: -1
+                        displayText: currentIndex === -1 ? "Select a version" : currentText
+                        
+                        background: Rectangle {
+                            radius: 6
+                            color: "#1a1a1a"
+                            border.color: borderColor
+                            border.width: 1
+                        }
+                        
+                        contentItem: Text {
+                            text: tagComboBox.displayText
+                            color: textColor
+                            verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
+                        }
+                    }
+                    
+                    Text {
+                        text: versionsApiHandler.isLoading ? "Loading versions..." : ""
+                        color: secondaryTextColor
+                        font.pixelSize: 12
+                        visible: versionsApiHandler.isLoading
+                    }
+                }
+            }
 
             Text {
                 id: errorLabel
@@ -374,7 +468,7 @@ Dialog {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredWidth: 160
                 text: "INSTALL"
-                enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (installDialog.useDefaultIcon || installDialog.iconPath !== "") && (installDialog.useDefaultBackground || installDialog.backgroundPath !== "")
+                enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (installDialog.useDefaultIcon || installDialog.iconPath !== "") && (installDialog.useDefaultBackground || installDialog.backgroundPath !== "") && (tagNo.checked || tagComboBox.currentIndex !== -1)
                 background: Rectangle {
                     radius: 6
                     color: installButton.enabled ? (installButton.pressed ? Qt.darker(accentColor, 1.3) : accentColor) : "#555555"
@@ -424,7 +518,8 @@ Dialog {
                                 installDialog.useDefaultIcon,
                                 iconToUse,
                                 installDialog.useDefaultBackground,
-                                bgToUse
+                                bgToUse,
+                                tagYes.checked ? tagComboBox.currentText : ""
                             )
                     // Do not close the dialog immediately; wait for signals
                 }

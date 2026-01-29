@@ -405,12 +405,14 @@ void MinecraftManager::installRequested(const QString &apkPath,
                                         bool useDefaultIcon,
                                         const QString &iconPath,
                                         bool useDefaultBackground,
-                                        const QString &backgroundPath) {
+                                        const QString &backgroundPath,
+                                        const QString &tag) {
   qDebug() << "[MinecraftManager] installRequested: apk=" << apkPath
            << " name=" << name << " useDefaultIcon=" << useDefaultIcon
            << " iconPath=" << iconPath
            << " useDefaultBackground=" << useDefaultBackground
-           << " backgroundPath=" << backgroundPath;
+           << " backgroundPath=" << backgroundPath
+           << " tag=" << tag;
 
   if (apkPath.isEmpty() || name.isEmpty()) {
     qWarning() << "installRequested: apkPath or name is empty";
@@ -575,6 +577,20 @@ void MinecraftManager::installRequested(const QString &apkPath,
   }
 
   // Notify UI and consumers that versions changed
+  // Save tag if provided
+  if (!tag.isEmpty()) {
+    QString tagFilePath = QDir(versionFolder).filePath("tag.txt");
+    QFile tagFile(tagFilePath);
+    if (tagFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QTextStream out(&tagFile);
+      out << tag;
+      tagFile.close();
+      qDebug() << "[MinecraftManager] tag saved to" << tagFilePath;
+    } else {
+      qWarning() << "[MinecraftManager] failed to save tag to" << tagFilePath;
+    }
+  }
+
   // Update installedVersion so QML bindings reflect the new installation
   m_installedVersion = name;
   emit installedVersionChanged();

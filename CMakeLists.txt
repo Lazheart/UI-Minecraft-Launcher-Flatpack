@@ -44,6 +44,7 @@ set(SOURCES
     src/pathmanager.cpp
     src/minecraftextract.cpp
     src/profilemanager.cpp
+    src/versionsapihandler.cpp
 )
 
 # Archivos de cabecera
@@ -54,6 +55,7 @@ set(HEADERS
     include/pathmanager.h
     include/minecraftextract.h
     include/profilemanager.h
+    include/versionsapihandler.h
 )
 
 # Archivos QML y recursos

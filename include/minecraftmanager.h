@@ -38,7 +38,8 @@ public:
                                     bool useDefaultIcon,
                                     const QString &iconPath,
                                     bool useDefaultBackground,
-                                    const QString &backgroundPath);
+                                    const QString &backgroundPath,
+                                    const QString &tag = QString());
 
   // Comportamientos mínimos/auxiliares (stubs) que pueden ampliarse
   Q_INVOKABLE bool isInstalled() const { return m_isInstalled; }
