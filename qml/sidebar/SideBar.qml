@@ -195,6 +195,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 clip: true
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                 ScrollBar.vertical.policy: ScrollBar.AsNeeded
                 
                 Column {
