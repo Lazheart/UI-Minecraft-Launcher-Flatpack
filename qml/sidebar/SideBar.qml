@@ -132,7 +132,8 @@ Rectangle {
                 let baseHeight = 30; // sortHeader height
                 let items = getSortedVersions();
                 let count = Math.min(items.length, 5);
-                return count * 40 + baseHeight;
+                let totalSpacing = (count > 0) ? (count - 1) * 8 : 0;
+                return count * 40 + totalSpacing + baseHeight;
             }
             color: sideBar.highlightColor
             clip: true
@@ -195,7 +196,8 @@ Rectangle {
                 
                 Column {
                     width: parent.width
-                    spacing: 0
+                    spacing: 1
+                    // bottomPadding: 20
                     
                     // Si no hay versiones
                     Rectangle {
