@@ -22,6 +22,23 @@ Rectangle {
     // Using a stable array for the Repeater model avoids intermittent UI desync.
     // List of versions, bound to the manager's property for automatic updates
     property var versionsList: minecraftManager.availableVersions
+    
+    // Configuración de visualización y ordenado
+    property string sortMode: "date" // "date" (default), "name", "tag"
+    property bool isFullyExpanded: false
+
+    function getSortedVersions() {
+        if (!versionsList) return [];
+        let list = Array.from(versionsList);
+        if (sortMode === "date") {
+            list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        } else if (sortMode === "name") {
+            list.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+        } else if (sortMode === "tag") {
+            list.sort((a, b) => (a.tag || "").localeCompare(b.tag || ""));
+        }
+        return list;
+    }
 
     Component.onCompleted: {
         // Initial refresh of the cache if needed
@@ -110,19 +127,77 @@ Rectangle {
         Rectangle {
             id: versionsMenu
             Layout.fillWidth: true
-            Layout.preferredHeight: isExpanded ? 200 : 0
+            Layout.preferredHeight: {
+                if (!isExpanded) return 0;
+                let baseHeight = 30; // sortHeader height
+                let items = getSortedVersions();
+                if (isFullyExpanded) {
+                    return Math.min(items.length * 40 + baseHeight + 30, 450); // +30 for "Show Less"
+                } else {
+                    let count = Math.min(items.length, 5);
+                    let h = count * 40 + baseHeight;
+                    if (items.length > 5) h += 40; // "+" button height
+                    return h;
+                }
+            }
             color: sideBar.highlightColor
             clip: true
             
             property bool isExpanded: false
             
             Behavior on height {
-                NumberAnimation { duration: 300 }
+                NumberAnimation { duration: 300; easing.type: Easing.InOutQuad }
+            }
+
+            // UI de Ordenado
+            RowLayout {
+                id: sortHeader
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 30
+                spacing: 5
+                anchors.margins: 4
+                visible: versionsMenu.height > 20
+
+                Text {
+                    text: "Sort by:"
+                    color: "#888888"
+                    font.pixelSize: 10
+                    Layout.margins: 4
+                }
+
+                Repeater {
+                    model: ["date", "name", "tag"]
+                    delegate: Rectangle {
+                        width: 45
+                        height: 18
+                        radius: 4
+                        color: sideBar.sortMode === modelData ? "#4CAF50" : "#3d3d3d"
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            text: modelData.toUpperCase()
+                            color: "#ffffff"
+                            font.pixelSize: 9
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: sideBar.sortMode = modelData
+                        }
+                    }
+                }
             }
             
             ScrollView {
-                anchors.fill: parent
+                anchors.top: sortHeader.bottom
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
                 clip: true
+                ScrollBar.vertical.policy: isFullyExpanded ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
                 
                 Column {
                     width: parent.width
@@ -146,10 +221,12 @@ Rectangle {
                         }
                     }
                     
-                    // Lista de versiones (máximo 5)
-                    // Use an array slice as the model so Repeater uses a stable list
+                    // Lista de versiones
                     Repeater {
-                        model: sideBar.versionsList ? sideBar.versionsList.slice(0, 5) : []
+                        model: {
+                            let sorted = sideBar.getSortedVersions();
+                            return sideBar.isFullyExpanded ? sorted : sorted.slice(0, 5);
+                        }
 
                         Rectangle {
                             id: versionItem
@@ -224,6 +301,70 @@ Rectangle {
                                     Layout.alignment: Qt.AlignVCenter
                                 }
                             }
+                        }
+                    }
+
+                    // Botón de expansión (+)
+                    Rectangle {
+                        id: expandMoreButton
+                        width: parent.width
+                        height: 40
+                        color: expandMouse.containsMouse ? sideBar.listItemHoverColor : "transparent"
+                        visible: !sideBar.isFullyExpanded && sideBar.versionsList.length > 5
+
+                        MouseArea {
+                            id: expandMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: sideBar.isFullyExpanded = true
+                        }
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 10
+                            
+                            Rectangle {
+                                width: 34
+                                height: 34
+                                color: "#3d3d3d"
+                                radius: 4
+                                
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "+"
+                                    color: "#4CAF50"
+                                    font.pixelSize: 20
+                                    font.bold: true
+                                }
+                            }
+
+                            Text {
+                                text: "Show More..."
+                                color: "#ffffff"
+                                font.pixelSize: 12
+                            }
+                        }
+                    }
+
+                    // Botón de colapsar (Opcional, para volver a 5)
+                    Rectangle {
+                        width: parent.width
+                        height: 30
+                        color: "transparent"
+                        visible: sideBar.isFullyExpanded
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "↑ Show Less"
+                            color: "#4CAF50"
+                            font.pixelSize: 10
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: sideBar.isFullyExpanded = false
                         }
                     }
                 }

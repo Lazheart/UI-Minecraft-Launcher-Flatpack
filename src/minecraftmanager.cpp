@@ -130,6 +130,19 @@ QVariantList MinecraftManager::getAvailableVersions() {
     QDateTime birthTime = vInfo.birthTime();
     if (!birthTime.isValid()) birthTime = vInfo.lastModified();
     m.insert("installDate", birthTime.toString("dd/MM/yy"));
+    m.insert("timestamp", birthTime.toMSecsSinceEpoch());
+
+    // Load tag if exists
+    QString tagFilePath = vDir.filePath("tag.txt");
+    if (QFile::exists(tagFilePath)) {
+        QFile tagFile(tagFilePath);
+        if (tagFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            m.insert("tag", QString::fromUtf8(tagFile.readAll()).trimmed());
+            tagFile.close();
+        }
+    } else {
+        m.insert("tag", "");
+    }
 
     // Track latest for m_lastActiveVersion if not set
     if (m_lastActiveVersion.isEmpty()) {
