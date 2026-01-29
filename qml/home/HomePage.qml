@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.15
 import "../Media.js" as Media
 
 Rectangle {
@@ -371,12 +372,41 @@ Rectangle {
                                     height: 220
 
                                     Rectangle {
+                                        id: cardBackground
                                         anchors.fill: parent
                                         color: "#2d2d2d"
                                         radius: 10
                                         border.color: mouseArea.containsMouse ? "#4CAF50" : "transparent"
                                         border.width: 2
-                                        clip: true
+                                        visible: false // Hidden because it's used as a mask
+                                    }
+
+                                    OpacityMask {
+                                        anchors.fill: parent
+                                        source: contentLayer
+                                        maskSource: Rectangle {
+                                            width: cardBackground.width
+                                            height: cardBackground.height
+                                            radius: cardBackground.radius
+                                        }
+                                    }
+
+                                    // Move card background to a separate layer or just use it as mask source
+                                    // Here we use a simpler approach: clip the Column to the card shape.
+                                    // However, since clip: true doesn't work for radius, we use the OpacityMask above.
+                                    // We need to group the content into another Item to use it as 'source' for OpacityMask.
+                                    
+                                    Item {
+                                        id: contentLayer
+                                        anchors.fill: parent
+                                        visible: false // Rendered via OpacityMask
+
+                                        // Explicit background for the card inside the mask
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            color: "#2d2d2d"
+                                            radius: 10
+                                        }
 
                                         Column {
                                             anchors.fill: parent
@@ -443,24 +473,35 @@ Rectangle {
                                                 }
                                             }
                                         }
+                                    }
 
-                                        MouseArea {
-                                            id: mouseArea
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                selectedVersion = modelData.name
-                                            }
-                                        }
+                                    // Border overlay (stays on top of OpacityMask)
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: "transparent"
+                                        radius: 10
+                                        border.color: mouseArea.containsMouse ? "#4CAF50" : "transparent"
+                                        border.width: 2
+                                        z: 5
+                                    }
 
-                                        // Hover effect overlay
-                                        Rectangle {
-                                            anchors.fill: parent
-                                            color: "white"
-                                            opacity: mouseArea.containsMouse ? 0.05 : 0
-                                            radius: 10
+                                    MouseArea {
+                                        id: mouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            selectedVersion = modelData.name
                                         }
+                                    }
+
+                                    // Hover effect overlay
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: "white"
+                                        opacity: mouseArea.containsMouse ? 0.05 : 0
+                                        radius: 10
+                                        z: 6
                                     }
                                 }
                             }
