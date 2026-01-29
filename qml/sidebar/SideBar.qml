@@ -130,8 +130,11 @@ Rectangle {
             Layout.preferredHeight: {
                 if (!isExpanded) return 0;
                 let baseHeight = 30; // sortHeader height
-                let items = getSortedVersions();
-                let count = Math.min(items.length, 5);
+                let versions = sideBar.versionsList || [];
+                if (versions.length === 0) {
+                    return baseHeight + 80; // sortHeader + empty message height
+                }
+                let count = Math.min(versions.length, 5);
                 let totalSpacing = (count > 0) ? (count - 1) * 8 : 0;
                 return count * 40 + totalSpacing + baseHeight;
             }
@@ -204,7 +207,7 @@ Rectangle {
                         width: parent.width
                         height: 80
                         color: "transparent"
-                        visible: sideBar.versionsList.length === 0
+                        visible: !sideBar.versionsList || sideBar.versionsList.length === 0
 
                         Text {
                             anchors.centerIn: parent
