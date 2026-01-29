@@ -131,14 +131,8 @@ Rectangle {
                 if (!isExpanded) return 0;
                 let baseHeight = 30; // sortHeader height
                 let items = getSortedVersions();
-                if (isFullyExpanded) {
-                    return Math.min(items.length * 40 + baseHeight + 30, 450); // +30 for "Show Less"
-                } else {
-                    let count = Math.min(items.length, 5);
-                    let h = count * 40 + baseHeight;
-                    if (items.length > 5) h += 40; // "+" button height
-                    return h;
-                }
+                let count = Math.min(items.length, 5);
+                return count * 40 + baseHeight;
             }
             color: sideBar.highlightColor
             clip: true
@@ -197,7 +191,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 clip: true
-                ScrollBar.vertical.policy: isFullyExpanded ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AsNeeded
                 
                 Column {
                     width: parent.width
@@ -223,10 +217,7 @@ Rectangle {
                     
                     // Lista de versiones
                     Repeater {
-                        model: {
-                            let sorted = sideBar.getSortedVersions();
-                            return sideBar.isFullyExpanded ? sorted : sorted.slice(0, 5);
-                        }
+                        model: sideBar.getSortedVersions()
 
                         Rectangle {
                             id: versionItem
@@ -304,69 +295,6 @@ Rectangle {
                         }
                     }
 
-                    // Botón de expansión (+)
-                    Rectangle {
-                        id: expandMoreButton
-                        width: parent.width
-                        height: 40
-                        color: expandMouse.containsMouse ? sideBar.listItemHoverColor : "transparent"
-                        visible: !sideBar.isFullyExpanded && sideBar.versionsList.length > 5
-
-                        MouseArea {
-                            id: expandMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: sideBar.isFullyExpanded = true
-                        }
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 10
-                            spacing: 10
-                            
-                            Rectangle {
-                                width: 34
-                                height: 34
-                                color: "#3d3d3d"
-                                radius: 4
-                                
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "+"
-                                    color: "#4CAF50"
-                                    font.pixelSize: 20
-                                    font.bold: true
-                                }
-                            }
-
-                            Text {
-                                text: "Show More..."
-                                color: "#ffffff"
-                                font.pixelSize: 12
-                            }
-                        }
-                    }
-
-                    // Botón de colapsar (Opcional, para volver a 5)
-                    Rectangle {
-                        width: parent.width
-                        height: 30
-                        color: "transparent"
-                        visible: sideBar.isFullyExpanded
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "↑ Show Less"
-                            color: "#4CAF50"
-                            font.pixelSize: 10
-                            font.bold: true
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: sideBar.isFullyExpanded = false
-                        }
-                    }
                 }
             }
         }
