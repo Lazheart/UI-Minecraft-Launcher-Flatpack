@@ -31,7 +31,6 @@ Rectangle {
                 settingsPage.currentLanguage = language
                 settingsPage.currentTheme = theme
                 settingsPage.currentScale = scale
-                settingsPage.scale = scale
                 
             }
         }
@@ -55,7 +54,6 @@ Rectangle {
                 settingsPage.currentLanguage = language
                 settingsPage.currentTheme = theme
                 settingsPage.currentScale = scale
-                settingsPage.scale = scale
             }
         }
         
@@ -211,7 +209,6 @@ Rectangle {
                             languageCard.currentLanguage = "EN"
                             visualCard.scaleValue = 1.0
                             visualCard.currentTheme = "DARK"
-                            settingsPage.scale = 1.0
                             settingsPage.currentLanguage = "EN"
                             settingsPage.currentTheme = "DARK"
                             settingsPage.currentScale = 1.0
