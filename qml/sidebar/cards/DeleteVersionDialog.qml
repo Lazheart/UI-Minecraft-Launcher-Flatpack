@@ -31,18 +31,7 @@ Dialog {
 
     signal deleteRequested(var versions)
 
-    function centeredPosition() {
-        if (!parent)
-            return Qt.point(0, 0)
-        if (!anchorItem)
-            return Qt.point((parent.width - width) / 2, (parent.height - height) / 2)
-        return anchorItem.mapToItem(parent,
-                                    (anchorItem.width - width) / 2,
-                                    (anchorItem.height - height) / 2)
-    }
-
-    x: centeredPosition().x
-    y: centeredPosition().y
+    anchors.centerIn: parent
 
     background: Rectangle {
         color: "#1a1a1a"

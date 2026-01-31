@@ -90,6 +90,8 @@ ApplicationWindow {
             // Prefer contentItem implicit size (the styled box)
             var w = notificationDialog.contentItem.implicitWidth || notificationDialog.width || 400
             var h = notificationDialog.contentItem.implicitHeight || notificationDialog.height || 200
+            
+            var parentItem = notificationDialog.parent || mainWindow.contentItem
 
             if (anchorItem) {
                 // If the anchor has a contentItem (it's a Dialog-like component), use that smaller area
@@ -98,24 +100,26 @@ ApplicationWindow {
                 // center notification over the anchor area
                 var localX = (anchor.width - w) / 2
                 var localY = (anchor.height - h) / 2
-                var p = anchor.mapToItem(mainWindow.contentItem, localX, localY)
+                
+                var p = anchor.mapToItem(parentItem, localX, localY)
                 var nx = p.x
                 var ny = p.y
 
                 // clamp so notification stays inside window
-                nx = Math.max(0, Math.min(nx, mainWindow.width - w))
-                ny = Math.max(0, Math.min(ny, mainWindow.height - h))
+                nx = Math.max(0, Math.min(nx, parentItem.width - w))
+                ny = Math.max(0, Math.min(ny, parentItem.height - h))
 
                 notificationDialog.x = nx
                 notificationDialog.y = ny
             } else {
-                notificationDialog.x = (mainWindow.width - w) / 2
-                notificationDialog.y = (mainWindow.height - h) / 2
+                notificationDialog.x = (parentItem.width - w) / 2
+                notificationDialog.y = (parentItem.height - h) / 2
             }
         } catch (e) {
             // fallback: centerIn
-            notificationDialog.x = (mainWindow.width - notificationDialog.width) / 2
-            notificationDialog.y = (mainWindow.height - notificationDialog.height) / 2
+            var pItem = notificationDialog.parent || mainWindow
+            notificationDialog.x = (pItem.width - w) / 2
+            notificationDialog.y = (pItem.height - h) / 2
         }
 
         notificationDialog.open()
@@ -130,7 +134,7 @@ ApplicationWindow {
     // Diálogo de notificación
     Dialog {
         id: notificationDialog
-        anchors.centerIn: parent
+        parent: scalableContainer
 
         // Remove default white frame/background from Dialog
         background: Rectangle {
@@ -199,7 +203,7 @@ ApplicationWindow {
 
     InstallVersionDialog {
         id: installVersionDialog
-        parent: mainWindow.contentItem
+        parent: scalableContainer
         anchorItem: stackView
         backgroundColor: "#171515"
         surfaceColor: "#0f0f0f"
@@ -216,7 +220,7 @@ ApplicationWindow {
 
     DeleteVersionDialog {
         id: deleteVersionDialog
-        parent: mainWindow.contentItem
+        parent: scalableContainer
         anchorItem: stackView
         backgroundColor: "#171515"
         surfaceColor: "#0f0f0f"
@@ -235,7 +239,7 @@ ApplicationWindow {
 
     ImportWorldsAddonsCard {
         id: importWorldsAddonsCard
-        parent: mainWindow.contentItem
+        parent: scalableContainer
         anchorItem: stackView
         
         onImportRequested: function(path, type) {
@@ -330,6 +334,7 @@ ApplicationWindow {
 
             // Scalable Container
             Item {
+                id: scalableContainer
                 anchors.centerIn: parent
                 // Inverse scale dimensions to fill parent visually
                 width: parent.width / mainWindow.uiScale
