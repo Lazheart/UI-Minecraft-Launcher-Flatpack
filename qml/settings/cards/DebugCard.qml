@@ -41,6 +41,7 @@ Rectangle {
             ListView {
                 id: consoleListView
                 anchors.fill: parent
+                anchors.margins: 5
                 model: logHandler
                 clip: true
                 spacing: 2
@@ -51,16 +52,14 @@ Rectangle {
                     policy: ScrollBar.AsNeeded
                 }
 
-                delegate: Rectangle {
-                    width: consoleListView.width
-                    height: logText.paintedHeight + 4
-                    color: "transparent"
-
+                delegate: Item {
+                    width: consoleListView.width - 10 
+                    height: logText.implicitHeight + 4
+                    
                     Text {
                         id: logText
-                        width: parent.width - 10
-                        x: 5
-                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.fill: parent
+                        anchors.leftMargin: 5
                         text: "[" + timestamp + "] " + message
                         color: logColor
                         font.family: "Courier" // Monospaced
@@ -85,12 +84,14 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
             spacing: 10
 
             Button {
                 text: "Clear Console"
-                Layout.preferredWidth: 120
+                Layout.fillWidth: true
+                Layout.minimumWidth: 80
+                Layout.maximumWidth: 160
+                Layout.preferredHeight: 35 
                 background: Rectangle {
                     color: parent.pressed ? "#505050" : "#3d3d3d"
                     radius: 3
@@ -101,13 +102,19 @@ Rectangle {
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: 8
+                    elide: Text.ElideRight
                 }
                 onClicked: logHandler.clear()
             }
 
             Button {
                 text: "Copy Logs"
-                Layout.preferredWidth: 120
+                Layout.fillWidth: true
+                Layout.minimumWidth: 60
+                Layout.maximumWidth: 160
+                Layout.preferredHeight: 35
                 background: Rectangle {
                     color: parent.pressed ? "#505050" : "#3d3d3d"
                     radius: 3
@@ -118,13 +125,19 @@ Rectangle {
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: 8
+                    elide: Text.ElideRight
                 }
                 onClicked: logHandler.copyToClipboard()
             }
 
             Button {
                 text: "Export Logs"
-                Layout.preferredWidth: 120
+                Layout.fillWidth: true
+                Layout.minimumWidth: 80
+                Layout.maximumWidth: 160
+                Layout.preferredHeight: 35
                 background: Rectangle {
                     color: parent.pressed ? "#505050" : "#3d3d3d"
                     radius: 3
@@ -135,6 +148,9 @@ Rectangle {
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: 8
+                    elide: Text.ElideRight
                 }
                 onClicked: fileDialog.open()
             }
@@ -146,12 +162,15 @@ Rectangle {
                 text: "Auto-scroll"
                 checked: debugCard.autoScroll
                 onCheckedChanged: debugCard.autoScroll = checked
+                
+                Layout.preferredHeight: 35
+                Layout.alignment: Qt.AlignVCenter
 
                 indicator: Rectangle {
                     implicitWidth: 18
                     implicitHeight: 18
+                    anchors.verticalCenter: parent.verticalCenter
                     x: autoScrollCheck.leftPadding
-                    y: parent.height / 2 - height / 2
                     radius: 3
                     color: "#3d3d3d"
                     border.color: autoScrollCheck.checked ? "#4CAF50" : "#505050"
@@ -172,6 +191,7 @@ Rectangle {
                     color: "#ffffff"
                     font.pixelSize: 12
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     leftPadding: parent.indicator.width + 10
                 }
             }
