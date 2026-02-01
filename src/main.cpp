@@ -6,10 +6,15 @@
 #include "../include/pathmanager.h"
 #include "../include/profilemanager.h"
 #include "../include/versionsapihandler.h"
+#include "../include/loghandler.h"
 
 int main(int argc, char **argv) {
   QGuiApplication app(argc, argv);
   app.setApplicationName("minecraft");
+
+  // Initialize LogHandler
+  LogHandler logHandler;
+  qInstallMessageHandler(LogHandler::messageOutput);
 
   QQmlApplicationEngine engine;
 
@@ -23,6 +28,7 @@ int main(int argc, char **argv) {
                                            &minecraftManager);
   engine.rootContext()->setContextProperty("profileManager", &profileManager);
   engine.rootContext()->setContextProperty("versionsApiHandler", &versionsApiHandler);
+  engine.rootContext()->setContextProperty("logHandler", &logHandler);
 
   qDebug() << "[main] Exposed pathManager and minecraftManager to QML";
   qDebug() << "[main] pathManager.versionsDir=" << pathManager.versionsDir();

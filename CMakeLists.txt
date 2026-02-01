@@ -40,6 +40,7 @@ include_directories(
 set(SOURCES
     src/main.cpp
     src/minecraftmanager.cpp
+    src/loghandler.cpp
     src/minecraftlaunch.cpp
     src/pathmanager.cpp
     src/minecraftextract.cpp
@@ -54,8 +55,8 @@ set(HEADERS
     include/minecraftlaunch.h
     include/pathmanager.h
     include/minecraftextract.h
-    include/profilemanager.h
     include/versionsapihandler.h
+    include/loghandler.h
 )
 
 # Archivos QML y recursos
