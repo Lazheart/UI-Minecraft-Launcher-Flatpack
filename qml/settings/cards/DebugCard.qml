@@ -142,15 +142,37 @@ Rectangle {
             Item { Layout.fillWidth: true }
             
             CheckBox {
+                id: autoScrollCheck
                 text: "Auto-scroll"
                 checked: debugCard.autoScroll
                 onCheckedChanged: debugCard.autoScroll = checked
+
+                indicator: Rectangle {
+                    implicitWidth: 18
+                    implicitHeight: 18
+                    x: autoScrollCheck.leftPadding
+                    y: parent.height / 2 - height / 2
+                    radius: 3
+                    color: "#3d3d3d"
+                    border.color: autoScrollCheck.checked ? "#4CAF50" : "#505050"
+                    border.width: 1
+
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        anchors.centerIn: parent
+                        radius: 2
+                        color: "#4CAF50"
+                        visible: autoScrollCheck.checked
+                    }
+                }
+
                 contentItem: Text {
                     text: parent.text
                     color: "#ffffff"
-                    font.pixelSize: 11
+                    font.pixelSize: 12
                     verticalAlignment: Text.AlignVCenter
-                    leftPadding: parent.indicator.width + parent.spacing
+                    leftPadding: parent.indicator.width + 10
                 }
             }
         }
