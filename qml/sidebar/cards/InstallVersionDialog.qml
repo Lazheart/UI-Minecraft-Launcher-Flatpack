@@ -180,6 +180,7 @@ Dialog {
                                 id: apkMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
+                                enabled: !installDialog.installing
                                 onClicked: apkDialog.open()
                             }
                         }
@@ -188,10 +189,11 @@ Dialog {
                     Button {
                         id: apkButton
                         text: "Browse"
+                        enabled: !installDialog.installing
                         Layout.preferredWidth: 100
                         Layout.preferredHeight: 40
                         background: Rectangle {
-                            color: apkButton.pressed ? "#45a049" : "#4CAF50"
+                            color: apkButton.enabled ? (apkButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
                             radius: 6
                         }
                         contentItem: Text {
@@ -473,8 +475,8 @@ Dialog {
                     id: installButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: "Install"
-                    enabled: nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
+                    text: installDialog.installing ? "Installing..." : "Install"
+                    enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
                         color: installButton.enabled ? (installButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
@@ -492,7 +494,6 @@ Dialog {
                     
                     onClicked: {
                         if (!installButton.enabled) {
-                            errorLabel.text = "Complete all required fields before installing."
                             return
                         }
                         errorLabel.text = ""
@@ -505,9 +506,6 @@ Dialog {
 
                         // Indicate installing state and disable UI
                         installDialog.installing = true
-                        installButton.enabled = false
-                        apkButton.enabled = false
-                        installButton.text = "Installing..."
 
                         installDialog.installRequested(
                                     nameField.text.trim(),
@@ -638,17 +636,11 @@ Dialog {
         target: minecraftManager
         function onInstallSucceeded(versionPath) {
             installDialog.installing = false
-            installButton.enabled = true
-            apkButton.enabled = true
-            installButton.text = "INSTALL"
             installDialog.close()
         }
 
         function onInstallFailed(versionPath, reason) {
             installDialog.installing = false
-            installButton.enabled = true
-            apkButton.enabled = true
-            installButton.text = "INSTALL"
             errorLabel.text = reason && reason.length ? reason : ("Failed to install " + versionPath)
         }
     }
