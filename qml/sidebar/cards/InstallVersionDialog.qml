@@ -9,7 +9,7 @@ Dialog {
     modal: true
     focus: true
     dim: true
-    closePolicy: Popup.CloseOnEscape
+    closePolicy: installing ? Popup.NoAutoClose : Popup.CloseOnEscape
     padding: 0
     implicitWidth: 550
     implicitHeight: 650
@@ -132,6 +132,7 @@ Dialog {
                     id: nameField
                     Layout.fillWidth: true
                     placeholderText: "Enter version name"
+                    enabled: !installDialog.installing
                     color: "#ffffff"
                     selectByMouse: true
                     padding: 12
@@ -226,6 +227,7 @@ Dialog {
                     CheckBox {
                         id: tagCheckBox
                         checked: false
+                        enabled: !installDialog.installing
                         padding: 0
                         Layout.alignment: Qt.AlignVCenter
                         indicator: Rectangle {
@@ -262,7 +264,7 @@ Dialog {
                     implicitHeight: 40
                     model: (typeof versionsApiHandler !== 'undefined' && versionsApiHandler) ? versionsApiHandler.versions : []
                     currentIndex: -1
-                    enabled: tagCheckBox.checked
+                    enabled: tagCheckBox.checked && !installDialog.installing
                     displayText: currentIndex === -1 ? "Select a version" : currentText
                     
                     background: Rectangle {
@@ -312,6 +314,7 @@ Dialog {
                         currentIndex: 0
                         implicitHeight: 40
                         font.pixelSize: 13
+                        enabled: !installDialog.installing
                         
                         onActivated: {
                             if (currentText === "Other...") {
@@ -332,6 +335,7 @@ Dialog {
                                 id: iconComboBoxMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
+                                enabled: !installDialog.installing
                                 onClicked: iconComboBox.popup.open()
                             }
                         }
@@ -384,6 +388,7 @@ Dialog {
                         currentIndex: 0
                         implicitHeight: 40
                         font.pixelSize: 13
+                        enabled: !installDialog.installing
                         
                         onActivated: {
                             if (currentText === "Other...") {
@@ -404,6 +409,7 @@ Dialog {
                                 id: backgroundComboBoxMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
+                                enabled: !installDialog.installing
                                 onClicked: backgroundComboBox.popup.open()
                             }
                         }
@@ -480,7 +486,7 @@ Dialog {
                     id: installButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: installDialog.installing ? "Installing..." : "Install"
+                    text: installDialog.installing ? "installing" : "Install"
                     enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
