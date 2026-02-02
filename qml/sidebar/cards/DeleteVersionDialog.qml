@@ -116,7 +116,7 @@ Dialog {
                                 id: versionItemDelegate
                                 width: parent.width
                                 height: 48
-                                radius: 0
+                                radius: 6
                                 clip: true
                                 property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                                 property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
@@ -148,17 +148,19 @@ Dialog {
                                 Rectangle {
                                     id: itemBackground
                                     anchors.fill: parent
-                                    // selected uses UI gray (borderColor), non-rounded
+                                    anchors.margins: 4
+                                    // selected uses UI gray (borderColor) with rounded corners
                                     color: checked ? deleteDialog.borderColor : "transparent"
-                                    radius: 0
+                                    radius: 6
                                     z: -1
                                 }
 
                                 Rectangle {
                                     anchors.fill: parent
+                                    anchors.margins: 4
                                     // subtle gray hover using existing borderColor with alpha
                                     color: itemMouse.containsMouse ? "#3d3d3d22" : "transparent"
-                                    radius: 0
+                                    radius: 6
                                     z: 0
                                 }
 
