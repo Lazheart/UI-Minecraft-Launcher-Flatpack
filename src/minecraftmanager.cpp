@@ -724,7 +724,96 @@ void MinecraftManager::importSelected(const QString &filePath,
   QString staged = m_pathManager->stageFileForExtraction(filePath);
   QString fileToUse = staged.isEmpty() ? filePath : staged;
 
-  // Create launcher and call import
+  // If the user selected an Addon, extract it directly into the
+  // resource_packs directory of the corresponding profile instead of
+  // delegating to the client import.
+  if (type.compare("Addon", Qt::CaseInsensitive) == 0) {
+    // Derive profile name from the version folder name
+    QFileInfo vfiFull(fullVersionPath);
+    QString versionName = vfiFull.fileName();
+
+    if (versionName.isEmpty()) {
+      qWarning() << "importSelected: could not determine version name for addon import";
+      emit importFailed(versionPath, fileToUse,
+                        "Could not determine version/profile for addon");
+      return;
+    }
+
+    // Build destination path similar to:
+    // <profilesDir>/<versionName>/games/com.mojang/resource_packs
+    QString profileRoot =
+        QDir(m_pathManager->profilesDir()).filePath(versionName);
+    QString comMojangPath = QDir(profileRoot).filePath("games/com.mojang");
+    QString resourcePacksDir = QDir(comMojangPath).filePath("resource_packs");
+
+    if (!QDir().mkpath(resourcePacksDir)) {
+      qWarning() << "importSelected: failed to create resource_packs dir" << resourcePacksDir;
+      emit importFailed(versionPath, fileToUse,
+                        "Failed to create resource_packs directory");
+      return;
+    }
+
+    // Extract the pack into a subfolder named after the file (without
+    // extension) to avoid collisions.
+    QFileInfo packInfo(fileToUse);
+    QString packFolderName = packInfo.completeBaseName();
+    if (packFolderName.isEmpty()) {
+      packFolderName = QStringLiteral("addon");
+    }
+    QString destDir = QDir(resourcePacksDir).filePath(packFolderName);
+    QDir().mkpath(destDir);
+
+    QString unzipBin = QStandardPaths::findExecutable("unzip");
+    if (unzipBin.isEmpty()) {
+      qWarning() << "importSelected: 'unzip' executable not found for addon extraction";
+      emit importFailed(versionPath, fileToUse,
+                        "'unzip' tool not found to extract addon");
+      return;
+    }
+
+    QStringList args;
+    args << "-o" << fileToUse << "-d" << destDir;
+
+    QProcess proc;
+    qDebug() << "importSelected: extracting addon with" << unzipBin << args
+             << "into" << destDir;
+    proc.start(unzipBin, args);
+    if (!proc.waitForStarted(5000)) {
+      qWarning() << "importSelected: failed to start unzip for addon";
+      emit importFailed(versionPath, fileToUse,
+                        "Failed to start addon extraction");
+      return;
+    }
+
+    if (!proc.waitForFinished(300000)) { // up to 5 minutes
+      qWarning() << "importSelected: addon extraction timeout";
+      emit importFailed(versionPath, fileToUse,
+                        "Addon extraction timed out");
+      return;
+    }
+
+    int rc = proc.exitCode();
+    if (rc != 0) {
+      qWarning() << "importSelected: addon extraction failed with code" << rc;
+      emit importFailed(versionPath, fileToUse,
+                        QStringLiteral("Addon extraction failed (code %1)")
+                            .arg(rc));
+      return;
+    }
+
+    qDebug() << "importSelected: addon extracted successfully to" << destDir;
+    emit importSucceeded(versionPath, fileToUse);
+
+    // If we staged the file, try to remove it after extraction
+    if (!staged.isEmpty()) {
+      if (!m_pathManager->removeStagedFile(staged)) {
+        qWarning() << "importSelected: failed to remove staged addon file:" << staged;
+      }
+    }
+    return;
+  }
+
+  // Default path: delegate import to the launcher (worlds / other types)
   MinecraftLaunch launcher(m_pathManager);
   bool ok = launcher.importFile(fullVersionPath, fileToUse, useShared,
                                 useNvidia, useZink, useMangohud);
@@ -741,7 +830,7 @@ void MinecraftManager::importSelected(const QString &filePath,
 
   // If we staged the file, try to remove it after starting the import
   if (!staged.isEmpty()) {
-    if (!QFile::remove(staged)) {
+    if (!m_pathManager->removeStagedFile(staged)) {
       qWarning() << "importSelected: failed to remove staged file:" << staged;
     } else {
       qDebug() << "importSelected: removed staged file:" << staged;
