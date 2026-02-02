@@ -467,6 +467,11 @@ Dialog {
                     }
 
                     onClicked: {
+                        if (installDialog.installing) {
+                            console.log("[InstallVersionDialog] Installation cancelled by user")
+                            installDialog.installing = false
+                            errorLabel.text = "Installation cancelled by user"
+                        }
                         installDialog.close()
                     }
                 }

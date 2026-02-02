@@ -541,6 +541,44 @@ void MinecraftManager::installRequested(const QString &apkPath,
   if (!vdir.exists()) {
     qWarning() << "Expected version folder not found after extraction:"
                << versionFolder;
+
+    // Cleanup any staged files as in the failure path above
+    if (m_pathManager) {
+      QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
+      auto tryRemoveIfStaged = [&](const QString &p) {
+        if (p.isEmpty())
+          return;
+        QString clean = QDir::cleanPath(p);
+        if (clean.startsWith(QDir(importsDir).absolutePath())) {
+          qDebug() << "[MinecraftManager] Removing staged file after missing"
+                      " version folder:" << clean;
+          if (!QFile::remove(clean)) {
+            qWarning()
+                << "[MinecraftManager] Failed to remove staged file:" << clean;
+          }
+        } else {
+          qDebug() << "[MinecraftManager] Not a staged file (skipping):"
+                   << clean;
+        }
+      };
+
+      QString apkCleanup = stagedApk.isEmpty() ? apkPath : stagedApk;
+      tryRemoveIfStaged(apkCleanup);
+      if (!useDefaultIcon) {
+        QString iconCleanup = stagedIcon.isEmpty() ? iconPath : stagedIcon;
+        tryRemoveIfStaged(iconCleanup);
+      }
+      if (!useDefaultBackground) {
+        QString bgCleanup =
+            stagedBackground.isEmpty() ? backgroundPath : stagedBackground;
+        tryRemoveIfStaged(bgCleanup);
+      }
+    }
+
+    QString reason =
+        QStringLiteral("Version folder not found after extraction: ") +
+        versionFolder;
+    emit installFailed(versionFolder, reason);
     return;
   }
 
