@@ -59,6 +59,10 @@ Dialog {
 
     property bool installing: false
 
+    onInstallingChanged: {
+        console.log("[InstallVersionDialog] installing changed ->", installing)
+    }
+
     function cleanFileUrl(url) {
         if (!url)
             return ""
@@ -504,6 +508,10 @@ Dialog {
                     }
                     
                     onClicked: {
+                        console.log("[InstallVersionDialog] installButton clicked. enabled=", installButton.enabled,
+                                    " installing=", installDialog.installing,
+                                    " name=", nameField.text,
+                                    " apk=", apkField.text)
                         if (!installButton.enabled) {
                             return
                         }
@@ -517,6 +525,15 @@ Dialog {
 
                         // Indicate installing state and disable UI
                         installDialog.installing = true
+
+                        console.log("[InstallVersionDialog] emitting installRequested with:",
+                                    "name=", nameField.text.trim(),
+                                    "apk=", stagedApk && stagedApk.length ? stagedApk : apkPath,
+                                    "useDefaultIcon=", installDialog.useDefaultIcon,
+                                    "iconPath=", iconToUse,
+                                    "useDefaultBackground=", installDialog.useDefaultBackground,
+                                    "backgroundPath=", bgToUse,
+                                    "tag=", tagCheckBox.checked ? tagComboBox.currentText : "")
 
                         installDialog.installRequested(
                                     nameField.text.trim(),
@@ -646,11 +663,13 @@ Dialog {
     Connections {
         target: minecraftManager
         function onInstallSucceeded(versionPath) {
+            console.log("[InstallVersionDialog] onInstallSucceeded for", versionPath)
             installDialog.installing = false
             installDialog.close()
         }
 
         function onInstallFailed(versionPath, reason) {
+            console.log("[InstallVersionDialog] onInstallFailed for", versionPath, "reason=", reason)
             installDialog.installing = false
             errorLabel.text = reason && reason.length ? reason : ("Failed to install " + versionPath)
         }
