@@ -490,7 +490,7 @@ Dialog {
                     id: installButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: installDialog.installing ? "installing" : "Install"
+                    text: installDialog.installing ? "Installing..." : "Install"
                     enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
@@ -516,10 +516,19 @@ Dialog {
                             return
                         }
                         errorLabel.text = ""
-                        // Ensure files are staged
+
+                        // Ensure APK file is staged and actually accessible
                         var apkPath = apkField.text.trim()
                         var stagedApk = pathManager.stageFileForExtraction(apkPath)
-                        
+                        var finalApk = (stagedApk && stagedApk.length) ? stagedApk : apkPath
+
+                        if (!finalApk || finalApk.length === 0) {
+                            console.log("[InstallVersionDialog] No valid APK path after staging, aborting install")
+                            errorLabel.text = "APK file not accessible. Please re-select the APK and try again."
+                            installDialog.installing = false
+                            return
+                        }
+
                         var iconToUse = installDialog.iconPath
                         var bgToUse = installDialog.backgroundPath
 
@@ -528,7 +537,7 @@ Dialog {
 
                         console.log("[InstallVersionDialog] emitting installRequested with:",
                                     "name=", nameField.text.trim(),
-                                    "apk=", stagedApk && stagedApk.length ? stagedApk : apkPath,
+                                    "apk=", finalApk,
                                     "useDefaultIcon=", installDialog.useDefaultIcon,
                                     "iconPath=", iconToUse,
                                     "useDefaultBackground=", installDialog.useDefaultBackground,
@@ -537,7 +546,7 @@ Dialog {
 
                         installDialog.installRequested(
                                     nameField.text.trim(),
-                                    stagedApk && stagedApk.length ? stagedApk : apkPath,
+                                    finalApk,
                                     installDialog.useDefaultIcon,
                                     iconToUse,
                                     installDialog.useDefaultBackground,

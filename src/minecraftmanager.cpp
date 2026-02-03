@@ -429,6 +429,10 @@ void MinecraftManager::installRequested(const QString &apkPath,
 
   if (apkPath.isEmpty() || name.isEmpty()) {
     qWarning() << "installRequested: apkPath or name is empty";
+    QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
+    QString reason =
+        QStringLiteral("APK path or version name is empty. Please select a valid APK and name.");
+    emit installFailed(versionFolderAttempt, reason);
     return;
   }
 
@@ -445,12 +449,30 @@ void MinecraftManager::installRequested(const QString &apkPath,
     }
   }
 
+  // Validate that the APK we are about to pass to the extractor exists and
+  // is readable. If not, fail fast instead of letting the extractor crash
+  // with a generic "Failed to open zip" error.
+  QFileInfo apkInfo(apkToUse);
+  if (!apkInfo.exists() || !apkInfo.isReadable()) {
+    QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
+    QString reason = QStringLiteral("APK file not found or not accessible: ") +
+                     apkToUse;
+    qWarning() << "installRequested:" << reason;
+    emit installFailed(versionFolderAttempt, reason);
+    return;
+  }
+
   // Pre-stage user-provided icon/background so we have accessible file paths
   QString stagedIcon;
   QString stagedBackground;
   QString iconToUse = iconPath;
   QString bgToUse = backgroundPath;
-  if (!useDefaultIcon && !iconPath.isEmpty() && m_pathManager) {
+  // Do not try to stage Qt resource paths (qrc:/...). Those are internal
+  // resources, not real files on disk.
+  bool iconIsQrc = iconPath.startsWith("qrc:/");
+  bool bgIsQrc = backgroundPath.startsWith("qrc:/");
+
+  if (!useDefaultIcon && !iconPath.isEmpty() && !iconIsQrc && m_pathManager) {
     stagedIcon = m_pathManager->stageFileForExtraction(iconPath);
     if (!stagedIcon.isEmpty()) {
       qDebug() << "[MinecraftManager] Using staged icon for later copy:"
@@ -458,7 +480,8 @@ void MinecraftManager::installRequested(const QString &apkPath,
       iconToUse = stagedIcon;
     }
   }
-  if (!useDefaultBackground && !backgroundPath.isEmpty() && m_pathManager) {
+  if (!useDefaultBackground && !backgroundPath.isEmpty() && !bgIsQrc &&
+      m_pathManager) {
     stagedBackground = m_pathManager->stageFileForExtraction(backgroundPath);
     if (!stagedBackground.isEmpty()) {
       qDebug() << "[MinecraftManager] Using staged background for later copy:"
