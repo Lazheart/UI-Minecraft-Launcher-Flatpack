@@ -38,6 +38,7 @@ Dialog {
                             string tag)
 
     function resetForm() {
+        console.log("[InstallVersionDialog] resetForm() called")
         nameField.text = ""
         apkField.text = ""
         refreshModels()
@@ -51,7 +52,7 @@ Dialog {
         tagComboBox.currentIndex = -1
         errorLabel.text = ""
         installDialog.installing = false
-        installButton.text = "Install"
+        console.log("[InstallVersionDialog] resetForm() done. installing=", installDialog.installing)
     }
 
     function stripExtension(filename) {
@@ -60,7 +61,12 @@ Dialog {
         return (lastDot > 0) ? filename.substring(0, lastDot) : filename
     }
 
+    // Reactive flag that drives all visual state of the Install button
     property bool installing: false
+
+    // Pending install request to be sent to the backend on the next event
+    // loop tick so the UI has time to render the Installing state first.
+    property var pendingInstallRequest: null
 
     onInstallingChanged: {
         console.log("[InstallVersionDialog] installing changed ->", installing)
@@ -461,39 +467,21 @@ Dialog {
 
                 Button {
                     text: "Cancel"
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 45
 
                     background: Rectangle {
-                        color: parent.pressed ? "#3d3d3d" : "#302C2C"
+                        color: installDialog.installing
+                            ? "#E53935"        // rojo crítico
+                            : (parent.pressed ? "#3d3d3d" : "#302C2C")
                         radius: 6
-                        border.color: parent.hovered ? accentColor : "transparent"
-                        border.width: 1
-                    }
-
-                    contentItem: Text {
-                        text: parent.text
-                        color: "#ffffff"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.pixelSize: 12
-                    }
-
-                    onClicked: {
-                        if (installDialog.installing) {
-                            console.log("[InstallVersionDialog] Installation cancelled by user")
-                            installDialog.installing = false
-                            errorLabel.text = "Installation cancelled by user"
-                        }
-                        installDialog.close()
                     }
                 }
+
 
                 Button {
                     id: installButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: "Install"
+                    text: installDialog.installing ? "Installing..." : "Install"
                     enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
@@ -516,6 +504,13 @@ Dialog {
                                     " name=", nameField.text,
                                     " apk=", apkField.text)
 
+                        var nameOk = nameField.text && nameField.text.trim().length > 0
+                        var apkOk = apkField.text && apkField.text.trim().length > 0
+                        var tagOk = (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
+                        console.log("[InstallVersionDialog] validation state -> nameOk=", nameOk,
+                                    " apkOk=", apkOk,
+                                    " tagOk=", tagOk)
+
                         // Guard against re-entrancy / double clicks
                         if (installDialog.installing) {
                             console.log("[InstallVersionDialog] install already in progress, ignoring click")
@@ -527,13 +522,16 @@ Dialog {
 
                         // Immediately mark installing so subsequent clicks are ignored
                         installDialog.installing = true
-                        installButton.text = "Installing..."
                         errorLabel.text = ""
 
                         // Ensure APK file is staged and actually accessible
                         var apkPath = apkField.text.trim()
                         var stagedApk = pathManager.stageFileForExtraction(apkPath)
                         var finalApk = (stagedApk && stagedApk.length) ? stagedApk : apkPath
+
+                        console.log("[InstallVersionDialog] stage result -> apkPath=", apkPath,
+                                    " stagedApk=", stagedApk,
+                                    " finalApk=", finalApk)
 
                         if (!finalApk || finalApk.length === 0) {
                             console.log("[InstallVersionDialog] No valid APK path after staging, aborting install")
@@ -545,27 +543,50 @@ Dialog {
                         var iconToUse = installDialog.iconPath
                         var bgToUse = installDialog.backgroundPath
 
-                        console.log("[InstallVersionDialog] emitting installRequested with:",
-                                    "name=", nameField.text.trim(),
-                                    "apk=", finalApk,
-                                    "useDefaultIcon=", installDialog.useDefaultIcon,
-                                    "iconPath=", iconToUse,
-                                    "useDefaultBackground=", installDialog.useDefaultBackground,
-                                    "backgroundPath=", bgToUse,
-                                    "tag=", tagCheckBox.checked ? tagComboBox.currentText : "")
+                        var pending = {
+                            name: nameField.text.trim(),
+                            apkPath: finalApk,
+                            useDefaultIcon: installDialog.useDefaultIcon,
+                            iconPath: iconToUse,
+                            useDefaultBackground: installDialog.useDefaultBackground,
+                            backgroundPath: bgToUse,
+                            tag: tagCheckBox.checked ? tagComboBox.currentText : ""
+                        }
 
-                        installDialog.installRequested(
-                                    nameField.text.trim(),
-                                    finalApk,
-                                    installDialog.useDefaultIcon,
-                                    iconToUse,
-                                    installDialog.useDefaultBackground,
-                                    bgToUse,
-                                    tagCheckBox.checked ? tagComboBox.currentText : ""
-                                )
+                        console.log("[InstallVersionDialog] scheduling deferred installRequested with:", pending)
+                        installDialog.pendingInstallRequest = pending
+                        deferredInstallTimer.start()
                     }
                 }
             }
+        }
+    }
+
+    // Timer used to defer the backend call to the next event loop tick so
+    // the UI has a chance to render the Installing state first.
+    Timer {
+        id: deferredInstallTimer
+        interval: 0
+        repeat: false
+        running: false
+        onTriggered: {
+            if (!installDialog.pendingInstallRequest) {
+                console.log("[InstallVersionDialog] deferredInstallTimer triggered but no pending request")
+                return
+            }
+
+            var req = installDialog.pendingInstallRequest
+            console.log("[InstallVersionDialog] emitting deferred installRequested with:", req)
+            installDialog.installRequested(
+                        req.name,
+                        req.apkPath,
+                        req.useDefaultIcon,
+                        req.iconPath,
+                        req.useDefaultBackground,
+                        req.backgroundPath,
+                        req.tag
+                    )
+            installDialog.pendingInstallRequest = null
         }
     }
 
@@ -600,7 +621,10 @@ Dialog {
         onAccepted: {
             var picked = installDialog.cleanFileUrl(apkDialog.fileUrl.toString())
             var staged = pathManager.stageFileForExtraction(picked)
+            console.log("[InstallVersionDialog] apkDialog accepted. picked=", picked,
+                        " staged=", staged)
             apkField.text = staged && staged.length ? staged : picked
+            console.log("[InstallVersionDialog] apkField.text set to", apkField.text)
         }
     }
 
@@ -684,14 +708,12 @@ Dialog {
         function onInstallSucceeded(versionPath) {
             console.log("[InstallVersionDialog] onInstallSucceeded for", versionPath)
             installDialog.installing = false
-            installButton.text = "Install"
             installDialog.close()
         }
 
         function onInstallFailed(versionPath, reason) {
             console.log("[InstallVersionDialog] onInstallFailed for", versionPath, "reason=", reason)
             installDialog.installing = false
-            installButton.text = "Install"
             errorLabel.text = reason && reason.length ? reason : ("Failed to install " + versionPath)
         }
     }
