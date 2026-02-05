@@ -50,6 +50,8 @@ Dialog {
         tagCheckBox.checked = false
         tagComboBox.currentIndex = -1
         errorLabel.text = ""
+        installDialog.installing = false
+        installButton.text = "Install"
     }
 
     function stripExtension(filename) {
@@ -491,7 +493,7 @@ Dialog {
                     id: installButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: installDialog.installing ? "Installing..." : "Install"
+                    text: "Install"
                     enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
@@ -525,6 +527,7 @@ Dialog {
 
                         // Immediately mark installing so subsequent clicks are ignored
                         installDialog.installing = true
+                        installButton.text = "Installing..."
                         errorLabel.text = ""
 
                         // Ensure APK file is staged and actually accessible
@@ -681,12 +684,14 @@ Dialog {
         function onInstallSucceeded(versionPath) {
             console.log("[InstallVersionDialog] onInstallSucceeded for", versionPath)
             installDialog.installing = false
+            installButton.text = "Install"
             installDialog.close()
         }
 
         function onInstallFailed(versionPath, reason) {
             console.log("[InstallVersionDialog] onInstallFailed for", versionPath, "reason=", reason)
             installDialog.installing = false
+            installButton.text = "Install"
             errorLabel.text = reason && reason.length ? reason : ("Failed to install " + versionPath)
         }
     }

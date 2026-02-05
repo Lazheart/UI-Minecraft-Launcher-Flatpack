@@ -436,6 +436,19 @@ void MinecraftManager::installRequested(const QString &apkPath,
     return;
   }
 
+  // If the target version folder already exists, treat this as an
+  // idempotent success. This avoids spurious errors when the user double
+  // clicks Install and the staged APK has already been cleaned up by the
+  // first successful installation.
+  QString existingVersionFolder = QDir(versionsDir()).filePath(name);
+  QDir existingDir(existingVersionFolder);
+  if (existingDir.exists()) {
+    qDebug() << "[MinecraftManager] installRequested: version already exists,"
+             << "treating as success for" << existingVersionFolder;
+    emit installSucceeded(existingVersionFolder);
+    return;
+  }
+
   // Stage APK if needed (e.g. Flatpak portal /run/user/ paths) so the
   // external extractor can access a regular file path.
   QString stagedApk;
