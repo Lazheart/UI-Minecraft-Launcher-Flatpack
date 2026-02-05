@@ -211,10 +211,18 @@ ApplicationWindow {
         textColor: mainWindow.textColor
         secondaryTextColor: mainWindow.secondaryTextColor
 
-        onInstallRequested: function(name, apkPath, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath) {
-            // Call the new backend API exposed by `minecraftManager`.
-            // Signature: installRequested(apkPath, name, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath)
-            minecraftManager.installRequested(apkPath, name, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath)
+        onInstallRequested: function(name, apkPath, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath, tag) {
+            console.log("[main.qml] onInstallRequested from dialog:",
+                        "name=", name,
+                        "apk=", apkPath,
+                        "useDefaultIcon=", useDefaultIcon,
+                        "iconPath=", iconPath,
+                        "useDefaultBackground=", useDefaultBackground,
+                        "backgroundPath=", backgroundPath,
+                        "tag=", tag)
+            // Call the backend API exposed by `minecraftManager`.
+            // Signature: installRequested(apkPath, name, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath, tag)
+            minecraftManager.installRequested(apkPath, name, useDefaultIcon, iconPath, useDefaultBackground, backgroundPath, tag)
         }
     }
 

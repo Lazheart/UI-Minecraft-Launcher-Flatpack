@@ -34,7 +34,8 @@ Dialog {
                             bool useDefaultIcon,
                             string iconPath,
                             bool useDefaultBackground,
-                            string backgroundPath)
+                            string backgroundPath,
+                            string tag)
 
     function resetForm() {
         nameField.text = ""
@@ -512,9 +513,18 @@ Dialog {
                                     " installing=", installDialog.installing,
                                     " name=", nameField.text,
                                     " apk=", apkField.text)
+
+                        // Guard against re-entrancy / double clicks
+                        if (installDialog.installing) {
+                            console.log("[InstallVersionDialog] install already in progress, ignoring click")
+                            return
+                        }
                         if (!installButton.enabled) {
                             return
                         }
+
+                        // Immediately mark installing so subsequent clicks are ignored
+                        installDialog.installing = true
                         errorLabel.text = ""
 
                         // Ensure APK file is staged and actually accessible
@@ -531,9 +541,6 @@ Dialog {
 
                         var iconToUse = installDialog.iconPath
                         var bgToUse = installDialog.backgroundPath
-
-                        // Indicate installing state and disable UI
-                        installDialog.installing = true
 
                         console.log("[InstallVersionDialog] emitting installRequested with:",
                                     "name=", nameField.text.trim(),
