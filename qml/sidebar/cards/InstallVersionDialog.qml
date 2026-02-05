@@ -466,6 +466,9 @@ Dialog {
                 spacing: 10
 
                 Button {
+                    id: cancelButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 45
                     text: "Cancel"
 
                     background: Rectangle {
@@ -473,6 +476,14 @@ Dialog {
                             ? "#E53935"        // rojo crítico
                             : (parent.pressed ? "#3d3d3d" : "#302C2C")
                         radius: 6
+                    }
+
+                    contentItem: Text {
+                        text: cancelButton.text
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 12
                     }
                 }
 
