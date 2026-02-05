@@ -13,7 +13,7 @@
 #include <QProcess>
 
 MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
-    : QObject(parent), m_pathManager(paths) {
+  : QObject(parent), m_pathManager(paths) {
   m_installedVersion = QString();
   qDebug() << "[MinecraftManager] Constructed. PathManager present:"
            << (m_pathManager != nullptr);
@@ -68,6 +68,11 @@ MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
       emit availableVersionsChanged();
     }
   }
+}
+
+void MinecraftManager::cancelInstall() {
+  qDebug() << "[MinecraftManager] cancelInstall() requested";
+  m_installCancelRequested = true;
 }
 
 QString MinecraftManager::versionsDir() const {
@@ -427,6 +432,10 @@ void MinecraftManager::installRequested(const QString &apkPath,
            << " backgroundPath=" << backgroundPath
            << " tag=" << tag;
 
+  // Clear any stale cancellation flag from previous runs; a new install
+  // starts as non-cancelled until QML explicitly calls cancelInstall().
+  m_installCancelRequested = false;
+
   if (apkPath.isEmpty() || name.isEmpty()) {
     qWarning() << "installRequested: apkPath or name is empty";
     QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
@@ -618,6 +627,63 @@ void MinecraftManager::installRequested(const QString &apkPath,
     return;
   }
 
+  // If the user requested cancellation while the extractor was running, treat
+  // this installation as cancelled rather than succeeded. Roll back the
+  // created version folder and emit installFailed with an appropriate reason.
+  if (m_installCancelRequested) {
+    qDebug() << "[MinecraftManager] Installation was cancelled by user after"
+                " extraction. Rolling back version folder:"
+             << versionFolder;
+
+    // Attempt to remove the created version folder to avoid keeping a
+    // partially installed or unwanted version.
+    if (vdir.exists()) {
+      bool removed = vdir.removeRecursively();
+      if (!removed) {
+        qWarning() << "[MinecraftManager] Failed to remove cancelled version"
+                   << versionFolder;
+      }
+    }
+
+    // Clean up any staged files as in the success path below.
+    if (m_pathManager) {
+      QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
+      auto tryRemoveIfStaged = [&](const QString &p) {
+        if (p.isEmpty())
+          return;
+        QString clean = QDir::cleanPath(p);
+        if (clean.startsWith(QDir(importsDir).absolutePath())) {
+          qDebug() << "[MinecraftManager] Removing staged file after cancel:"
+                   << clean;
+          if (!QFile::remove(clean)) {
+            qWarning() << "[MinecraftManager] Failed to remove staged file:"
+                       << clean;
+          }
+        } else {
+          qDebug() << "[MinecraftManager] Not a staged file (skipping):"
+                   << clean;
+        }
+      };
+
+      QString apkCleanup = stagedApk.isEmpty() ? apkPath : stagedApk;
+      tryRemoveIfStaged(apkCleanup);
+      if (!useDefaultIcon) {
+        QString iconCleanup = stagedIcon.isEmpty() ? iconPath : stagedIcon;
+        tryRemoveIfStaged(iconCleanup);
+      }
+      if (!useDefaultBackground) {
+        QString bgCleanup =
+            stagedBackground.isEmpty() ? backgroundPath : stagedBackground;
+        tryRemoveIfStaged(bgCleanup);
+      }
+    }
+
+    m_installCancelRequested = false;
+    QString reason = QStringLiteral("Installation cancelled by user.");
+    emit installFailed(versionFolder, reason);
+    return;
+  }
+
   // Copy user-provided icon/background into the version folder (if provided and
   // not default).
   if (!useDefaultIcon && !iconToUse.isEmpty()) {
@@ -726,6 +792,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
     emit lastActiveVersionChanged();
   }
 
+  m_installCancelRequested = false;
   emit installSucceeded(versionFolder);
 }
 

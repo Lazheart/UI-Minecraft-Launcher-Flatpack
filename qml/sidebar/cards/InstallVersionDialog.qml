@@ -64,6 +64,10 @@ Dialog {
     // Reactive flag that drives all visual state of the Install button
     property bool installing: false
 
+    // Flag to indicate that the user has requested cancellation while an
+    // install is in progress (after the backend has started).
+    property bool cancelRequested: false
+
     // Pending install request to be sent to the backend on the next event
     // loop tick so the UI has time to render the Installing state first.
     property var pendingInstallRequest: null
@@ -485,6 +489,41 @@ Dialog {
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12
                     }
+
+                    onClicked: {
+                        console.log("[InstallVersionDialog] cancelButton clicked. installing=", installDialog.installing,
+                                    " pending=", deferredInstallTimer.running,
+                                    " cancelRequested=", installDialog.cancelRequested)
+
+                        if (installDialog.installing) {
+                            // Caso 1: aún no se ha llamado al backend (llamada diferida pendiente)
+                            if (deferredInstallTimer.running) {
+                                console.log("[InstallVersionDialog] Cancelling pending install before backend call")
+                                deferredInstallTimer.stop()
+                                installDialog.pendingInstallRequest = null
+                                installDialog.installing = false
+                                installDialog.cancelRequested = false
+                                errorLabel.text = "Installation Failed:\nCancelled by user"
+                                return
+                            }
+
+                            // Caso 2: el backend ya está ejecutando la instalación;
+                            // pedimos cancelación lógica al C++ y esperamos un
+                            // installFailed con el motivo correspondiente.
+                            console.log("[InstallVersionDialog] Requesting backend cancel")
+                            installDialog.cancelRequested = true
+                            errorLabel.text = "Cancelling installation..."
+                            if (typeof minecraftManager !== "undefined" && minecraftManager) {
+                                minecraftManager.cancelInstall()
+                            } else {
+                                console.log("[InstallVersionDialog] minecraftManager not available for cancelInstall")
+                            }
+                            return
+                        }
+
+                        // Si no hay instalación en curso, simplemente cierra el diálogo.
+                        installDialog.close()
+                    }
                 }
 
 
@@ -719,12 +758,14 @@ Dialog {
         function onInstallSucceeded(versionPath) {
             console.log("[InstallVersionDialog] onInstallSucceeded for", versionPath)
             installDialog.installing = false
+            installDialog.cancelRequested = false
             installDialog.close()
         }
 
         function onInstallFailed(versionPath, reason) {
             console.log("[InstallVersionDialog] onInstallFailed for", versionPath, "reason=", reason)
             installDialog.installing = false
+            installDialog.cancelRequested = false
             errorLabel.text = reason && reason.length ? reason : ("Failed to install " + versionPath)
         }
     }

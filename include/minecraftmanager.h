@@ -59,6 +59,12 @@ public:
                                   bool useNvidia = false, bool useZink = false,
                                   bool useMangohud = false);
 
+  // Cancel a currently running installation request. This does not abort the
+  // external extractor process immediately, but marks the in-flight
+  // installation so that once the extractor finishes, the result is treated
+  // as a user cancellation instead of a success.
+  Q_INVOKABLE void cancelInstall();
+
   QString installedVersion() const { return m_installedVersion; }
   QString lastActiveVersion() const { return m_lastActiveVersion; }
 
@@ -91,6 +97,7 @@ private:
   PathManager *m_pathManager = nullptr;
   QProcess *m_gameProcess = nullptr;
   QString m_status;
+  bool m_installCancelRequested = false;
 };
 
 #endif // MINECRAFTMANAGER_H
