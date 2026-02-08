@@ -687,7 +687,14 @@ void MinecraftManager::installRequested(const QString &apkPath,
   // Copy user-provided icon/background into the version folder (if provided and
   // not default).
   if (!useDefaultIcon && !iconToUse.isEmpty()) {
-    QFileInfo iconFi(iconToUse);
+    // Support Qt resource icons (qrc:/...) as well as regular files.
+    QString effectiveIconPath = iconToUse;
+    if (effectiveIconPath.startsWith("qrc:/")) {
+      // QML uses the "qrc:/" scheme; QFile expects the resource prefix ":/".
+      effectiveIconPath = ":" + effectiveIconPath.mid(4); // "qrc:/foo" -> ":/foo"
+    }
+
+    QFileInfo iconFi(effectiveIconPath);
     QString ext = iconFi.suffix();
     if (ext.isEmpty())
       ext = "png";
@@ -701,15 +708,22 @@ void MinecraftManager::installRequested(const QString &apkPath,
     for (const QString &old : oldIcons)
       QFile::remove(QDir(versionFolder).filePath(old));
 
-    bool copied = QFile::copy(iconToUse, destIcon);
-    qDebug() << "[MinecraftManager] copy icon" << iconToUse << "->" << destIcon
+    bool copied = QFile::copy(effectiveIconPath, destIcon);
+    qDebug() << "[MinecraftManager] copy icon" << effectiveIconPath << "->" << destIcon
              << "=>" << copied;
     if (!copied)
       qWarning() << "Failed to copy icon to" << destIcon;
   }
 
   if (!useDefaultBackground && !bgToUse.isEmpty()) {
-    QFileInfo bgFi(bgToUse);
+    // Support Qt resource backgrounds (qrc:/...) as well as regular files.
+    QString effectiveBgPath = bgToUse;
+    if (effectiveBgPath.startsWith("qrc:/")) {
+      // QML uses the "qrc:/" scheme; QFile expects the resource prefix ":/".
+      effectiveBgPath = ":" + effectiveBgPath.mid(4); // "qrc:/foo" -> ":/foo"
+    }
+
+    QFileInfo bgFi(effectiveBgPath);
     QString ext = bgFi.suffix();
     if (ext.isEmpty())
       ext = "jpg";
@@ -722,8 +736,8 @@ void MinecraftManager::installRequested(const QString &apkPath,
     for (const QString &old : oldBgs)
       QFile::remove(QDir(versionFolder).filePath(old));
 
-    bool copied = QFile::copy(bgToUse, destBg);
-    qDebug() << "[MinecraftManager] copy background" << bgToUse << "->"
+    bool copied = QFile::copy(effectiveBgPath, destBg);
+    qDebug() << "[MinecraftManager] copy background" << effectiveBgPath << "->"
              << destBg << "=>" << copied;
     if (!copied)
       qWarning() << "Failed to copy background to" << destBg;
