@@ -47,11 +47,17 @@ Item {
 
             // Quick Launch Card
             Rectangle {
+                id: quickLaunchCard
                 Layout.fillWidth: true
                 Layout.preferredHeight: 180
                 color: "#2d2d2d"
                 radius: 12
                 clip: true
+
+                property string versionName: minecraftManager.lastActiveVersion || "Latest"
+                property string fullTitle: "Minecraft " + versionName
+                property int titleMaxChars: 22
+                property string displayTitle: fullTitle.length > titleMaxChars ? versionName : fullTitle
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -59,9 +65,11 @@ Item {
                     spacing: 15
 
                     RowLayout {
+                        id: quickLaunchHeader
                         Layout.fillWidth: true
 
                         ColumnLayout {
+                            Layout.fillWidth: true
                             spacing: 5
                             Text {
                                 text: "READY TO PLAY"
@@ -71,10 +79,14 @@ Item {
                                 font.letterSpacing: 1.5
                             }
                             Text {
-                                text: "Minecraft " + (minecraftManager.lastActiveVersion || "Latest")
+                                text: quickLaunchCard.displayTitle
                                 font.pixelSize: 24
                                 font.bold: true
                                 color: "#ffffff"
+                                Layout.fillWidth: true
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                                clip: true
                             }
                         }
 
@@ -82,6 +94,7 @@ Item {
 
                         // Status Badge
                         Rectangle {
+                            id: statusBadge
                             Layout.preferredWidth: 100
                             Layout.preferredHeight: 30
                             color: minecraftManager.isRunning ? "#1b5e20" : "#3d3d3d"
@@ -89,7 +102,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: minecraftManager.isRunning ? "EJECUTANDO" : "DETENIDO"
+                                text: minecraftManager.isRunning ? "RUNNING" : "STOPPED"
                                 font.pixelSize: 10
                                 font.bold: true
                                 color: minecraftManager.isRunning ? "#81C784" : "#b0b0b0"
