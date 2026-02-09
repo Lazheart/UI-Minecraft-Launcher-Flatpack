@@ -10,18 +10,18 @@ Item {
     // Altura disponible del viewport para evitar huecos negros
     property real availableHeight: 0
 
-    // Versión seleccionada a mostrar
-    property string selectedVersion: ""
+    // Versión seleccionada a mostrar (nombre)
+    property string versionName: ""
 
     // Señal para pedir al padre volver al dashboard
     signal backRequested()
 
     // Datos completos de la versión seleccionada
     property var selectedVersionData: {
-        if (selectedVersion === "") return null;
+        if (versionName === "") return null;
         var versions = minecraftManager.availableVersions;
         for (var i = 0; i < versions.length; i++) {
-            if (versions[i].name === selectedVersion) return versions[i];
+            if (versions[i].name === versionName) return versions[i];
         }
         return null;
     }
@@ -45,6 +45,10 @@ Item {
         return Media.VersionBackgrounds[versionName] || Media.DefaultVersionBackground;
     }
 
+    onVisibleChanged: {
+        console.log("[HomeVersionSelected] visible =", visible, "versionName =", versionName)
+    }
+
     // Background Image
     Rectangle {
         anchors.fill: parent
@@ -54,7 +58,7 @@ Item {
         Image {
             id: backgroundImage
             anchors.fill: parent
-            source: getVersionBackground(selectedVersion)
+            source: getVersionBackground(versionName)
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             cache: true
@@ -223,7 +227,7 @@ Item {
                                 color: "#b0b0b0"
                             }
                             Text {
-                                text: selectedVersion
+                                text: versionName
                                 color: "#4CAF50"
                                 font.bold: true
                             }
@@ -306,8 +310,8 @@ Item {
                         console.log("[Home] Stopping game")
                         minecraftManager.stopGame()
                     } else {
-                        console.log("[Home] Launching game version:", selectedVersion)
-                        minecraftManager.runGame(selectedVersion, "", profileManager.currentProfile)
+                        console.log("[Home] Launching game version:", versionName)
+                        minecraftManager.runGame(versionName, "", profileManager.currentProfile)
                     }
                 }
             }

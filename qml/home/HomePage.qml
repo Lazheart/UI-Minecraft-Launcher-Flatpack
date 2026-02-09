@@ -10,6 +10,10 @@ Rectangle {
     
     // Property to track selected version
     property string selectedVersion: ""
+
+    onSelectedVersionChanged: {
+        console.log("[HomePage] selectedVersion changed to:", selectedVersion)
+    }
     
     // Señal para abrir el diálogo de instalación
     signal installVersionRequested()
@@ -62,7 +66,7 @@ Rectangle {
             anchors.fill: parent
             visible: minecraftManager.isInstalled && selectedVersion !== ""
             availableHeight: homeScroll.availableHeight
-            selectedVersion: selectedVersion
+            versionName: selectedVersion
 
             onBackRequested: selectedVersion = ""
         }

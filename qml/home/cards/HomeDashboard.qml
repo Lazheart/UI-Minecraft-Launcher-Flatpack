@@ -356,4 +356,8 @@ Item {
 
         Item { Layout.fillHeight: true; Layout.preferredHeight: 40 }
     }
+
+    onVisibleChanged: {
+        console.log("[HomeDashboard] visible =", visible)
+    }
 }

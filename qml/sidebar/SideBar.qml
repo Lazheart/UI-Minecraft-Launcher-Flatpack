@@ -240,11 +240,12 @@ Rectangle {
                                 id: versionMouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                    onClicked: {
-                                        // Refrescar la lista al seleccionar una versión
-                                        minecraftManager.getAvailableVersions()
-                                        sideBar.versionSelected(versionName)
-                                    }
+                                onClicked: {
+                                    // Refrescar la lista al seleccionar una versión
+                                    minecraftManager.getAvailableVersions()
+                                    console.log("[SideBar] Version clicked:", versionName)
+                                    sideBar.versionSelected(versionName)
+                                }
                             }
 
                             RowLayout {
