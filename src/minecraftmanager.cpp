@@ -11,6 +11,30 @@
 #include "../include/minecraftlaunch.h"
 #include <QFile>
 #include <QProcess>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrent/QtConcurrentRun>
+
+struct MinecraftManager::InstallContext {
+  QString apkPath;
+  QString name;
+  bool useDefaultIcon = true;
+  QString iconPath;
+  bool useDefaultBackground = true;
+  QString backgroundPath;
+  QString tag;
+
+  QString stagedApk;
+  QString stagedIcon;
+  QString stagedBackground;
+
+  QString apkToUse;
+  QString iconToUse;
+  QString bgToUse;
+
+  bool iconIsQrc = false;
+  bool bgIsQrc = false;
+};
 
 MinecraftManager::MinecraftManager(PathManager *paths, QObject *parent)
   : QObject(parent), m_pathManager(paths) {
@@ -432,6 +456,21 @@ void MinecraftManager::installRequested(const QString &apkPath,
            << " backgroundPath=" << backgroundPath
            << " tag=" << tag;
 
+  // Si ya hay una instalación en curso, rechazar la nueva para evitar
+  // estados inconsistentes (la UI QML ya debería evitarlo, pero es una
+  // salvaguarda extra en C++).
+  if (m_currentInstall != nullptr) {
+    qWarning() << "[MinecraftManager] installRequested called while another"
+               << "installation is in progress";
+    QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
+    emit installFailed(versionFolderAttempt, QStringLiteral("Another installation is already in progress."));
+    return;
+  }
+
+  // Limpiar cualquier contexto previo (por si quedó alguno colgando)
+  delete m_currentInstall;
+  m_currentInstall = nullptr;
+
   // Clear any stale cancellation flag from previous runs; a new install
   // starts as non-cancelled until QML explicitly calls cancelInstall().
   m_installCancelRequested = false;
@@ -458,71 +497,134 @@ void MinecraftManager::installRequested(const QString &apkPath,
     return;
   }
 
+  // Crear el contexto de instalación que se usará tanto en el hilo de
+  // extracción como en la fase de finalización.
+  InstallContext *ctx = new InstallContext();
+  ctx->apkPath = apkPath;
+  ctx->name = name;
+  ctx->useDefaultIcon = useDefaultIcon;
+  ctx->iconPath = iconPath;
+  ctx->useDefaultBackground = useDefaultBackground;
+  ctx->backgroundPath = backgroundPath;
+  ctx->tag = tag;
+  ctx->iconIsQrc = iconPath.startsWith("qrc:/");
+  ctx->bgIsQrc = backgroundPath.startsWith("qrc:/");
+
   // Stage APK if needed (e.g. Flatpak portal /run/user/ paths) so the
   // external extractor can access a regular file path.
-  QString stagedApk;
-  QString apkToUse = apkPath;
+  ctx->stagedApk.clear();
+  ctx->apkToUse = apkPath;
   if (m_pathManager) {
-    stagedApk = m_pathManager->stageFileForExtraction(apkPath);
-    if (!stagedApk.isEmpty()) {
+    ctx->stagedApk = m_pathManager->stageFileForExtraction(apkPath);
+    if (!ctx->stagedApk.isEmpty()) {
       qDebug() << "[MinecraftManager] Using staged APK for extraction:"
-               << stagedApk;
-      apkToUse = stagedApk;
+               << ctx->stagedApk;
+      ctx->apkToUse = ctx->stagedApk;
     }
   }
 
   // Validate that the APK we are about to pass to the extractor exists and
   // is readable. If not, fail fast instead of letting the extractor crash
   // with a generic "Failed to open zip" error.
-  QFileInfo apkInfo(apkToUse);
+  QFileInfo apkInfo(ctx->apkToUse);
   if (!apkInfo.exists() || !apkInfo.isReadable()) {
     QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
     QString reason = QStringLiteral("APK file not found or not accessible: ") +
-                     apkToUse;
+                     ctx->apkToUse;
     qWarning() << "installRequested:" << reason;
+    delete ctx;
     emit installFailed(versionFolderAttempt, reason);
     return;
   }
 
   // Pre-stage user-provided icon/background so we have accessible file paths
-  QString stagedIcon;
-  QString stagedBackground;
-  QString iconToUse = iconPath;
-  QString bgToUse = backgroundPath;
+  ctx->stagedIcon.clear();
+  ctx->stagedBackground.clear();
+  ctx->iconToUse = iconPath;
+  ctx->bgToUse = backgroundPath;
+
   // Do not try to stage Qt resource paths (qrc:/...). Those are internal
   // resources, not real files on disk.
-  bool iconIsQrc = iconPath.startsWith("qrc:/");
-  bool bgIsQrc = backgroundPath.startsWith("qrc:/");
-
-  if (!useDefaultIcon && !iconPath.isEmpty() && !iconIsQrc && m_pathManager) {
-    stagedIcon = m_pathManager->stageFileForExtraction(iconPath);
-    if (!stagedIcon.isEmpty()) {
-      qDebug() << "[MinecraftManager] Using staged icon for later copy:"
-               << stagedIcon;
-      iconToUse = stagedIcon;
-    }
-  }
-  if (!useDefaultBackground && !backgroundPath.isEmpty() && !bgIsQrc &&
+  if (!useDefaultIcon && !iconPath.isEmpty() && !ctx->iconIsQrc &&
       m_pathManager) {
-    stagedBackground = m_pathManager->stageFileForExtraction(backgroundPath);
-    if (!stagedBackground.isEmpty()) {
+    ctx->stagedIcon = m_pathManager->stageFileForExtraction(iconPath);
+    if (!ctx->stagedIcon.isEmpty()) {
+      qDebug() << "[MinecraftManager] Using staged icon for later copy:"
+               << ctx->stagedIcon;
+      ctx->iconToUse = ctx->stagedIcon;
+    }
+  }
+  if (!useDefaultBackground && !backgroundPath.isEmpty() && !ctx->bgIsQrc &&
+      m_pathManager) {
+    ctx->stagedBackground =
+        m_pathManager->stageFileForExtraction(backgroundPath);
+    if (!ctx->stagedBackground.isEmpty()) {
       qDebug() << "[MinecraftManager] Using staged background for later copy:"
-               << stagedBackground;
-      bgToUse = stagedBackground;
+               << ctx->stagedBackground;
+      ctx->bgToUse = ctx->stagedBackground;
     }
   }
 
-  // Use MinecraftExtract to perform extraction
-  MinecraftExtract extractor(m_pathManager);
-  QString extractorErr;
-  bool ok = extractor.extractApk(apkToUse, name, &extractorErr);
+  // Guardar el contexto como instalación en curso
+  m_currentInstall = ctx;
+
+  // Lanzar la extracción en un hilo en segundo plano usando QtConcurrent para
+  // no bloquear el hilo de la GUI ni el event loop de QML. El resultado se
+  // recogerá en handleInstallCompletion().
+  QFutureWatcher<QPair<bool, QString>> *watcher =
+      new QFutureWatcher<QPair<bool, QString>>(this);
+
+  connect(watcher, &QFutureWatcherBase::finished, this,
+          [this, watcher]() {
+            QFuture<QPair<bool, QString>> future = watcher->future();
+            QPair<bool, QString> result = future.result();
+            watcher->deleteLater();
+            handleInstallCompletion(result.first, result.second);
+          });
+
+  QFuture<QPair<bool, QString>> future =
+      QtConcurrent::run([this, apkToUse = ctx->apkToUse,
+                         versionName = ctx->name]() -> QPair<bool, QString> {
+        MinecraftExtract extractor(m_pathManager);
+        QString extractorErr;
+        bool ok = extractor.extractApk(apkToUse, versionName, &extractorErr);
+        return qMakePair(ok, extractorErr);
+      });
+
+  watcher->setFuture(future);
+}
+
+void MinecraftManager::handleInstallCompletion(bool ok,
+                                               const QString &extractorErr) {
+  InstallContext *ctx = m_currentInstall;
+  if (!ctx) {
+    qWarning() << "[MinecraftManager] handleInstallCompletion called without"
+               << "an active install context";
+    return;
+  }
+
+  const QString name = ctx->name;
+  const QString apkPath = ctx->apkPath;
+  const bool useDefaultIcon = ctx->useDefaultIcon;
+  const QString iconPath = ctx->iconPath;
+  const bool useDefaultBackground = ctx->useDefaultBackground;
+  const QString backgroundPath = ctx->backgroundPath;
+  const QString tag = ctx->tag;
+  const QString stagedApk = ctx->stagedApk;
+  const QString stagedIcon = ctx->stagedIcon;
+  const QString stagedBackground = ctx->stagedBackground;
+  const QString iconToUse = ctx->iconToUse;
+  const QString bgToUse = ctx->bgToUse;
+
+  // A partir de aquí, ctx ya no es necesario; liberarlo al final de la
+  // función.
+
   if (!ok) {
     qWarning() << "Extraction failed:" << extractorErr;
-    // Emitir señal de fallo con razón
     QString versionFolderAttempt = QDir(versionsDir()).filePath(name);
 
     // Si la extracción creó una carpeta parcial, eliminarla para evitar
-    // versiones "fantasma"
+    // versiones "fantasma".
     QDir vdirAttempt(versionFolderAttempt);
     if (vdirAttempt.exists()) {
       qDebug() << "[MinecraftManager] Removing incomplete version folder due "
@@ -536,7 +638,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
     }
 
     // Intentar limpiar cualquier archivo staged (apk, icon, background) que
-    // hayamos creado
+    // hayamos creado.
     if (m_pathManager) {
       QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
       auto tryRemoveIfStagedLocal = [&](const QString &p) {
@@ -574,6 +676,11 @@ void MinecraftManager::installRequested(const QString &apkPath,
                 "cleanup attempted for version:"
              << name;
     qDebug() << "[MinecraftManager] extraction error message:" << extractorErr;
+
+    delete m_currentInstall;
+    m_currentInstall = nullptr;
+    m_installCancelRequested = false;
+
     emit installFailed(versionFolderAttempt, extractorErr);
     return;
   }
@@ -587,7 +694,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
     qWarning() << "Expected version folder not found after extraction:"
                << versionFolder;
 
-    // Cleanup any staged files as in the failure path above
+    // Cleanup any staged files as in the failure path above.
     if (m_pathManager) {
       QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
       auto tryRemoveIfStaged = [&](const QString &p) {
@@ -623,6 +730,11 @@ void MinecraftManager::installRequested(const QString &apkPath,
     QString reason =
         QStringLiteral("Version folder not found after extraction: ") +
         versionFolder;
+
+    delete m_currentInstall;
+    m_currentInstall = nullptr;
+    m_installCancelRequested = false;
+
     emit installFailed(versionFolder, reason);
     return;
   }
@@ -678,14 +790,17 @@ void MinecraftManager::installRequested(const QString &apkPath,
       }
     }
 
+    delete m_currentInstall;
+    m_currentInstall = nullptr;
     m_installCancelRequested = false;
+
     QString reason = QStringLiteral("Installation cancelled by user.");
     emit installFailed(versionFolder, reason);
     return;
   }
 
-  // Copy user-provided icon/background into the version folder (if provided and
-  // not default).
+  // Copy user-provided icon/background into the version folder (if provided
+  // and not default).
   if (!useDefaultIcon && !iconToUse.isEmpty()) {
     // Support Qt resource icons (qrc:/...) as well as regular files.
     QString effectiveIconPath = iconToUse;
@@ -701,7 +816,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
     QString destIcon = QDir(versionFolder).filePath("custom_icon." + ext);
 
     // Remove any existing custom icons to avoid duplicates with different
-    // extensions
+    // extensions.
     QStringList oldIcons =
         QDir(versionFolder)
             .entryList(QStringList() << "custom_icon.*", QDir::Files);
@@ -709,8 +824,8 @@ void MinecraftManager::installRequested(const QString &apkPath,
       QFile::remove(QDir(versionFolder).filePath(old));
 
     bool copied = QFile::copy(effectiveIconPath, destIcon);
-    qDebug() << "[MinecraftManager] copy icon" << effectiveIconPath << "->" << destIcon
-             << "=>" << copied;
+    qDebug() << "[MinecraftManager] copy icon" << effectiveIconPath << "->"
+             << destIcon << "=>" << copied;
     if (!copied)
       qWarning() << "Failed to copy icon to" << destIcon;
   }
@@ -729,7 +844,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
       ext = "jpg";
     QString destBg = QDir(versionFolder).filePath("custom_background." + ext);
 
-    // Remove any existing custom backgrounds
+    // Remove any existing custom backgrounds.
     QStringList oldBgs =
         QDir(versionFolder)
             .entryList(QStringList() << "custom_background.*", QDir::Files);
@@ -737,14 +852,14 @@ void MinecraftManager::installRequested(const QString &apkPath,
       QFile::remove(QDir(versionFolder).filePath(old));
 
     bool copied = QFile::copy(effectiveBgPath, destBg);
-    qDebug() << "[MinecraftManager] copy background" << effectiveBgPath << "->"
-             << destBg << "=>" << copied;
+    qDebug() << "[MinecraftManager] copy background" << effectiveBgPath
+             << "->" << destBg << "=>" << copied;
     if (!copied)
       qWarning() << "Failed to copy background to" << destBg;
   }
 
-  // Notify UI and consumers that versions changed
-  // Save tag if provided
+  // Notify UI and consumers that versions changed.
+  // Save tag if provided.
   if (!tag.isEmpty()) {
     QString tagFilePath = QDir(versionFolder).filePath("tag.txt");
     QFile tagFile(tagFilePath);
@@ -758,7 +873,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
     }
   }
 
-  // Update installedVersion so QML bindings reflect the new installation
+  // Update installedVersion so QML bindings reflect the new installation.
   m_installedVersion = name;
   emit installedVersionChanged();
   emit availableVersionsChanged();
@@ -766,8 +881,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
   qDebug() << "[MinecraftManager] installRequested completed for" << name
            << "folder:" << versionFolder;
 
-  // Emitir señal de éxito con la ruta de la versión creada
-  // Intentar limpiar archivos staged que se copiaron a dataDir/imports
+  // Intentar limpiar archivos staged que se copiaron a dataDir/imports.
   if (m_pathManager) {
     QString importsDir = QDir(m_pathManager->dataDir()).filePath("imports");
     auto tryRemoveIfStaged = [&](const QString &p) {
@@ -785,7 +899,7 @@ void MinecraftManager::installRequested(const QString &apkPath,
       }
     };
 
-    // remove the actual files used for extraction / copy operations
+    // remove the actual files used for extraction / copy operations.
     QString apkCleanup = stagedApk.isEmpty() ? apkPath : stagedApk;
     tryRemoveIfStaged(apkCleanup);
     if (!useDefaultIcon) {
@@ -799,14 +913,17 @@ void MinecraftManager::installRequested(const QString &apkPath,
     }
   }
 
-  // Update last active version with the newly installed version
+  // Update last active version with the newly installed version.
   QString versionName = QFileInfo(versionFolder).fileName();
   if (m_lastActiveVersion != versionName) {
     m_lastActiveVersion = versionName;
     emit lastActiveVersionChanged();
   }
 
+  delete m_currentInstall;
+  m_currentInstall = nullptr;
   m_installCancelRequested = false;
+
   emit installSucceeded(versionFolder);
 }
 

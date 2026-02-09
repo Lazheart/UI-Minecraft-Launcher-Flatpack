@@ -22,6 +22,7 @@ find_package(Qt5 REQUIRED COMPONENTS
     Widgets
     Network
     DBus
+    Concurrent
 )
 
 # Buscar libzip
@@ -79,6 +80,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::Widgets
     Qt5::Network
     Qt5::DBus
+    Qt5::Concurrent
     ${LIBZIP_LIBRARIES}
 )
 

@@ -89,6 +89,8 @@ signals:
                     const QString &reason);
 
 private:
+  struct InstallContext;
+  InstallContext *m_currentInstall = nullptr;
   QString m_installedVersion;
   QString m_lastActiveVersion;
   bool m_isInstalled = false;
@@ -98,6 +100,7 @@ private:
   QProcess *m_gameProcess = nullptr;
   QString m_status;
   bool m_installCancelRequested = false;
+  void handleInstallCompletion(bool ok, const QString &extractorErr);
 };
 
 #endif // MINECRAFTMANAGER_H
