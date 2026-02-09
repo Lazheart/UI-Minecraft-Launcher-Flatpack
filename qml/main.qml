@@ -235,7 +235,6 @@ ApplicationWindow {
         accentColor: mainWindow.accentColor
         textColor: mainWindow.textColor
         secondaryTextColor: mainWindow.secondaryTextColor
-        deleteColor: "#f44336"
 
         onDeleteRequested: function(versions) {
             for (let i = 0; i < versions.length; i++) {

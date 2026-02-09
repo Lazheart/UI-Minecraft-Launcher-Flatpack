@@ -22,7 +22,9 @@ Dialog {
     property color textColor: "#ffffff"
     property color secondaryTextColor: "#b0b0b0"
     property color borderColor: "#4CAF50"
-    property color deleteColor: "#f44336"
+    // Rojo aún más grisáceo/suave para las versiones a eliminar
+    
+    property color deleteColor: '#521d1d'
 
     // Lista de versiones seleccionadas para eliminar
     property var selectedVersions: []
@@ -86,11 +88,18 @@ Dialog {
                 }
 
                 ScrollView {
+                    id: versionsScrollView
                     anchors.fill: parent
                     clip: true
 
+                    // Sólo scroll vertical; nunca horizontal
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+                    // Asegura que el contenido no sea más ancho que el área visible
+                    contentWidth: availableWidth
+
                     Column {
-                        width: parent.width
+                        width: versionsScrollView.availableWidth
                         spacing: 0
 
                         // Mensaje si no hay versiones
@@ -114,22 +123,20 @@ Dialog {
 
                             Rectangle {
                                 id: versionItemDelegate
-                                width: parent.width
+                                width: versionsScrollView.availableWidth
                                 height: 48
                                 radius: 6
                                 clip: true
                                 property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                                 property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
-                                // item check state and color behavior
                                 property bool checked: false
-                                color: checked ? "#2e1f1f" : (itemMouse.containsMouse ? "#302C2C" : "transparent")
+                                color: "transparent"
 
                                 MouseArea {
                                     id: itemMouse
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     onClicked: {
-                                        // Toggle the delegate checked state (same behavior as clicking the custom checkbox)
                                         versionItemDelegate.checked = !versionItemDelegate.checked
                                         if (versionItemDelegate.checked) {
                                             deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([versionPath])
@@ -144,22 +151,14 @@ Dialog {
                                     }
                                 }
 
-                                // background and hover overlays
+                                // background overlay (contenido siempre dentro del recuadro)
                                 Rectangle {
                                     id: itemBackground
                                     anchors.fill: parent
-                                    anchors.margins: 4
-                                    // selected uses UI gray (borderColor) with rounded corners
-                                    color: checked ? deleteDialog.borderColor : "transparent"
-                                    radius: 6
-                                    z: -1
-                                }
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    anchors.margins: 4
-                                    // subtle gray hover using existing borderColor with alpha
-                                    color: itemMouse.containsMouse ? "#3d3d3d22" : "transparent"
+                                    // Margen muy pequeño para que casi no se note el espacio negro entre tarjetas
+                                    anchors.margins: 1
+                                    // Hover gris cuando no está seleccionado, rojo suave cuando sí
+                                    color: versionItemDelegate.checked ? deleteDialog.deleteColor : (itemMouse.containsMouse ? "#2a2a2a" : "transparent")
                                     radius: 6
                                     z: 0
                                 }
@@ -168,18 +167,16 @@ Dialog {
                                     anchors.fill: parent
                                     anchors.margins: 10
                                     spacing: 12
-                                    // ensure children are laid out inside the delegate bounds
                                     clip: true
 
-                                    // Custom checkbox visual (thin, compact, green accent when checked)
                                     Rectangle {
                                         id: customCheck
                                         width: 20
                                         height: 20
                                         radius: 4
-                                        // keep visible on hover: faint bg and lighter border when not checked
-                                        color: checked ? deleteDialog.accentColor : (itemMouse.containsMouse ? '#151515' : "transparent")
-                                        border.color: checked ? deleteDialog.accentColor : (itemMouse.containsMouse ? "#e0e0e0" : deleteDialog.borderColor)
+                                        // Usamos el rojo fuerte del botón principal para que resalte sobre el fondo suave de la fila
+                                        color: versionItemDelegate.checked ? '#17cd0a' : "transparent"
+                                        border.color: versionItemDelegate.checked ? '#17cd0a' : deleteDialog.borderColor
                                         border.width: 1
                                         Layout.preferredWidth: 20
                                         Layout.preferredHeight: 20
@@ -192,10 +189,10 @@ Dialog {
                                             id: checkMark
                                             anchors.centerIn: parent
                                             text: "✓"
-                                            color: checked ? "#ffffff" : "transparent"
+                                            color: versionItemDelegate.checked ? "#ffffff" : "transparent"
                                             font.pixelSize: 12
                                             font.bold: true
-                                            opacity: checked ? 1 : 0
+                                            opacity: versionItemDelegate.checked ? 1 : 0
                                             Behavior on opacity { NumberAnimation { duration: 120 } }
                                         }
 
