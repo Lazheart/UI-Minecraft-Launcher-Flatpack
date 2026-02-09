@@ -19,6 +19,11 @@
         <file>settings/SettingsPage.qml</file>
         <file>about/AboutPage.qml</file>
 
+        <!-- Home cards -->
+        <file>home/cards/HomeEmptyState.qml</file>
+        <file>home/cards/HomeDashboard.qml</file>
+        <file>home/cards/HomeVersionSelected.qml</file>
+
         <!-- About cards -->
         <file>about/cards/AboutHeroCard.qml</file>
         <file>about/cards/AboutAuthorCard.qml</file>
@@ -33,6 +38,9 @@
         <file>settings/cards/DebugCard.qml</file>
         <file>settings/cards/SettingsTab.qml</file>
         <file>settings/cards/LogsTab.qml</file>
+
+        <!-- Home cards -->
+        <file>home/cards/HomeEmptyState.qml</file>
 
         <!-- Media Assets -->
         <file alias="assets/media/logo.svg">../assets/media/logo.svg</file>
