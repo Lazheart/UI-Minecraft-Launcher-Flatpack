@@ -129,7 +129,7 @@ Dialog {
                                 clip: true
                                 property string versionPath: (typeof modelData === 'string') ? modelData : (modelData && modelData.path ? modelData.path : "")
                                 property string versionName: (typeof modelData === 'string') ? (modelData.split("/").pop()) : (modelData && modelData.name ? modelData.name : (versionPath.split("/").pop()))
-                                property bool checked: false
+                                readonly property bool checked: deleteDialog.selectedVersions.indexOf(versionPath) !== -1
                                 color: "transparent"
 
                                 MouseArea {
@@ -137,15 +137,13 @@ Dialog {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     onClicked: {
-                                        versionItemDelegate.checked = !versionItemDelegate.checked
-                                        if (versionItemDelegate.checked) {
-                                            deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([versionPath])
+                                        var path = versionPath
+                                        var index = deleteDialog.selectedVersions.indexOf(path)
+                                        if (index === -1) {
+                                            deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([path])
                                         } else {
-                                            var newArr = []
-                                            for (var i = 0; i < deleteDialog.selectedVersions.length; ++i) {
-                                                if (deleteDialog.selectedVersions[i] !== versionPath)
-                                                    newArr.push(deleteDialog.selectedVersions[i])
-                                            }
+                                            var newArr = deleteDialog.selectedVersions.slice()
+                                            newArr.splice(index, 1)
                                             deleteDialog.selectedVersions = newArr
                                         }
                                     }
@@ -199,16 +197,13 @@ Dialog {
                                         MouseArea {
                                             anchors.fill: parent
                                             onClicked: {
-                                                // toggle delegate checked state and update selection list
-                                                versionItemDelegate.checked = !versionItemDelegate.checked
-                                                if (versionItemDelegate.checked) {
-                                                    deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([versionPath])
+                                                var path = versionPath
+                                                var index = deleteDialog.selectedVersions.indexOf(path)
+                                                if (index === -1) {
+                                                    deleteDialog.selectedVersions = deleteDialog.selectedVersions.concat([path])
                                                 } else {
-                                                    var newArr = []
-                                                    for (var i = 0; i < deleteDialog.selectedVersions.length; ++i) {
-                                                        if (deleteDialog.selectedVersions[i] !== versionPath)
-                                                            newArr.push(deleteDialog.selectedVersions[i])
-                                                    }
+                                                    var newArr = deleteDialog.selectedVersions.slice()
+                                                    newArr.splice(index, 1)
                                                     deleteDialog.selectedVersions = newArr
                                                 }
                                             }
@@ -294,8 +289,8 @@ Dialog {
 
     onVisibleChanged: {
         // Clear any previous selections when the dialog opens or closes
+        deleteDialog.selectedVersions = []
         if (visible) {
-            deleteDialog.selectedVersions = []
             // refresh the list each time the dialog opens
             deleteDialog.versions = minecraftManager.getAvailableVersions()
         }
