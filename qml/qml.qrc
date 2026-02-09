@@ -34,9 +34,6 @@
         <file>settings/cards/SettingsTab.qml</file>
         <file>settings/cards/LogsTab.qml</file>
 
-        <!-- Legacy/other components -->
-        <file>home/cards/PlayTab.qml</file>
-
         <!-- Media Assets -->
         <file alias="assets/media/logo.svg">../assets/media/logo.svg</file>
         <file alias="assets/media/bedrockLogo.png">../assets/media/bedrockLogo.png</file>
