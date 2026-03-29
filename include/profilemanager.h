@@ -27,6 +27,8 @@ public:
     Q_INVOKABLE void updateProfile(const QString &name, const QVariantMap &data);
     Q_INVOKABLE void reloadProfiles();
 
+    Q_INVOKABLE void saveProfiles();
+
 signals:
     void profilesChanged();
     void currentProfileChanged(const QString &profile);
@@ -37,7 +39,6 @@ private:
     QString m_currentProfile;
 
     void loadProfiles();
-    void saveProfiles();
 };
 
 #endif // PROFILEMANAGER_H

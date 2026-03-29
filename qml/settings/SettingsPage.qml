@@ -178,9 +178,9 @@ Rectangle {
                                 theme: visualCard.currentTheme,
                                 scale: visualCard.scaleValue
                             })
-                            // Recargar los perfiles para reflejar los cambios
-                            profileManager.reloadProfiles()
-                            console.log("[Settings] Settings saved to profile:", profileManager.currentProfile)
+                            // Guardar los cambios en el archivo
+                            profileManager.saveProfiles()
+                            console.log("[Settings] Settings saved to disk for profile:", profileManager.currentProfile)
                         }
                     }
 
@@ -204,15 +204,9 @@ Rectangle {
                         }
 
                         onClicked: {
-                            // Resetear a valores por defecto
-                            profileManager.updateProfile(profileManager.currentProfile, { language: "EN", theme: "DARK", scale: 1.0 })
-                            languageCard.currentLanguage = "EN"
-                            visualCard.scaleValue = 1.0
-                            visualCard.currentTheme = "DARK"
-                            settingsPage.currentLanguage = "EN"
-                            settingsPage.currentTheme = "DARK"
-                            settingsPage.currentScale = 1.0
-                            console.log("[Settings] Settings reset to default")
+                            // Cargar la última configuración guardada
+                            profileManager.reloadProfiles()
+                            console.log("[Settings] Settings reset to last saved state")
                         }
                     }
 

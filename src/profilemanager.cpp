@@ -31,7 +31,6 @@ void ProfileManager::setCurrentProfile(const QString &profile)
 {
     if (m_currentProfile != profile) {
         m_currentProfile = profile;
-        m_settings->setValue("currentProfile", profile);
         emit currentProfileChanged(profile);
         qDebug() << "[ProfileManager] Perfil cambiado a:" << profile;
     }
@@ -59,7 +58,6 @@ void ProfileManager::addProfile(const QString &name, const QString &version)
     newProfile["created"] = QDateTime::currentDateTime().toString(Qt::ISODate);
     
     m_profiles.append(newProfile);
-    saveProfiles();
     emit profilesChanged();
     
     qDebug() << "[ProfileManager] Perfil agregado:" << name;
@@ -90,10 +88,9 @@ void ProfileManager::addProfileWithSettings(const QString &name, const QString &
     newProfile["created"] = QDateTime::currentDateTime().toString(Qt::ISODate);
     
     m_profiles.append(newProfile);
-    saveProfiles();
     emit profilesChanged();
     
-    qDebug() << "[ProfileManager] Perfil agregado con configuraci\u00f3n:" << name 
+    qDebug() << "[ProfileManager] Perfil agregado con configuración:" << name 
              << "Language:" << language << "Theme:" << theme << "Scale:" << scale;
 }
 
@@ -103,7 +100,6 @@ void ProfileManager::removeProfile(const QString &name)
         QVariantMap profile = m_profiles[i].toMap();
         if (profile["name"].toString() == name) {
             m_profiles.removeAt(i);
-            saveProfiles();
             emit profilesChanged();
             qDebug() << "[ProfileManager] Perfil eliminado:" << name;
             
@@ -137,7 +133,6 @@ void ProfileManager::updateProfile(const QString &name, const QVariantMap &data)
                 profile[it.key()] = it.value();
             }
             m_profiles[i] = profile;
-            saveProfiles();
             emit profilesChanged();
             qDebug() << "[ProfileManager] Perfil actualizado:" << name;
             return;
@@ -161,32 +156,24 @@ void ProfileManager::loadProfiles()
         profile["version"] = m_settings->value("version", "latest").toString();
         profile["created"] = m_settings->value("created").toString();
         
-        m_profiles.append(profile);
-    }
-    m_settings->endArray();
-    
-    // Ahora cargar los valores de configuración (language, theme, scale)
-    // que pueden estar guardados por LauncherBackend::saveProfileSettings()
-    for (int i = 0; i < m_profiles.size(); ++i) {
-        QVariantMap profile = m_profiles[i].toMap();
-        QString profileName = profile["name"].toString();
-        
+        // Claves antiguas para soporte de LauncherBackend backwards compatibility
         QString langKey = QString("profile/%1/language").arg(profileName);
         QString themeKey = QString("profile/%1/theme").arg(profileName);
         QString scaleKey = QString("profile/%1/scale").arg(profileName);
         
-        // Cargar del archivo si existe, si no, usar valores por defecto
-        profile["language"] = m_settings->value(langKey, "EN").toString();
-        profile["theme"] = m_settings->value(themeKey, "DARK").toString();
-        profile["scale"] = m_settings->value(scaleKey, 1.0).toDouble();
+        // Cargar desde el array si existe, de lo contrario intentar fallback a las antiguas, o por defecto
+        profile["language"] = m_settings->value("language", m_settings->value(langKey, "EN")).toString();
+        profile["theme"] = m_settings->value("theme", m_settings->value(themeKey, "DARK")).toString();
+        profile["scale"] = m_settings->value("scale", m_settings->value(scaleKey, 1.0)).toDouble();
         
-        m_profiles[i] = profile;
+        m_profiles.append(profile);
         
         qDebug() << "[ProfileManager] Perfil cargado:" << profileName 
                  << "Language:" << profile["language"] 
                  << "Theme:" << profile["theme"] 
                  << "Scale:" << profile["scale"];
     }
+    m_settings->endArray();
     
     // Si no hay perfiles, crear uno por defecto
     if (m_profiles.isEmpty()) {
@@ -224,5 +211,9 @@ void ProfileManager::saveProfiles()
         m_settings->setValue("scale", profile.value("scale", 1.0));
     }
     m_settings->endArray();
+    
+    // Guardar el perfil actual en los settings
+    m_settings->setValue("currentProfile", m_currentProfile);
+    
     m_settings->sync();
 }
