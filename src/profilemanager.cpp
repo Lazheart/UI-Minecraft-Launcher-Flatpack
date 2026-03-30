@@ -57,6 +57,7 @@ void ProfileManager::addProfile(const QString &name, const QString &version)
     newProfile["version"] = version.isEmpty() ? "latest" : version;
     newProfile["created"] = QDateTime::currentDateTime().toString(Qt::ISODate);
     newProfile["customThemePath"] = QString();
+    newProfile["customThemes"] = QVariantList();
 
     m_profiles.append(newProfile);
     emit profilesChanged();
@@ -91,6 +92,7 @@ void ProfileManager::addProfileWithSettings(const QString &name, const QString &
     newProfile["scale"] = scale;
     newProfile["created"] = QDateTime::currentDateTime().toString(Qt::ISODate);
     newProfile["customThemePath"] = QString();
+    newProfile["customThemes"] = QVariantList();
 
     m_profiles.append(newProfile);
     emit profilesChanged();
@@ -178,6 +180,8 @@ void ProfileManager::loadProfiles()
         profile["scale"] = m_settings->value("scale", m_settings->value(scaleKey, 1.0)).toDouble();
         profile["customThemePath"] =
             m_settings->value("customThemePath", "").toString();
+        profile["customThemes"] =
+            m_settings->value("customThemes", QVariantList()).toList();
         
         m_profiles.append(profile);
         
@@ -224,6 +228,8 @@ void ProfileManager::saveProfiles()
         m_settings->setValue("scale", profile.value("scale", 1.0));
         m_settings->setValue("customThemePath",
                               profile.value("customThemePath", ""));
+        m_settings->setValue("customThemes",
+                     profile.value("customThemes", QVariantList()));
     }
     m_settings->endArray();
     

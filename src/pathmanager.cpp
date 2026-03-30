@@ -303,3 +303,65 @@ bool PathManager::saveCustomBackground(const QString &sourcePath) const {
     return true; // Already exists
   return QFile::copy(path, dest);
 }
+
+QString PathManager::saveThemeToProfile(const QString &profileName,
+                                        const QString &themeName,
+                                        const QString &sourcePath) const {
+  if (sourcePath.isEmpty())
+    return QString();
+
+  QString src = sourcePath;
+  if (src.startsWith("file://")) {
+    QUrl u(src);
+    src = u.toLocalFile();
+  }
+
+  QFileInfo srcInfo(src);
+  if (!srcInfo.exists() || !srcInfo.isFile()) {
+    qWarning() << "[PathManager] saveThemeToProfile: invalid source" << src;
+    return QString();
+  }
+
+  QString profileSafe = profileName.trimmed();
+  if (profileSafe.isEmpty())
+    profileSafe = QStringLiteral("Default");
+  profileSafe.replace('/', '_');
+
+  QString baseName = themeName.trimmed();
+  if (baseName.isEmpty())
+    baseName = srcInfo.completeBaseName();
+  if (baseName.isEmpty())
+    baseName = QStringLiteral("style");
+
+  QString safeStem;
+  safeStem.reserve(baseName.size());
+  for (const QChar &c : baseName) {
+    if (c.isLetterOrNumber() || c == QLatin1Char('-') || c == QLatin1Char('_')) {
+      safeStem.append(c);
+    } else if (c.isSpace()) {
+      safeStem.append(QLatin1Char('-'));
+    }
+  }
+  if (safeStem.isEmpty())
+    safeStem = QStringLiteral("style");
+
+  const QString themesDir = QDir(m_profilesDir).filePath(profileSafe + "/themes");
+  QDir().mkpath(themesDir);
+
+  QString dest = QDir(themesDir).filePath(safeStem + ".css");
+  int suffix = 1;
+  while (QFile::exists(dest) && suffix < 10000) {
+    dest = QDir(themesDir).filePath(
+        QString("%1-%2.css").arg(safeStem).arg(suffix));
+    ++suffix;
+  }
+
+  if (!QFile::copy(src, dest)) {
+    qWarning() << "[PathManager] saveThemeToProfile: failed copy" << src
+               << "->" << dest;
+    return QString();
+  }
+
+  qDebug() << "[PathManager] saved custom theme:" << src << "->" << dest;
+  return QDir::cleanPath(dest);
+}

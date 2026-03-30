@@ -47,6 +47,9 @@ public:
     Q_INVOKABLE QStringList listCustomBackgrounds() const;
     Q_INVOKABLE bool saveCustomIcon(const QString &sourcePath) const;
     Q_INVOKABLE bool saveCustomBackground(const QString &sourcePath) const;
+    Q_INVOKABLE QString saveThemeToProfile(const QString &profileName,
+                                           const QString &themeName,
+                                           const QString &sourcePath) const;
 
 signals:
     void changed();
