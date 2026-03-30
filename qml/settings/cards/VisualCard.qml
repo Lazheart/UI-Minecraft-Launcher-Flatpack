@@ -15,6 +15,8 @@ Rectangle {
     property real scaleValue: 1.0
     property string currentTheme: "DARK"
     property var customThemes: []
+    property bool deleteMode: false
+    property string selectedDeleteThemePath: ""
 
     signal scaleChanged(real scale)
     signal themeChanged(string theme)
@@ -25,6 +27,18 @@ Rectangle {
             customThemes = profile.customThemes
         else
             customThemes = []
+
+        if (selectedDeleteThemePath.length > 0) {
+            var stillExists = false
+            for (var i = 0; i < customThemes.length; ++i) {
+                if (String(customThemes[i].path) === selectedDeleteThemePath) {
+                    stillExists = true
+                    break
+                }
+            }
+            if (!stillExists)
+                selectedDeleteThemePath = ""
+        }
     }
 
     function activateCustomTheme(themeName, themePath) {
@@ -93,6 +107,44 @@ Rectangle {
         visualCard.themeChanged(name)
         refreshCustomThemes()
         addThemeDialog.close()
+    }
+
+    function deleteThemeByPath(pathToDelete) {
+        var profile = profileManager.getProfile(profileManager.currentProfile)
+        var targetPath = String(pathToDelete)
+        if (targetPath.length === 0)
+            return
+        var list = (profile && profile.customThemes) ? profile.customThemes.slice() : []
+        var filtered = []
+        for (var i = 0; i < list.length; ++i) {
+            if (String(list[i].path) !== targetPath)
+                filtered.push(list[i])
+        }
+
+        var removedCurrent = (profile && profile.customThemePath)
+                           ? (String(profile.customThemePath) === targetPath)
+                           : false
+        var nextTheme = removedCurrent ? "DARK"
+                                       : ((profile && profile.theme) ? String(profile.theme) : "DARK")
+        var nextCustomThemePath = removedCurrent ? ""
+                                                 : ((profile && profile.customThemePath) ? String(profile.customThemePath) : "")
+
+        profileManager.updateProfile(profileManager.currentProfile, {
+            customThemes: filtered,
+            customThemePath: nextCustomThemePath,
+            theme: nextTheme
+        })
+        profileManager.saveProfiles()
+
+        if (removedCurrent) {
+            visualCard.currentTheme = "DARK"
+            themeManager.loadBundledTheme("DARK")
+            visualCard.themeChanged("DARK")
+        }
+
+        deleteMode = false
+        selectedDeleteThemePath = ""
+        refreshCustomThemes()
     }
 
     Component.onCompleted: refreshCustomThemes()
@@ -221,6 +273,30 @@ Rectangle {
                 targetPath += "/"
             targetPath += "style.css"
             themeManager.saveBundledDarkTemplateTo(targetPath)
+        }
+    }
+
+    Menu {
+        id: themeOptionsMenu
+
+        MenuItem {
+            text: qsTr("Get Template")
+            onTriggered: saveTemplateDialog.open()
+        }
+
+        MenuItem {
+            text: deleteMode ? qsTr("Cancel Delete Mode") : qsTr("Select Theme to Delete")
+            enabled: visualCard.customThemes.length > 0
+            onTriggered: {
+                deleteMode = !deleteMode
+                selectedDeleteThemePath = ""
+            }
+        }
+
+        MenuItem {
+            text: qsTr("Delete Selected Theme")
+            enabled: deleteMode && selectedDeleteThemePath.length > 0
+            onTriggered: visualCard.deleteThemeByPath(selectedDeleteThemePath)
         }
     }
 
@@ -426,11 +502,15 @@ Rectangle {
                                 background: Rectangle {
                                     color: (visualCard.currentTheme === String(modelData.name))
                                            ? themeManager.colors["accent"]
-                                           : themeManager.colors["background_primary"]
+                                           : (deleteMode && selectedDeleteThemePath === String(modelData.path)
+                                              ? themeManager.colors["error"]
+                                              : themeManager.colors["background_primary"])
                                     radius: 6
-                                    border.color: (visualCard.currentTheme === String(modelData.name))
-                                                  ? themeManager.colors["accent"]
-                                                  : themeManager.colors["border"]
+                                        border.color: (visualCard.currentTheme === String(modelData.name))
+                                                     ? themeManager.colors["accent"]
+                                                     : (deleteMode && selectedDeleteThemePath === String(modelData.path)
+                                                        ? themeManager.colors["error"]
+                                                        : themeManager.colors["border"])
                                     border.width: 2
                                     Behavior on color { ColorAnimation { duration: 150 } }
                                 }
@@ -448,7 +528,10 @@ Rectangle {
                                 }
 
                                 onClicked: {
-                                    visualCard.activateCustomTheme(String(modelData.name), String(modelData.path))
+                                    if (deleteMode)
+                                        selectedDeleteThemePath = String(modelData.path)
+                                    else
+                                        visualCard.activateCustomTheme(String(modelData.name), String(modelData.path))
                                 }
                             }
                         }
@@ -496,31 +579,31 @@ Rectangle {
                         }
 
                         Button {
-                            id: templateBtn
+                            id: themeOptionsBtn
                             hoverEnabled: true
                             width: 44
                             height: 44
                             anchors.verticalCenter: parent.verticalCenter
-                            ToolTip.visible: templateBtn.hovered
+                            ToolTip.visible: themeOptionsBtn.hovered
                             ToolTip.delay: 400
-                            ToolTip.text: qsTr("Guardar la plantilla del tema oscuro (dark.css)")
+                            ToolTip.text: qsTr("Opciones de tema")
 
                             background: Rectangle {
-                                color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["surface"]
+                                color: (deleteMode || parent.pressed) ? themeManager.colors["border"] : themeManager.colors["surface"]
                                 radius: 6
                                 border.color: themeManager.colors["border"]
                                 border.width: 1
                             }
                             contentItem: Text {
-                                text: "\u2193"
+                                text: "\u22EF"
                                 color: themeManager.colors["text_primary"]
-                                font.pixelSize: 17
+                                font.pixelSize: 20
                                 font.bold: true
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
                             onClicked: {
-                                saveTemplateDialog.open()
+                                themeOptionsMenu.popup()
                             }
                         }
                     }
@@ -531,6 +614,15 @@ Rectangle {
                 visible: themeManager.lastError.length > 0
                 text: themeManager.lastError
                 color: themeManager.colors["error"]
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+
+            Text {
+                visible: deleteMode
+                text: qsTr("Modo eliminación: selecciona un tema en la fila y luego usa 'Delete Selected Theme' en el menú de 3 puntos.")
+                color: themeManager.colors["text_muted"]
                 font.pixelSize: 11
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
