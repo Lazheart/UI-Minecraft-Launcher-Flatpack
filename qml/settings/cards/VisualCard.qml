@@ -490,27 +490,28 @@ Rectangle {
                     model: visualCard.customThemes
 
                     delegate: Button {
-                        width: 118
-                        height: 38
+                        width: 108
+                        height: 45
                         text: modelData.name
 
                         background: Rectangle {
-                            color: (profileManager.getProfile(profileManager.currentProfile).customThemePath === modelData.path)
+                            color: (visualCard.currentTheme === String(modelData.name))
                                    ? themeManager.colors["accent"]
                                    : themeManager.colors["background_primary"]
                             radius: 6
-                            border.color: (profileManager.getProfile(profileManager.currentProfile).customThemePath === modelData.path)
+                            border.color: (visualCard.currentTheme === String(modelData.name))
                                           ? themeManager.colors["accent"]
                                           : themeManager.colors["border"]
-                            border.width: 1
+                            border.width: 2
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
 
                         contentItem: Text {
                             text: parent.text
-                            color: (profileManager.getProfile(profileManager.currentProfile).customThemePath === modelData.path)
+                            color: (visualCard.currentTheme === String(modelData.name))
                                    ? themeManager.colors["text_on_accent"]
                                    : themeManager.colors["text_primary"]
-                            font.pixelSize: 11
+                            font.pixelSize: 13
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
