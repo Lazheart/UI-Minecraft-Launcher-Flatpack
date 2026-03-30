@@ -61,6 +61,9 @@ void ProfileManager::addProfile(const QString &name, const QString &version)
     m_profiles.append(newProfile);
     emit profilesChanged();
     
+    // Guardar inmediatamente
+    saveProfiles();
+    
     qDebug() << "[ProfileManager] Perfil agregado:" << name;
 }
 
@@ -92,6 +95,9 @@ void ProfileManager::addProfileWithSettings(const QString &name, const QString &
     m_profiles.append(newProfile);
     emit profilesChanged();
     
+    // Guardar inmediatamente
+    saveProfiles();
+    
     qDebug() << "[ProfileManager] Perfil agregado con configuración:" << name 
              << "Language:" << language << "Theme:" << theme << "Scale:" << scale;
 }
@@ -109,6 +115,9 @@ void ProfileManager::removeProfile(const QString &name)
             if (m_currentProfile == name) {
                 setCurrentProfile("Default");
             }
+            
+            // Guardar inmediatamente para evitar que vuelva a aparecer
+            saveProfiles();
             return;
         }
     }
@@ -203,7 +212,7 @@ void ProfileManager::reloadProfiles()
 
 void ProfileManager::saveProfiles()
 {
-    m_settings->beginWriteArray("profiles");
+    m_settings->beginWriteArray("profiles", m_profiles.size());
     for (int i = 0; i < m_profiles.size(); ++i) {
         m_settings->setArrayIndex(i);
         QVariantMap profile = m_profiles[i].toMap();
