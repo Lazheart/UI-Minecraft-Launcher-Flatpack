@@ -228,37 +228,30 @@ Rectangle {
                 Button {
                     id: importCssBtn
                     hoverEnabled: true
-                    Layout.preferredHeight: 45
-                    Layout.minimumHeight: 45
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 120
+                    Layout.preferredWidth: 44
+                    Layout.minimumWidth: 38
+                    Layout.maximumWidth: 46
+                    Layout.preferredHeight: 44
+                    Layout.minimumHeight: 38
+                    Layout.maximumHeight: 46
                     Layout.alignment: Qt.AlignVCenter
                     ToolTip.visible: importCssBtn.hovered
                     ToolTip.delay: 400
                     ToolTip.text: qsTr("Importar un archivo .css de tema personalizado")
 
                     background: Rectangle {
-                        color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["background_primary"]
+                        color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["surface"]
                         radius: 6
                         border.color: themeManager.colors["border"]
-                        border.width: 2
+                        border.width: 1
                     }
-                    contentItem: Row {
-                        spacing: 6
-                        anchors.centerIn: parent
-
-                        Text {
-                            text: "\u2191"
-                            font.pixelSize: 16
-                            font.bold: true
-                            color: themeManager.colors["accent"]
-                        }
-                        Text {
-                            text: qsTr("Importar")
-                            color: themeManager.colors["text_primary"]
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
+                    contentItem: Text {
+                        text: "+"
+                        color: themeManager.colors["text_primary"]
+                        font.pixelSize: 19
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                     onClicked: importThemeDialog.open()
                 }
@@ -266,37 +259,30 @@ Rectangle {
                 Button {
                     id: templateBtn
                     hoverEnabled: true
-                    Layout.preferredHeight: 45
-                    Layout.minimumHeight: 45
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 120
+                    Layout.preferredWidth: 44
+                    Layout.minimumWidth: 38
+                    Layout.maximumWidth: 46
+                    Layout.preferredHeight: 44
+                    Layout.minimumHeight: 38
+                    Layout.maximumHeight: 46
                     Layout.alignment: Qt.AlignVCenter
                     ToolTip.visible: templateBtn.hovered
                     ToolTip.delay: 400
                     ToolTip.text: qsTr("Guardar la plantilla del tema oscuro (dark.css)")
 
                     background: Rectangle {
-                        color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["background_primary"]
+                        color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["surface"]
                         radius: 6
                         border.color: themeManager.colors["border"]
-                        border.width: 2
+                        border.width: 1
                     }
-                    contentItem: Row {
-                        spacing: 6
-                        anchors.centerIn: parent
-
-                        Text {
-                            text: "\u2193"
-                            font.pixelSize: 16
-                            font.bold: true
-                            color: themeManager.colors["accent"]
-                        }
-                        Text {
-                            text: qsTr("Plantilla")
-                            color: themeManager.colors["text_primary"]
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
+                    contentItem: Text {
+                        text: "\u2193"
+                        color: themeManager.colors["text_primary"]
+                        font.pixelSize: 17
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                     onClicked: saveTemplateDialog.open()
                 }
