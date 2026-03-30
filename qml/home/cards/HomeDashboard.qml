@@ -30,13 +30,13 @@ Item {
                 text: "Hello, " + (profileManager ? profileManager.currentProfile : "User")
                 font.pixelSize: 32
                 font.bold: true
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
             }
 
             Text {
                 text: "Welcome back to Kon Launcher. What do you want to play today?"
                 font.pixelSize: 16
-                color: "#b0b0b0"
+                color: themeManager.colors["text_secondary"]
             }
         }
 
@@ -50,7 +50,7 @@ Item {
                 id: quickLaunchCard
                 Layout.fillWidth: true
                 Layout.preferredHeight: 180
-                color: "#2d2d2d"
+                color: themeManager.colors["surface"]
                 radius: 12
                 clip: true
 
@@ -75,14 +75,14 @@ Item {
                                 text: "READY TO PLAY"
                                 font.pixelSize: 12
                                 font.bold: true
-                                color: "#4CAF50"
+                                color: themeManager.colors["accent"]
                                 font.letterSpacing: 1.5
                             }
                             Text {
                                 text: quickLaunchCard.displayTitle
                                 font.pixelSize: 24
                                 font.bold: true
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                                 Layout.fillWidth: true
                                 elide: Text.ElideRight
                                 wrapMode: Text.NoWrap
@@ -97,7 +97,7 @@ Item {
                             id: statusBadge
                             Layout.preferredWidth: 100
                             Layout.preferredHeight: 30
-                            color: minecraftManager.isRunning ? "#1b5e20" : "#3d3d3d"
+                            color: minecraftManager.isRunning ? themeManager.colors["accent_pressed"] : themeManager.colors["border"]
                             radius: 15
 
                             Text {
@@ -105,7 +105,7 @@ Item {
                                 text: minecraftManager.isRunning ? "RUNNING" : "STOPPED"
                                 font.pixelSize: 10
                                 font.bold: true
-                                color: minecraftManager.isRunning ? "#81C784" : "#b0b0b0"
+                                color: minecraftManager.isRunning ? themeManager.colors["accent_bright"] : themeManager.colors["text_secondary"]
                             }
                         }
                     }
@@ -122,7 +122,7 @@ Item {
                             enabled: !minecraftManager.isRunning
 
                             background: Rectangle {
-                                color: parent.enabled ? (parent.pressed ? "#388E3C" : "#4CAF50") : "#444444"
+                                color: parent.enabled ? (parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]) : themeManager.colors["button_disabled"]
                                 radius: 8
                             }
 
@@ -133,7 +133,7 @@ Item {
                                     Text {
                                         text: "\u25B6" // ▶
                                         font.pixelSize: 16
-                                        color: "#ffffff"
+                                        color: themeManager.colors["text_primary"]
                                         visible: !minecraftManager.isRunning
                                         verticalAlignment: Text.AlignVCenter
                                     }
@@ -141,7 +141,7 @@ Item {
                                         text: actionButtonHome.text
                                         font.pixelSize: 16
                                         font.bold: true
-                                        color: actionButtonHome.enabled ? "#ffffff" : "#888888"
+                                        color: actionButtonHome.enabled ? themeManager.colors["text_primary"] : themeManager.colors["text_muted"]
                                         verticalAlignment: Text.AlignVCenter
                                     }
                                 }
@@ -159,7 +159,7 @@ Item {
                             visible: minecraftManager.isRunning
 
                             background: Rectangle {
-                                color: parent.pressed ? "#d32f2f" : "#f44336"
+                                color: parent.pressed ? themeManager.colors["error_dark"] : themeManager.colors["error"]
                                 radius: 8
                             }
 
@@ -181,9 +181,9 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 250
                 Layout.preferredHeight: 180
-                color: "#1e1e1e"
+                color: themeManager.colors["background_primary"]
                 radius: 12
-                border.color: "#333333"
+                border.color: themeManager.colors["border"]
                 border.width: 1
 
                 ColumnLayout {
@@ -195,20 +195,20 @@ Item {
                         text: "INSTALLED VERSIONS"
                         font.pixelSize: 12
                         font.bold: true
-                        color: "#888888"
+                        color: themeManager.colors["text_muted"]
                     }
 
                     Text {
                         text: minecraftManager.availableVersions.length
                         font.pixelSize: 48
                         font.bold: true
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                     }
 
                     Text {
                         text: "Versions loaded"
                         font.pixelSize: 14
-                        color: "#666666"
+                        color: themeManager.colors["text_muted"]
                     }
                 }
             }
@@ -223,7 +223,7 @@ Item {
                 text: "Your Versions"
                 font.pixelSize: 20
                 font.bold: true
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
             }
 
             Flow {
@@ -243,9 +243,9 @@ Item {
                         Rectangle {
                             id: cardBackground
                             anchors.fill: parent
-                            color: "#2d2d2d"
+                            color: themeManager.colors["surface"]
                             radius: 10
-                            border.color: mouseArea.containsMouse ? "#4CAF50" : "transparent"
+                            border.color: mouseArea.containsMouse ? themeManager.colors["accent"] : "transparent"
                             border.width: 2
                             visible: false
                         }
@@ -267,7 +267,7 @@ Item {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: "#2d2d2d"
+                                color: themeManager.colors["surface"]
                                 radius: 10
                             }
 
@@ -278,7 +278,7 @@ Item {
                                 Rectangle {
                                     width: parent.width
                                     height: 120
-                                    color: "#3d3d3d"
+                                    color: themeManager.colors["border"]
 
                                     Image {
                                         anchors.fill: parent
@@ -292,7 +292,7 @@ Item {
                                         anchors.centerIn: parent
                                         width: 48
                                         height: 48
-                                        color: "#222"
+                                        color: themeManager.colors["surface_input"]
                                         radius: 8
                                         opacity: 0.8
 
@@ -315,7 +315,7 @@ Item {
                                         text: modelData.name
                                         font.pixelSize: 16
                                         font.bold: true
-                                        color: "#ffffff"
+                                        color: themeManager.colors["text_primary"]
                                         elide: Text.ElideRight
                                         width: parent.width - 24
                                     }
@@ -323,13 +323,13 @@ Item {
                                     Text {
                                         text: modelData.tag || modelData.name
                                         font.pixelSize: 12
-                                        color: "#888888"
+                                        color: themeManager.colors["text_muted"]
                                     }
 
                                     Text {
                                         text: modelData.installDate || ""
                                         font.pixelSize: 10
-                                        color: "#666666"
+                                        color: themeManager.colors["text_muted"]
                                         font.italic: true
                                     }
                                 }
@@ -340,7 +340,7 @@ Item {
                             anchors.fill: parent
                             color: "transparent"
                             radius: 10
-                            border.color: mouseArea.containsMouse ? "#4CAF50" : "transparent"
+                            border.color: mouseArea.containsMouse ? themeManager.colors["accent"] : "transparent"
                             border.width: 2
                             z: 5
                         }

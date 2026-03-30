@@ -17,12 +17,12 @@ Dialog {
     // Item that defines the visual area where the dialog should be centered.
     property Item anchorItem: null
 
-    property color backgroundColor: '#1a1a1a'
-    property color surfaceColor: "#1a1a1a"
-    property color accentColor: "#4CAF50"
-    property color textColor: "#ffffff"
-    property color secondaryTextColor: "#b0b0b0"
-    property color borderColor: "#4CAF50"
+    property color backgroundColor: themeManager.colors["surface_dialog"]
+    property color surfaceColor: themeManager.colors["surface_dialog"]
+    property color accentColor: themeManager.colors["accent"]
+    property color textColor: themeManager.colors["text_primary"]
+    property color secondaryTextColor: themeManager.colors["text_secondary"]
+    property color borderColor: themeManager.colors["accent"]
 
     property string iconPath: ""
     property string backgroundPath: ""
@@ -112,7 +112,7 @@ Dialog {
     }
 
     background: Rectangle {
-        color: "#1a1a1a"
+        color: themeManager.colors["surface_dialog"]
         radius: 16
         clip: true
     }
@@ -127,7 +127,7 @@ Dialog {
 
             Text {
                 text: "Install Version"
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true
                 Layout.fillWidth: true
@@ -150,13 +150,13 @@ Dialog {
                     Layout.fillWidth: true
                     placeholderText: "Enter version name"
                     enabled: !installDialog.installing
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     selectByMouse: true
                     padding: 12
                     font.pixelSize: 13
                     background: Rectangle {
-                        color: "#111111"
-                        border.color: nameField.activeFocus ? accentColor : "#3d3d3d"
+                        color: themeManager.colors["surface_input"]
+                        border.color: nameField.activeFocus ? accentColor : themeManager.colors["border"]
                         border.width: nameField.activeFocus ? 2 : 1
                         radius: 6
                     }
@@ -184,13 +184,13 @@ Dialog {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
                         placeholderText: "Select APK file..."
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         readOnly: true
                         padding: 12
                         font.pixelSize: 13
                         background: Rectangle {
-                            color: "#111111"
-                            border.color: apkMouse.containsMouse ? accentColor : "#3d3d3d"
+                            color: themeManager.colors["surface_input"]
+                            border.color: apkMouse.containsMouse ? accentColor : themeManager.colors["border"]
                             border.width: 1
                             radius: 6
                             
@@ -211,12 +211,12 @@ Dialog {
                         Layout.preferredWidth: 100
                         Layout.preferredHeight: 40
                         background: Rectangle {
-                            color: apkButton.enabled ? (apkButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
+                            color: apkButton.enabled ? (apkButton.pressed ? themeManager.colors["accent_muted"] : themeManager.colors["accent"]) : themeManager.colors["button_disabled"]
                             radius: 6
                         }
                         contentItem: Text {
                             text: apkButton.text
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             font.pixelSize: 12
@@ -251,8 +251,8 @@ Dialog {
                             implicitWidth: 16
                             implicitHeight: 16
                             radius: 3
-                            color: "#111111"
-                            border.color: tagCheckBox.checked ? accentColor : (tagCheckBoxMouse.containsMouse ? accentColor : "#3d3d3d")
+                            color: themeManager.colors["surface_input"]
+                            border.color: tagCheckBox.checked ? accentColor : (tagCheckBoxMouse.containsMouse ? accentColor : themeManager.colors["border"])
                             Rectangle {
                                 width: 9
                                 height: 9
@@ -286,8 +286,8 @@ Dialog {
                     
                     background: Rectangle {
                         radius: 6
-                        color: "#111111"
-                        border.color: tagComboBox.activeFocus || tagComboBoxMouse.containsMouse ? accentColor : "#3d3d3d"
+                        color: themeManager.colors["surface_input"]
+                        border.color: tagComboBox.activeFocus || tagComboBoxMouse.containsMouse ? accentColor : themeManager.colors["border"]
                         border.width: 1
                         
                         MouseArea {
@@ -343,8 +343,8 @@ Dialog {
                         }
 
                         background: Rectangle {
-                            color: "#111111"
-                            border.color: (iconComboBox.activeFocus || iconComboBoxMouse.containsMouse) ? accentColor : "#3d3d3d"
+                            color: themeManager.colors["surface_input"]
+                            border.color: (iconComboBox.activeFocus || iconComboBoxMouse.containsMouse) ? accentColor : themeManager.colors["border"]
                             border.width: 1
                             radius: 6
                             
@@ -359,7 +359,7 @@ Dialog {
                         
                         contentItem: Text {
                             text: iconComboBox.displayText
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             verticalAlignment: Text.AlignVCenter
                             leftPadding: 10
                         }
@@ -369,7 +369,7 @@ Dialog {
                         width: 40
                         height: 40
                         radius: 6
-                        color: '#ef121212'
+                        color: themeManager.colors["overlay_scrim"]
                         clip: true
                         Image {
                             anchors.fill: parent
@@ -417,8 +417,8 @@ Dialog {
                         }
 
                         background: Rectangle {
-                            color: "#111111"
-                            border.color: (backgroundComboBox.activeFocus || backgroundComboBoxMouse.containsMouse) ? accentColor : "#3d3d3d"
+                            color: themeManager.colors["surface_input"]
+                            border.color: (backgroundComboBox.activeFocus || backgroundComboBoxMouse.containsMouse) ? accentColor : themeManager.colors["border"]
                             border.width: 1
                             radius: 6
                             
@@ -433,7 +433,7 @@ Dialog {
                         
                         contentItem: Text {
                             text: backgroundComboBox.displayText
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             verticalAlignment: Text.AlignVCenter
                             leftPadding: 10
                         }
@@ -443,7 +443,7 @@ Dialog {
                         width: 60
                         height: 40
                         radius: 10
-                        color: '#1e1e1e'
+                        color: themeManager.colors["background_primary"]
                         clip: true
                         Image {
                             anchors.fill: parent
@@ -457,7 +457,7 @@ Dialog {
             Text {
                 id: errorLabel
                 text: ""
-                color: "#ff7070"
+                color: themeManager.colors["error_bright"]
                 font.pixelSize: 14
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
@@ -477,14 +477,14 @@ Dialog {
 
                     background: Rectangle {
                         color: installDialog.installing
-                            ? "#E53935"        // rojo crítico
-                            : (parent.pressed ? "#3d3d3d" : "#302C2C")
+                            ? themeManager.colors["error_dark"]        // rojo crítico
+                            : (parent.pressed ? themeManager.colors["border"] : themeManager.colors["sidebar_highlight"])
                         radius: 6
                     }
 
                     contentItem: Text {
                         text: cancelButton.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12
@@ -535,13 +535,13 @@ Dialog {
                     enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
-                        color: installButton.enabled ? (installButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
+                        color: installButton.enabled ? (installButton.pressed ? themeManager.colors["accent_muted"] : themeManager.colors["accent"]) : themeManager.colors["button_disabled"]
                         radius: 6
                     }
 
                     contentItem: Text {
                         text: installButton.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12

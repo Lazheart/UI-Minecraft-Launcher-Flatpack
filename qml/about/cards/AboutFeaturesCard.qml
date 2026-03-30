@@ -3,9 +3,9 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
-    color: "#232323"
+    color: themeManager.colors["background_primary"]
     radius: 16
-    border.color: "#343434"
+    border.color: themeManager.colors["border"]
     border.width: 1
     Layout.fillWidth: true
     Layout.minimumHeight: Math.max(implicitHeight, 210)
@@ -24,8 +24,8 @@ Rectangle {
                 Layout.preferredHeight: 56
                 Layout.alignment: Qt.AlignTop
                 radius: 12
-                color: "#2f2f2f"
-                border.color: "#404040"
+                color: themeManager.colors["surface"]
+                border.color: themeManager.colors["border"]
                 border.width: 1
 
                 Image {
@@ -42,7 +42,7 @@ Rectangle {
                 text: "Información y Características"
                 font.pixelSize: 20
                 font.bold: true
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 wrapMode: Text.WordWrap
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -51,7 +51,7 @@ Rectangle {
         Text {
             Layout.fillWidth: true
             text: "• Interfaz diseñada con Qt para usabilidad\n• Gestión completa de perfiles y lenguaje \n• Registro en tiempo real para depuración y soporte\n• Integración seamless con Flatpak y app sandbox de Linux"
-            color: "#b8b8b8"
+            color: themeManager.colors["text_secondary"]
             font.pixelSize: 13
             lineHeight: 1.6
             wrapMode: Text.WordWrap

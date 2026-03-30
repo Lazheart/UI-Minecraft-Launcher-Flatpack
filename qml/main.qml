@@ -19,11 +19,11 @@ ApplicationWindow {
     minimumHeight: 700
     title: "Kon Launcher"
     
-    readonly property color backgroundColor: "#1e1e1e"
-    readonly property color surfaceColor: "#2d2d2d"
-    readonly property color accentColor: "#4CAF50"
-    readonly property color textColor: "#ffffff"
-    readonly property color secondaryTextColor: "#b0b0b0"
+    readonly property color backgroundColor: themeManager.colors["background_primary"]
+    readonly property color surfaceColor: themeManager.colors["surface"]
+    readonly property color accentColor: themeManager.colors["accent"]
+    readonly property color textColor: themeManager.colors["text_primary"]
+    readonly property color secondaryTextColor: themeManager.colors["text_secondary"]
     
     property string currentPage: "Home"
     property bool sidebarVisible: true
@@ -167,7 +167,7 @@ ApplicationWindow {
                     text: notificationDialog.notificationTitle
                     font.pixelSize: 18
                     font.bold: true
-                    color: notificationDialog.notificationType === "error" ? "#f44336" : accentColor
+                    color: notificationDialog.notificationType === "error" ? themeManager.colors["error"] : accentColor
                 }
                 
                 Text {
@@ -184,7 +184,7 @@ ApplicationWindow {
                     text: "OK"
                     
                     background: Rectangle {
-                        color: parent.pressed ? "#388E3C" : accentColor
+                        color: parent.pressed ? themeManager.colors["accent_pressed"] : accentColor
                         radius: 4
                     }
                     
@@ -205,8 +205,8 @@ ApplicationWindow {
         id: installVersionDialog
         parent: scalableContainer
         anchorItem: stackView
-        backgroundColor: "#171515"
-        surfaceColor: "#0f0f0f"
+        backgroundColor: themeManager.colors["sidebar_base"]
+        surfaceColor: themeManager.colors["surface_dialog_alt"]
         accentColor: mainWindow.accentColor
         textColor: mainWindow.textColor
         secondaryTextColor: mainWindow.secondaryTextColor
@@ -230,8 +230,8 @@ ApplicationWindow {
         id: deleteVersionDialog
         parent: scalableContainer
         anchorItem: stackView
-        backgroundColor: "#171515"
-        surfaceColor: "#0f0f0f"
+        backgroundColor: themeManager.colors["sidebar_base"]
+        surfaceColor: themeManager.colors["surface_dialog_alt"]
         accentColor: mainWindow.accentColor
         textColor: mainWindow.textColor
         secondaryTextColor: mainWindow.secondaryTextColor
@@ -286,14 +286,27 @@ ApplicationWindow {
     // Global UI Scale property
     property real uiScale: 1.0
 
-    // Escuchar cambios en el perfil para el Global Zoom
+    // Escuchar cambios en el perfil para el Global Zoom y tema
     Connections {
         target: profileManager
         function onCurrentProfileChanged(profile) {
             updateGlobalScale(profile)
+            applyThemeFromProfile()
         }
         function onProfilesChanged() {
             updateGlobalScale(profileManager.currentProfile)
+            applyThemeFromProfile()
+        }
+    }
+
+    function applyThemeFromProfile() {
+        var p = profileManager.getProfile(profileManager.currentProfile)
+        var path = (p && p.customThemePath) ? String(p.customThemePath) : ""
+        if (path.length > 0)
+            themeManager.loadFromFile(path)
+        else {
+            var t = (p && p.theme) ? p.theme : "DARK"
+            themeManager.loadBundledTheme(t)
         }
     }
 
@@ -302,6 +315,7 @@ ApplicationWindow {
         console.log("[QML] Versión:", minecraftManager.getLauncherVersion())
         minecraftManager.checkInstallation()
         updateGlobalScale(profileManager.currentProfile)
+        applyThemeFromProfile()
     }
 
     function updateGlobalScale(profileName) {

@@ -3,6 +3,8 @@
         <!-- Main QML and shared JS -->
         <file>main.qml</file>
         <file>Media.js</file>
+        <file alias="themes/dark.css">../themes/dark.css</file>
+        <file alias="themes/light.css">../themes/light.css</file>
 
         <!-- Navigation Components -->
         <file>navbar/NavBar.qml</file>

@@ -10,8 +10,8 @@ Button {
     implicitHeight: 50
     
     background: Rectangle {
-        color: button.isActive ? "#4CAF50" : (button.hovered ? "#3d3d3d" : "#2d2d2d")
-        border.color: button.isActive ? "#66BB6A" : "transparent"
+        color: button.isActive ? themeManager.colors["accent"] : (button.hovered ? themeManager.colors["border"] : themeManager.colors["surface"])
+        border.color: button.isActive ? themeManager.colors["accent_bright"] : "transparent"
         border.width: 2
         radius: 6
         
@@ -24,7 +24,7 @@ Button {
         text: button.text
         font.pixelSize: 14
         font.bold: button.isActive
-        color: button.isActive ? "#ffffff" : "#b0b0b0"
+        color: button.isActive ? themeManager.colors["text_primary"] : themeManager.colors["text_secondary"]
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }

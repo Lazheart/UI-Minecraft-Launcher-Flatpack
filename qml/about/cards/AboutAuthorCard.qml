@@ -3,9 +3,9 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
-    color: "#252525"
+    color: themeManager.colors["surface_card"]
     radius: 18
-    border.color: "#363636"
+    border.color: themeManager.colors["border"]
     border.width: 1
     Layout.minimumHeight: 200
     Layout.fillWidth: true
@@ -37,7 +37,7 @@ Rectangle {
                     text: "Creado por Lazheart"
                     font.pixelSize: 18
                     font.bold: true
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 }
@@ -46,10 +46,10 @@ Rectangle {
                     Layout.fillWidth: true
                     textFormat: Text.RichText
                     text: "<a href='https://github.com/Lazheart'>https://github.com/Lazheart</a>"
-                    color: "#4CAF50"
+                    color: themeManager.colors["accent"]
                     font.pixelSize: 18
                     font.bold: true
-                    linkColor: "#4CAF50"
+                    linkColor: themeManager.colors["accent"]
                     wrapMode: Text.WordWrap
                     onLinkActivated: Qt.openUrlExternally(link)
                 }
@@ -58,7 +58,7 @@ Rectangle {
                     Layout.fillWidth: true
                     text: "Desarrollo abierto, comunidad activa y soporte continuo para disfrutar tu biblioteca de Minecraft Bedrock en Linux."
                     wrapMode: Text.WordWrap
-                    color: "#bcbcbc"
+                    color: themeManager.colors["text_secondary"]
                     font.pixelSize: 13
                     lineHeight: 1.5
                 }

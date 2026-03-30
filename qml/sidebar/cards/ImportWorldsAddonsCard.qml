@@ -15,7 +15,7 @@ Dialog {
     implicitHeight: 400
     
     background: Rectangle {
-        color: "#1a1a1a"
+        color: themeManager.colors["surface_dialog"]
         radius: 16
         clip: true
     }
@@ -56,7 +56,7 @@ Dialog {
     Component.onCompleted: rebuildVersions()
 
     contentItem: Rectangle {
-        color: "#1a1a1a"
+        color: themeManager.colors["surface_dialog"]
         radius: 16
         clip: true
 
@@ -68,7 +68,7 @@ Dialog {
             // Title
             Text {
                 text: "Import Worlds / Addons"
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true
                 Layout.fillWidth: true
@@ -85,7 +85,7 @@ Dialog {
 
                 Text {
                     text: "Type:"
-                    color: "#b0b0b0"
+                    color: themeManager.colors["text_secondary"]
                     font.pixelSize: 14
                     font.bold: true
                 }
@@ -102,7 +102,7 @@ Dialog {
                             height: 24
                             radius: 12
                             color: "transparent"
-                            border.color: "#4CAF50"
+                            border.color: themeManager.colors["accent"]
                             border.width: mundoRadio.checked ? 3 : 1
                             clip: true
 
@@ -111,7 +111,7 @@ Dialog {
                                 width: 12
                                 height: 12
                                 radius: 6
-                                color: "#4CAF50"
+                                color: themeManager.colors["accent"]
                                 visible: mundoRadio.checked
                             }
 
@@ -139,7 +139,7 @@ Dialog {
 
                         Text {
                             text: "World"
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             font.pixelSize: 14
 
                             MouseArea {
@@ -159,7 +159,7 @@ Dialog {
                             height: 24
                             radius: 12
                             color: "transparent"
-                            border.color: "#4CAF50"
+                            border.color: themeManager.colors["accent"]
                             border.width: addonRadio.checked ? 3 : 1
                             clip: true
 
@@ -168,7 +168,7 @@ Dialog {
                                 width: 12
                                 height: 12
                                 radius: 6
-                                color: "#4CAF50"
+                                color: themeManager.colors["accent"]
                                 visible: addonRadio.checked
                             }
 
@@ -195,7 +195,7 @@ Dialog {
 
                         Text {
                             text: "Addon"
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             font.pixelSize: 14
 
                             MouseArea {
@@ -225,8 +225,8 @@ Dialog {
                     readOnly: true
                     
                     background: Rectangle {
-                        color: "#111111"
-                        border.color: filePathInputMouse.containsMouse ? "#4CAF50" : "#3d3d3d"
+                        color: themeManager.colors["surface_input"]
+                        border.color: filePathInputMouse.containsMouse ? themeManager.colors["accent"] : themeManager.colors["border"]
                         border.width: 1
                         radius: 6
                         
@@ -238,7 +238,7 @@ Dialog {
                         }
                     }
 
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 13
                     padding: 12
                 }
@@ -250,13 +250,13 @@ Dialog {
 
                     Layout.preferredHeight: 40
                     background: Rectangle {
-                        color: browseButton.pressed ? "#45a049" : "#4CAF50"
+                        color: browseButton.pressed ? themeManager.colors["accent_muted"] : themeManager.colors["accent"]
                         radius: 6
                     }
 
                     contentItem: Text {
                         text: browseButton.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12
@@ -277,13 +277,13 @@ Dialog {
                     spacing: 10
                     Text {
                         text: "Target Version"
-                        color: "#b0b0b0"
+                        color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
                     Text {
                         id: noVersionsLabel
                         visible: versionsListModel.count === 0
-                        color: "#ff6b6b"
+                        color: themeManager.colors["error_bright"]
                         text: "No versions installed. Install a version first."
                         font.pixelSize: 12
                         Layout.fillWidth: true
@@ -311,8 +311,8 @@ Dialog {
                     }
 
                     background: Rectangle {
-                        color: "#111111"
-                        border.color: (versionCombo.activeFocus || versionComboMouse.containsMouse) ? "#4CAF50" : "#3d3d3d"
+                        color: themeManager.colors["surface_input"]
+                        border.color: (versionCombo.activeFocus || versionComboMouse.containsMouse) ? themeManager.colors["accent"] : themeManager.colors["border"]
                         border.width: versionCombo.activeFocus ? 2 : 1
                         radius: 6
                         implicitHeight: 36
@@ -327,7 +327,7 @@ Dialog {
 
                     contentItem: Text {
                         text: versionCombo.displayText
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignLeft
                         elide: Text.ElideRight
@@ -344,7 +344,7 @@ Dialog {
                 id: importErrorText
                 visible: importError !== ""
                 text: importError
-                color: "#ff6b6b"
+                color: themeManager.colors["error_bright"]
                 font.pixelSize: 13
                 Layout.fillWidth: true
             }
@@ -365,15 +365,15 @@ Dialog {
                     Layout.preferredHeight: 45
 
                     background: Rectangle {
-                        color: parent.pressed ? "#3d3d3d" : "#302C2C"
+                        color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["sidebar_highlight"]
                         radius: 6
-                        border.color: parent.hovered ? "#4CAF50" : "transparent"
+                        border.color: parent.hovered ? themeManager.colors["accent"] : "transparent"
                         border.width: 1
                     }
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12
@@ -395,13 +395,13 @@ Dialog {
                     enabled: selectedVersionPath !== ""
 
                     background: Rectangle {
-                        color: importButton.enabled ? (importButton.pressed ? "#45a049" : "#4CAF50") : "#555555"
+                        color: importButton.enabled ? (importButton.pressed ? themeManager.colors["accent_muted"] : themeManager.colors["accent"]) : themeManager.colors["button_disabled"]
                         radius: 6
                     }
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12

@@ -52,7 +52,7 @@ Item {
     // Background Image
     Rectangle {
         anchors.fill: parent
-        color: "#1e1e1e"
+        color: themeManager.colors["background_primary"]
         z: 0
 
         Image {
@@ -103,9 +103,9 @@ Item {
                 text: "\u2190 Back to Home"
 
                 background: Rectangle {
-                    color: parent.pressed ? "#3d3d3d" : "#1e1e1e"
+                    color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["background_primary"]
                     radius: 8
-                    border.color: parent.hovered ? "#4CAF50" : "#555555"
+                    border.color: parent.hovered ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                     border.width: 1
                     opacity: 0.9
                 }
@@ -113,7 +113,7 @@ Item {
                 contentItem: Text {
                     text: parent.text
                     font.pixelSize: 14
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -130,9 +130,9 @@ Item {
                 height: 40
 
                 background: Rectangle {
-                    color: parent.pressed ? "#3d3d3d" : "#2d2d2d"
+                    color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["surface"]
                     radius: 8
-                    border.color: parent.hovered ? "#4CAF50" : "#555555"
+                    border.color: parent.hovered ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                     border.width: 1
                     opacity: 0.9
                 }
@@ -155,7 +155,7 @@ Item {
                         Text {
                             text: "Graphic Options"
                             font.pixelSize: 13
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                         }
@@ -186,13 +186,13 @@ Item {
                     text: "Welcome to Kon Launcher"
                     font.pixelSize: 32
                     font.bold: true
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                 }
 
                 Text {
                     text: "Hola " + (profileManager ? profileManager.currentProfile : "Usuario")
                     font.pixelSize: 24
-                    color: "#4CAF50"
+                    color: themeManager.colors["accent"]
                     font.bold: true
                 }
 
@@ -200,7 +200,7 @@ Item {
                 Rectangle {
                     Layout.preferredWidth: 500
                     Layout.preferredHeight: 160
-                    color: "#2d2d2d"
+                    color: themeManager.colors["surface"]
                     radius: 8
                     opacity: 0.9
 
@@ -213,7 +213,7 @@ Item {
                             text: "Version Information"
                             font.pixelSize: 16
                             font.bold: true
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                         }
 
                         GridLayout {
@@ -224,30 +224,30 @@ Item {
 
                             Text {
                                 text: "Selected:"
-                                color: "#b0b0b0"
+                                color: themeManager.colors["text_secondary"]
                             }
                             Text {
                                 text: versionName
-                                color: "#4CAF50"
+                                color: themeManager.colors["accent"]
                                 font.bold: true
                             }
 
                             Text {
                                 text: "Tag:"
-                                color: "#b0b0b0"
+                                color: themeManager.colors["text_secondary"]
                             }
                             Text {
                                 text: (selectedVersionData && selectedVersionData.tag) ? selectedVersionData.tag : "None"
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                             }
 
                             Text {
                                 text: "Created:"
-                                color: "#b0b0b0"
+                                color: themeManager.colors["text_secondary"]
                             }
                             Text {
                                 text: (selectedVersionData && selectedVersionData.installDate) ? selectedVersionData.installDate : "Unknown"
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                             }
                         }
                     }
@@ -275,8 +275,8 @@ Item {
 
                 background: Rectangle {
                     color: parent.isGameRunning ?
-                           (parent.pressed ? "#d32f2f" : "#f44336") :
-                           (parent.pressed ? "#388E3C" : "#4CAF50")
+                           (parent.pressed ? themeManager.colors["error_dark"] : themeManager.colors["error"]) :
+                           (parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"])
                     radius: 8
                 }
 
@@ -290,7 +290,7 @@ Item {
                         Text {
                             text: actionButton.isGameRunning ? "\u25A0" : "\u25B6"
                             font.pixelSize: 24
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
@@ -299,7 +299,7 @@ Item {
                             font.pixelSize: 24
                             font.bold: true
                             font.letterSpacing: 5
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }

@@ -4,14 +4,13 @@ import QtQuick.Layouts 1.15
 
 Rectangle {
     id: profilesCard
-    color: "#2d2d2d"
+    color: themeManager.colors["surface_card"]
     radius: 8
-    border.color: "#3d3d3d"
+    border.color: themeManager.colors["border"]
     border.width: 1
     Layout.preferredWidth: 300
     Layout.preferredHeight: 200
 
-    // Referencia a SettingsPage para acceder a los valores actuales
     property var settingsPageRef: null
 
     ColumnLayout {
@@ -23,7 +22,7 @@ Rectangle {
 
         Text {
             text: "PROFILES"
-            color: "#ffffff"
+            color: themeManager.colors["text_primary"]
             font.pixelSize: 16
             font.bold: true
             font.capitalization: Font.AllUppercase
@@ -44,9 +43,9 @@ Rectangle {
                 delegate: Rectangle {
                     width: parent.width
                     height: 70
-                    color: modelData.name === profileManager.currentProfile ? "#4CAF50" : "#1e1e1e"
+                    color: modelData.name === profileManager.currentProfile ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
                     radius: 4
-                    border.color: modelData.name === profileManager.currentProfile ? "#4CAF50" : "#555555"
+                    border.color: modelData.name === profileManager.currentProfile ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                     border.width: 2
 
                     ColumnLayout {
@@ -60,22 +59,18 @@ Rectangle {
                             Layout.fillWidth: true
                             spacing: 10
 
-                            // Área clickeable para seleccionar el perfil
                             MouseArea {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 onClicked: {
                                     profileManager.currentProfile = modelData.name
-                                    
-                                    // Aplicar la configuración del perfil seleccionado
+
                                     var language = modelData.language || "EN"
                                     var theme = modelData.theme || "DARK"
                                     var scale = modelData.scale || 1.0
 
-                                    // Guardar la configuración en el ProfileManager
                                     profileManager.updateProfile(modelData.name, { language: language, theme: theme, scale: scale })
 
-                                    // Actualizar la UI con los valores del perfil
                                     if (settingsPageRef) {
                                         settingsPageRef.currentLanguage = language
                                         settingsPageRef.currentTheme = theme
@@ -92,7 +87,7 @@ Rectangle {
 
                                     Text {
                                         text: modelData.name
-                                        color: modelData.name === profileManager.currentProfile ? "#1e1e1e" : "#ffffff"
+                                        color: modelData.name === profileManager.currentProfile ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
                                         font.pixelSize: 13
                                         font.bold: true
                                     }
@@ -105,7 +100,7 @@ Rectangle {
                                             if (modelData.scale) info.push(modelData.scale + "x")
                                             return info.length > 0 ? info.join(" | ") : "Version: " + (modelData.version || "latest")
                                         }
-                                        color: modelData.name === profileManager.currentProfile ? "#2d2d2d" : "#b0b0b0"
+                                        color: modelData.name === profileManager.currentProfile ? themeManager.colors["text_on_accent"] : themeManager.colors["text_secondary"]
                                         font.pixelSize: 10
                                     }
                                 }
@@ -118,13 +113,13 @@ Rectangle {
                                 Layout.preferredHeight: 30
 
                                 background: Rectangle {
-                                    color: parent.pressed ? "#d32f2f" : "#f44336"
+                                    color: parent.pressed ? themeManager.colors["error_dark"] : themeManager.colors["error"]
                                     radius: 3
                                 }
 
                                 contentItem: Text {
                                     text: parent.text
-                                    color: "#ffffff"
+                                    color: themeManager.colors["text_primary"]
                                     font.pixelSize: 14
                                     font.bold: true
                                     horizontalAlignment: Text.AlignHCenter
@@ -153,13 +148,13 @@ Rectangle {
                     placeholderText: "New profile"
 
                     background: Rectangle {
-                        color: "#1e1e1e"
+                        color: themeManager.colors["background_primary"]
                         radius: 3
-                        border.color: parent.activeFocus ? "#4CAF50" : "#555555"
+                        border.color: parent.activeFocus ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                         border.width: 1
                     }
 
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                 }
 
@@ -168,13 +163,13 @@ Rectangle {
                     Layout.preferredWidth: 35
 
                     background: Rectangle {
-                        color: parent.pressed ? "#388E3C" : "#4CAF50"
+                        color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]
                         radius: 3
                     }
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 14
                         font.bold: true
                         horizontalAlignment: Text.AlignHCenter
@@ -182,11 +177,10 @@ Rectangle {
 
                     onClicked: {
                         if (newProfileInput.text.trim() !== "") {
-                            // Obtener los valores actuales de SettingsPage
                             var language = settingsPageRef ? settingsPageRef.currentLanguage : "EN"
                             var theme = settingsPageRef ? settingsPageRef.currentTheme : "DARK"
                             var scale = settingsPageRef ? settingsPageRef.currentScale : 1.0
-                            
+
                             profileManager.addProfileWithSettings(
                                 newProfileInput.text.trim(),
                                 language,

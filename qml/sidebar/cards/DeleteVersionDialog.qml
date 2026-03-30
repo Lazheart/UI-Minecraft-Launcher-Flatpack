@@ -16,15 +16,13 @@ Dialog {
     // Item that defines the visual area where the dialog should be centered.
     property Item anchorItem: null
 
-    property color backgroundColor: '#1a1a1a'
-    property color surfaceColor: "#1a1a1a"
-    property color accentColor: "#4CAF50"
-    property color textColor: "#ffffff"
-    property color secondaryTextColor: "#b0b0b0"
-    property color borderColor: "#4CAF50"
-    // Rojo aún más grisáceo/suave para las versiones a eliminar
-    
-    property color deleteColor: '#521d1d'
+    property color backgroundColor: themeManager.colors["surface_dialog"]
+    property color surfaceColor: themeManager.colors["surface_dialog"]
+    property color accentColor: themeManager.colors["accent"]
+    property color textColor: themeManager.colors["text_primary"]
+    property color secondaryTextColor: themeManager.colors["text_secondary"]
+    property color borderColor: themeManager.colors["accent"]
+    property color deleteColor: themeManager.colors["delete_bg"]
 
     // Lista de versiones seleccionadas para eliminar
     property var selectedVersions: []
@@ -36,13 +34,13 @@ Dialog {
     anchors.centerIn: parent
 
     background: Rectangle {
-        color: "#1a1a1a"
+        color: themeManager.colors["surface_dialog"]
         radius: 16
         clip: true
     }
 
     contentItem: Rectangle {
-        color: "#1a1a1a"
+        color: themeManager.colors["surface_dialog"]
         radius: 16
         clip: true
 
@@ -54,7 +52,7 @@ Dialog {
             // Título
             Text {
                 text: "Delete Versions"
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true
                 Layout.fillWidth: true
@@ -64,7 +62,7 @@ Dialog {
             Text {
                 text: "Select the versions you want to delete:"
                 font.pixelSize: 13
-                color: "#b0b0b0"
+                color: themeManager.colors["text_secondary"]
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
@@ -73,7 +71,7 @@ Dialog {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "#111111"
+                color: themeManager.colors["surface_input"]
                 radius: 6
                 clip: true
                 border.color: listMouse.containsMouse ? accentColor : "transparent"
@@ -156,7 +154,7 @@ Dialog {
                                     // Margen muy pequeño para que casi no se note el espacio negro entre tarjetas
                                     anchors.margins: 1
                                     // Hover gris cuando no está seleccionado, rojo suave cuando sí
-                                    color: versionItemDelegate.checked ? deleteDialog.deleteColor : (itemMouse.containsMouse ? "#2a2a2a" : "transparent")
+                                    color: versionItemDelegate.checked ? deleteDialog.deleteColor : (itemMouse.containsMouse ? themeManager.colors["list_item_hover"] : "transparent")
                                     radius: 6
                                     z: 0
                                 }
@@ -173,8 +171,8 @@ Dialog {
                                         height: 20
                                         radius: 4
                                         // Usamos el rojo fuerte del botón principal para que resalte sobre el fondo suave de la fila
-                                        color: versionItemDelegate.checked ? '#17cd0a' : "transparent"
-                                        border.color: versionItemDelegate.checked ? '#17cd0a' : deleteDialog.borderColor
+                                        color: versionItemDelegate.checked ? themeManager.colors["success"] : "transparent"
+                                        border.color: versionItemDelegate.checked ? themeManager.colors["success"] : deleteDialog.borderColor
                                         border.width: 1
                                         Layout.preferredWidth: 20
                                         Layout.preferredHeight: 20
@@ -187,7 +185,7 @@ Dialog {
                                             id: checkMark
                                             anchors.centerIn: parent
                                             text: "✓"
-                                            color: versionItemDelegate.checked ? "#ffffff" : "transparent"
+                                            color: versionItemDelegate.checked ? themeManager.colors["text_primary"] : "transparent"
                                             font.pixelSize: 12
                                             font.bold: true
                                             opacity: versionItemDelegate.checked ? 1 : 0
@@ -212,7 +210,7 @@ Dialog {
 
                                     Text {
                                         text: versionName
-                                        color: "#ffffff"
+                                        color: themeManager.colors["text_primary"]
                                         font.pixelSize: 13
                                         verticalAlignment: Text.AlignVCenter
                                         Layout.fillWidth: true
@@ -235,7 +233,7 @@ Dialog {
                     Layout.preferredHeight: 45
 
                     background: Rectangle {
-                        color: parent.pressed ? "#3d3d3d" : "#302C2C"
+                        color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["sidebar_highlight"]
                         radius: 6
                         border.color: parent.hovered ? accentColor : "transparent"
                         border.width: 1
@@ -243,7 +241,7 @@ Dialog {
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12
@@ -262,13 +260,13 @@ Dialog {
                     enabled: deleteDialog.selectedVersions.length > 0
 
                     background: Rectangle {
-                        color: parent.enabled ? (parent.pressed ? "#d32f2f" : "#f44336") : "#555555"
+                        color: parent.enabled ? (parent.pressed ? themeManager.colors["error_dark"] : themeManager.colors["error"]) : themeManager.colors["button_disabled"]
                         radius: 6
                     }
 
                     contentItem: Text {
                         text: parent.text
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 12

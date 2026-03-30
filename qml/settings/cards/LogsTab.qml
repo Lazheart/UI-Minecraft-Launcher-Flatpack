@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
-    color: "#2d2d2d"
+    color: themeManager.colors["surface_card"]
     opacity: 0.95
     radius: 8
     
@@ -20,7 +20,7 @@ Rectangle {
                 text: "Registro de eventos"
                 font.pixelSize: 16
                 font.bold: true
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
             }
             
             Item { Layout.fillWidth: true }
@@ -29,13 +29,13 @@ Rectangle {
                 text: "Limpiar"
                 
                 background: Rectangle {
-                    color: parent.pressed ? "#616161" : "#757575"
+                    color: parent.pressed ? themeManager.colors["logs_button_neutral_pressed"] : themeManager.colors["logs_button_neutral"]
                     radius: 4
                 }
                 
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -49,13 +49,13 @@ Rectangle {
                 text: "Exportar"
                 
                 background: Rectangle {
-                    color: parent.pressed ? "#388E3C" : "#4CAF50"
+                    color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]
                     radius: 4
                 }
                 
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -79,12 +79,12 @@ Rectangle {
                 selectByMouse: true
                 font.family: "Monospace"
                 font.pixelSize: 11
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 
                 background: Rectangle {
-                    color: "#1e1e1e"
+                    color: themeManager.colors["background_primary"]
                     radius: 4
-                    border.color: "#3d3d3d"
+                    border.color: themeManager.colors["border"]
                 }
                 
                 // Función para agregar líneas al log
@@ -102,7 +102,7 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 80
-            color: "#3d3d3d"
+            color: themeManager.colors["border"]
             radius: 8
             
             GridLayout {
@@ -114,45 +114,45 @@ Rectangle {
                 
                 Text {
                     text: "Sistema:"
-                    color: "#b0b0b0"
+                    color: themeManager.colors["text_secondary"]
                     font.pixelSize: 11
                 }
                 Text {
                     text: Qt.platform.os
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                 }
                 
                 Text {
                     text: "Qt Version:"
-                    color: "#b0b0b0"
+                    color: themeManager.colors["text_secondary"]
                     font.pixelSize: 11
                 }
                 Text {
                     text: "5.15"
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                 }
                 
                 Text {
                     text: "Plataforma gráfica:"
-                    color: "#b0b0b0"
+                    color: themeManager.colors["text_secondary"]
                     font.pixelSize: 11
                 }
                 Text {
                     text: "Wayland/X11"
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                 }
                 
                 Text {
                     text: "Estado:"
-                    color: "#b0b0b0"
+                    color: themeManager.colors["text_secondary"]
                     font.pixelSize: 11
                 }
                 Text {
                     text: (typeof minecraftManager !== 'undefined') ? minecraftManager.status : ""
-                    color: "#4CAF50"
+                    color: themeManager.colors["accent"]
                     font.pixelSize: 11
                     font.bold: true
                 }

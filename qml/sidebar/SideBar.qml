@@ -6,12 +6,11 @@ import "../Media.js" as Media
 Rectangle {
     id: sideBar
     width: 280
-    color: "#171515"
-    property color baseColor: "#171515"
-    property color highlightColor: "#302C2C"
-    property color listItemBaseColor: "#231f1f"
-    // Color de hover para items de la lista (usar verde como el resto de la UI)
-    property color listItemHoverColor: "#4CAF50"
+    color: themeManager.colors["sidebar_base"]
+    property color baseColor: themeManager.colors["sidebar_base"]
+    property color highlightColor: themeManager.colors["sidebar_highlight"]
+    property color listItemBaseColor: themeManager.colors["list_item_base"]
+    property color listItemHoverColor: themeManager.colors["list_item_hover"]
 
     signal addVersionsRequested()
     signal deleteVersionsRequested()
@@ -88,7 +87,7 @@ Rectangle {
                         
                         Rectangle {
                             anchors.fill: parent
-                            color: "#4CAF50"
+                            color: themeManager.colors["logo_placeholder"]
                             radius: 4
                             visible: versionsIcon.status !== Image.Ready
                             
@@ -97,7 +96,7 @@ Rectangle {
                                 text: "M"
                                 font.pixelSize: 16
                                 font.bold: true
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                             }
                         }
                     }
@@ -110,14 +109,14 @@ Rectangle {
                             text: "Installed Versions"
                             font.pixelSize: 14
                             font.bold: true
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                         }
                     }
                     
                     Text {
                         text: versionsMenu.isExpanded ? "▼" : "▶"
                         font.pixelSize: 12
-                        color: "#4CAF50"
+                        color: themeManager.colors["accent"]
                     }
                 }
             }
@@ -160,7 +159,7 @@ Rectangle {
 
                 Text {
                     text: "Sort by:"
-                    color: "#888888"
+                    color: themeManager.colors["text_muted"]
                     font.pixelSize: 10
                     Layout.margins: 4
                 }
@@ -171,12 +170,12 @@ Rectangle {
                         width: 45
                         height: 18
                         radius: 4
-                        color: sideBar.sortMode === modelData ? "#4CAF50" : "#3d3d3d"
+                        color: sideBar.sortMode === modelData ? themeManager.colors["accent"] : themeManager.colors["sort_pill_inactive"]
                         
                         Text {
                             anchors.centerIn: parent
                             text: modelData.toUpperCase()
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             font.pixelSize: 9
                             font.bold: true
                         }
@@ -213,7 +212,7 @@ Rectangle {
                         Text {
                             anchors.centerIn: parent
                             text: "Not versions Installed"
-                            color: "#888888"
+                            color: themeManager.colors["text_muted"]
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignHCenter
                             wrapMode: Text.WordWrap
@@ -292,7 +291,7 @@ Rectangle {
                                 Text {
                                     id: versionNameText
                                     text: versionName
-                                    color: "#ffffff"
+                                    color: themeManager.colors["text_primary"]
                                     font.pixelSize: 12
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
@@ -342,7 +341,7 @@ Rectangle {
                         
                         Rectangle {
                             anchors.fill: parent
-                            color: "#4CAF50"
+                            color: themeManager.colors["logo_placeholder"]
                             radius: 3
                             visible: addIcon.status !== Image.Ready
                             
@@ -351,14 +350,14 @@ Rectangle {
                                 text: "+"
                                 font.pixelSize: 18
                                 font.bold: true
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                             }
                         }
                     }
                     
                     Text {
                         text: "Add versions"
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                         Layout.fillWidth: true
                     }
@@ -399,14 +398,14 @@ Rectangle {
                         
                         Rectangle {
                             anchors.fill: parent
-                            color: "#f44336"
+                            color: themeManager.colors["error"]
                             radius: 3
                             visible: deleteIcon.status !== Image.Ready
                             
                             Text {
                                 anchors.centerIn: parent
                                 text: "✕"
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                                 font.bold: true
                                 font.pixelSize: 16
                             }
@@ -415,7 +414,7 @@ Rectangle {
                     
                     Text {
                         text: "Delete versions"
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                         Layout.fillWidth: true
                     }
@@ -460,14 +459,14 @@ Rectangle {
                         
                         Rectangle {
                             anchors.fill: parent
-                            color: "#4CAF50"
+                            color: themeManager.colors["logo_placeholder"]
                             radius: 3
                             visible: importIcon.status !== Image.Ready
                             
                             Text {
                                 anchors.centerIn: parent
                                 text: "+"
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                                 font.bold: true
                                 font.pixelSize: 16
                             }
@@ -476,7 +475,7 @@ Rectangle {
                     
                     Text {
                         text: "Import Worlds\nand mods"
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                         Layout.fillWidth: true
                     }
@@ -499,13 +498,13 @@ Rectangle {
                 
                 Text {
                     text: "Version del Launcher"
-                    color: "#888888"
+                    color: themeManager.colors["text_muted"]
                     font.pixelSize: 11
                 }
                 
                 Text {
                     text: {"Launcher v" + minecraftManager.getLauncherVersion()}
-                    color: "#4CAF50"
+                    color: themeManager.colors["accent"]
                     font.pixelSize: 13
                     font.bold: true
                 }

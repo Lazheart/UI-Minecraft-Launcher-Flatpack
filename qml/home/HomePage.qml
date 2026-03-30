@@ -6,7 +6,7 @@ import "../Media.js" as Media
 import "cards"
 
 Rectangle {
-    color: "#1e1e1e"
+    color: themeManager.colors["background_primary"]
     
     // Property to track selected version
     property string selectedVersion: ""

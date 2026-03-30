@@ -28,7 +28,7 @@ Item {
             text: "Welcome to Kon Launcher"
             font.pixelSize: 32
             font.bold: true
-            color: "#ffffff"
+            color: themeManager.colors["text_primary"]
             horizontalAlignment: Text.AlignHCenter
             width: parent.width
         }
@@ -40,7 +40,7 @@ Item {
             Text {
                 text: "Install new version clicking on icon of"
                 font.pixelSize: 16
-                color: "#b0b0b0"
+                color: themeManager.colors["text_secondary"]
                 horizontalAlignment: Text.AlignHCenter
                 width: parent.width
             }
@@ -68,7 +68,7 @@ Item {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: "#4CAF50"
+                        color: themeManager.colors["accent"]
                         radius: 8
                         visible: installIcon.status !== Image.Ready
                         opacity: parent.containsMouse ? 0.8 : 1.0
@@ -79,7 +79,7 @@ Item {
                             text: "B"
                             font.pixelSize: 48
                             font.bold: true
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                         }
                     }
                 }
@@ -88,7 +88,7 @@ Item {
             Text {
                 text: "Install new version"
                 font.pixelSize: 14
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 horizontalAlignment: Text.AlignHCenter
                 width: parent.width
             }

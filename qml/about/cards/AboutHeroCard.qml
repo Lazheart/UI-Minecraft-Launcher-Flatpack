@@ -5,9 +5,9 @@ import QtGraphicalEffects 1.15
 
 Rectangle {
     id: cardRoot
-    color: "#252525"
+    color: themeManager.colors["surface_card"]
     radius: 16
-    border.color: "#363636"
+    border.color: themeManager.colors["border"]
     border.width: 1
     clip: true
     Layout.preferredHeight: 220
@@ -35,7 +35,7 @@ Rectangle {
 
     Rectangle {
         anchors.fill: parent
-        color: "#121212"
+        color: themeManager.colors["background_secondary"]
         opacity: 0.55
         radius: 16
     }
@@ -50,8 +50,8 @@ Rectangle {
             Layout.preferredHeight: 120
             Layout.alignment: Qt.AlignVCenter
             radius: 14
-            color: "#1f1f1f"
-            border.color: "#3a3a3a"
+            color: themeManager.colors["surface"]
+            border.color: themeManager.colors["border"]
             border.width: 1
 
             Image {
@@ -72,19 +72,19 @@ Rectangle {
                 text: "Minecraft Bedrock Launcher"
                 font.pixelSize: 24
                 font.bold: true
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
             }
 
             Text {
                 text: "Versión: " + minecraftManager.getLauncherVersion()
-                color: "#d4d4d4"
+                color: themeManager.colors["text_secondary"]
                 font.pixelSize: 14
             }
 
             Text {
                 Layout.fillWidth: true
                 text: "Launcher de Minecraft Bedrock Edition en Linux mediante flatpak con integración de perfiles, customización y registros en tiempo real."
-                color: "#c0c0c0"
+                color: themeManager.colors["text_muted"]
                 font.pixelSize: 13
                 wrapMode: Text.WordWrap
             }

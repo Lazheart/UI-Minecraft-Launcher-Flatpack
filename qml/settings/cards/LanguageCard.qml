@@ -4,9 +4,9 @@ import QtQuick.Layouts 1.15
 
 Rectangle {
     id: languageCard
-    color: "#2d2d2d"
+    color: themeManager.colors["surface_card"]
     radius: 8
-    border.color: "#3d3d3d"
+    border.color: themeManager.colors["border"]
     border.width: 1
     Layout.fillWidth: true
     Layout.preferredHeight: 200
@@ -23,7 +23,7 @@ Rectangle {
 
         Text {
             text: "LANGUAGE"
-            color: "#ffffff"
+            color: themeManager.colors["text_primary"]
             font.pixelSize: 16
             font.bold: true
             font.capitalization: Font.AllUppercase
@@ -40,15 +40,15 @@ Rectangle {
                 Layout.preferredHeight: 50
                 
                 background: Rectangle {
-                    color: languageCard.currentLanguage === "EN" ? "#4CAF50" : "#1e1e1e"
+                    color: languageCard.currentLanguage === "EN" ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
                     radius: 4
-                    border.color: languageCard.currentLanguage === "EN" ? "#4CAF50" : "#555555"
+                    border.color: languageCard.currentLanguage === "EN" ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                     border.width: 2
                 }
                 
                 contentItem: Text {
                     text: parent.text
-                    color: languageCard.currentLanguage === "EN" ? "#1e1e1e" : "#ffffff"
+                    color: languageCard.currentLanguage === "EN" ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
                     font.bold: true
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignHCenter
@@ -67,15 +67,15 @@ Rectangle {
                 Layout.preferredHeight: 50
                 
                 background: Rectangle {
-                    color: languageCard.currentLanguage === "ES" ? "#4CAF50" : "#1e1e1e"
+                    color: languageCard.currentLanguage === "ES" ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
                     radius: 4
-                    border.color: languageCard.currentLanguage === "ES" ? "#4CAF50" : "#555555"
+                    border.color: languageCard.currentLanguage === "ES" ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                     border.width: 2
                 }
                 
                 contentItem: Text {
                     text: parent.text
-                    color: languageCard.currentLanguage === "ES" ? "#1e1e1e" : "#ffffff"
+                    color: languageCard.currentLanguage === "ES" ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
                     font.bold: true
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignHCenter

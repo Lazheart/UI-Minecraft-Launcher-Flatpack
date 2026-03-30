@@ -1,0 +1,54 @@
+/*
+ * Kon Launcher — tema oscuro (plantilla por defecto).
+ * Variables en formato: --nombre-clave: #rrggbb o rgba();
+ * Los nombres usan guiones; en la app se convierten a nombre_clave.
+ */
+:root {
+  --background-primary: #1e1e1e;
+  --background-secondary: #121111;
+  --nav-bar: #121111;
+  --surface: #2d2d2d;
+  --surface-card: #2d2d2d;
+  --surface-dialog: #1a1a1a;
+  --surface-dialog-alt: #0f0f0f;
+  --surface-input: #111111;
+  --surface-input-alt: #1e1e1e;
+  --surface-muted: #2d2d2d;
+  --surface-hover: #302c2c;
+  --slider-track: #1e1e1e;
+  --accent: #4caf50;
+  --accent-bright: #66bb6a;
+  --accent-muted: #45a049;
+  --accent-pressed: #388e3c;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+  --border: #3d3d3d;
+  --border-muted: #555555;
+  --border-strong: #4d4d4d;
+  --border-active: #4caf50;
+  --sidebar-base: #171515;
+  --sidebar-highlight: #302c2c;
+  --list-item-base: #231f1f;
+  --list-item-hover: #4caf50;
+  --error: #f44336;
+  --error-bright: #ff6b6b;
+  --error-dark: #d32f2f;
+  --success: #17cd0a;
+  --delete-bg: #521d1d;
+  --overlay-scrim: #ef121212;
+  --button-disabled: #555555;
+  --checkbox-checked-bg: #17cd0a;
+  --logo-placeholder: #4caf50;
+  --toggle-hover-bg: #2d2d2d;
+  --toggle-hover-border: #1e1e1e;
+  --text-on-accent: #1e1e1e;
+  --slider-handle-inner: #2d2d2d;
+  --danger-button: #f44336;
+  --danger-button-pressed: #d32f2f;
+  --sort-pill-inactive: #3d3d3d;
+  --settings-page-bg: #1e1e1e;
+  --debug-console-bg: #0d0d0d;
+  --logs-button-neutral: #757575;
+  --logs-button-neutral-pressed: #616161;
+}

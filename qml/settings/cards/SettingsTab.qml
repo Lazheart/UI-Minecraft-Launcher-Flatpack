@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
-    color: "#2d2d2d"
+    color: themeManager.colors["surface"]
     opacity: 0.95
     radius: 8
     
@@ -21,14 +21,14 @@ Rectangle {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: "#3d3d3d"
+                    color: themeManager.colors["border"]
                     radius: 8
-                    border.color: "#4d4d4d"
+                    border.color: themeManager.colors["border_strong"]
                 }
                 
                 label: Text {
                     text: "Perfiles"
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 16
                     font.bold: true
                     padding: 10
@@ -48,25 +48,25 @@ Rectangle {
                             placeholderText: "Nombre del nuevo perfil"
                             
                             background: Rectangle {
-                                color: "#2d2d2d"
+                                color: themeManager.colors["surface"]
                                 radius: 4
-                                border.color: parent.activeFocus ? "#4CAF50" : "#555555"
+                                border.color: parent.activeFocus ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                             }
                             
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                         }
                         
                         Button {
                             text: "Agregar Perfil"
                             
                             background: Rectangle {
-                                color: parent.pressed ? "#388E3C" : "#4CAF50"
+                                color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]
                                 radius: 4
                             }
                             
                             contentItem: Text {
                                 text: parent.text
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
@@ -90,9 +90,9 @@ Rectangle {
                         delegate: Rectangle {
                             width: ListView.view.width
                             height: 50
-                            color: "#2d2d2d"
+                            color: themeManager.colors["surface"]
                             radius: 4
-                            border.color: modelData.name === profileManager.currentProfile ? "#4CAF50" : "#555555"
+                            border.color: modelData.name === profileManager.currentProfile ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                             border.width: 2
                             
                             RowLayout {
@@ -106,14 +106,14 @@ Rectangle {
                                     
                                     Text {
                                         text: modelData.name
-                                        color: "#ffffff"
+                                        color: themeManager.colors["text_primary"]
                                         font.pixelSize: 14
                                         font.bold: true
                                     }
                                     
                                     Text {
                                         text: "Versión: " + (modelData.version || "latest")
-                                        color: "#b0b0b0"
+                                        color: themeManager.colors["text_secondary"]
                                         font.pixelSize: 11
                                     }
                                 }
@@ -123,13 +123,13 @@ Rectangle {
                                     visible: modelData.name !== "Default"
                                     
                                     background: Rectangle {
-                                        color: parent.pressed ? "#d32f2f" : "#f44336"
+                                        color: parent.pressed ? themeManager.colors["error_dark"] : themeManager.colors["error"]
                                         radius: 4
                                     }
                                     
                                     contentItem: Text {
                                         text: parent.text
-                                        color: "#ffffff"
+                                        color: themeManager.colors["text_primary"]
                                         font.pixelSize: 11
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -150,14 +150,14 @@ Rectangle {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: "#3d3d3d"
+                    color: themeManager.colors["border"]
                     radius: 8
-                    border.color: "#4d4d4d"
+                    border.color: themeManager.colors["border_strong"]
                 }
                 
                 label: Text {
                     text: "Gráficos"
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 16
                     font.bold: true
                     padding: 10
@@ -172,7 +172,7 @@ Rectangle {
                         
                         Text {
                             text: "Resolución de ventana:"
-                            color: "#b0b0b0"
+                            color: themeManager.colors["text_secondary"]
                             font.pixelSize: 13
                         }
                         
@@ -182,14 +182,14 @@ Rectangle {
                             model: ["1920x1080", "1600x900", "1366x768", "1280x720"]
                             
                             background: Rectangle {
-                                color: "#2d2d2d"
+                                color: themeManager.colors["surface"]
                                 radius: 4
-                                border.color: parent.activeFocus ? "#4CAF50" : "#555555"
+                                border.color: parent.activeFocus ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                             }
                             
                             contentItem: Text {
                                 text: parent.displayText
-                                color: "#ffffff"
+                                color: themeManager.colors["text_primary"]
                                 verticalAlignment: Text.AlignVCenter
                                 leftPadding: 10
                             }
@@ -201,7 +201,7 @@ Rectangle {
                         
                         Text {
                             text: "Pantalla completa:"
-                            color: "#b0b0b0"
+                            color: themeManager.colors["text_secondary"]
                             font.pixelSize: 13
                         }
                         
@@ -219,14 +219,14 @@ Rectangle {
                 Layout.fillWidth: true
                 
                 background: Rectangle {
-                    color: "#3d3d3d"
+                    color: themeManager.colors["border"]
                     radius: 8
-                    border.color: "#4d4d4d"
+                    border.color: themeManager.colors["border_strong"]
                 }
                 
                 label: Text {
                     text: "Información"
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 16
                     font.bold: true
                     padding: 10
@@ -240,23 +240,23 @@ Rectangle {
                     
                     Text {
                         text: "Versión del Launcher:"
-                        color: "#b0b0b0"
+                        color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
                     Text {
                         text: minecraftManager.getLauncherVersion()
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                     }
                     
                     Text {
                         text: "Directorio de datos:"
-                        color: "#b0b0b0"
+                        color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
                     Text {
                         text: (typeof pathManager !== 'undefined' && pathManager.dataDir) ? pathManager.dataDir : ""
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 11
                         elide: Text.ElideMiddle
                         Layout.fillWidth: true
@@ -264,12 +264,12 @@ Rectangle {
                     
                     Text {
                         text: "Directorio de aplicación:"
-                        color: "#b0b0b0"
+                        color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
                     Text {
                         text: (typeof pathManager !== 'undefined' && pathManager.launcherDir) ? pathManager.launcherDir : ""
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                         font.pixelSize: 11
                         elide: Text.ElideMiddle
                         Layout.fillWidth: true

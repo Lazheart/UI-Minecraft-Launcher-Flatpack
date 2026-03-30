@@ -40,6 +40,7 @@ include_directories(
 # Archivos fuente
 set(SOURCES
     src/main.cpp
+    src/thememanager.cpp
     src/minecraftmanager.cpp
     src/loghandler.cpp
     src/minecraftlaunch.cpp
@@ -51,6 +52,7 @@ set(SOURCES
 
 # Archivos de cabecera
 set(HEADERS
+    include/thememanager.h
     include/minecraftmanager.h
     include/profilemanager.h
     include/minecraftlaunch.h

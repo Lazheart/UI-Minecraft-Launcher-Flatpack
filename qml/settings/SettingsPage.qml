@@ -5,7 +5,7 @@ import "cards"
 
 Rectangle {
     id: settingsPage
-    color: "#1e1e1e"
+    color: themeManager.colors["settings_page_bg"]
 
     // Propiedades para capturar los valores actuales
     property string currentLanguage: "EN"
@@ -89,7 +89,7 @@ Rectangle {
                     text: "Settings"
                     font.pixelSize: 36
                     font.bold: true
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 }
@@ -136,7 +136,6 @@ Rectangle {
                     }
                     onThemeChanged: (theme) => {
                         settingsPage.currentTheme = theme
-                        profileManager.updateProfile(profileManager.currentProfile, { theme: theme })
                     }
                 }
 
@@ -158,13 +157,13 @@ Rectangle {
                         Layout.preferredHeight: 45
 
                         background: Rectangle {
-                            color: parent.pressed ? "#388E3C" : "#4CAF50"
+                            color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]
                             radius: 4
                         }
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             font.pixelSize: 13
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
@@ -190,13 +189,13 @@ Rectangle {
                         Layout.preferredHeight: 45
 
                         background: Rectangle {
-                            color: parent.pressed ? "#d32f2f" : "#f44336"
+                            color: parent.pressed ? themeManager.colors["error_dark"] : themeManager.colors["error"]
                             radius: 4
                         }
 
                         contentItem: Text {
                             text: parent.text
-                            color: "#ffffff"
+                            color: themeManager.colors["text_primary"]
                             font.pixelSize: 13
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter

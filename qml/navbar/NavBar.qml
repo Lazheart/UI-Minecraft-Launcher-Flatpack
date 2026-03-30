@@ -6,7 +6,7 @@ import "../Media.js" as Media
 Rectangle {
     id: navBar
     height: 80
-    color: "#121111"
+    color: themeManager.colors["nav_bar"]
     
     // Signal para cambiar de página
     signal navigate(string page)
@@ -32,7 +32,7 @@ Rectangle {
                 
                 Rectangle {
                     anchors.fill: parent
-                    color: "#4CAF50"
+                    color: themeManager.colors["logo_placeholder"]
                     radius: 8
                     visible: parent.status !== Image.Ready
                     
@@ -41,7 +41,7 @@ Rectangle {
                         text: "EL"
                         font.pixelSize: 24
                         font.bold: true
-                        color: "#ffffff"
+                        color: themeManager.colors["text_primary"]
                     }
                 }
             }
@@ -50,7 +50,7 @@ Rectangle {
                 text: "Kon Launcher"
                 font.pixelSize: 20
                 font.bold: true
-                color: "#ffffff"
+                color: themeManager.colors["text_primary"]
                 Layout.fillWidth: true
             }
         }
@@ -61,9 +61,9 @@ Rectangle {
             Layout.preferredHeight: 50
             
             background: Rectangle {
-                color: parent.hovered ? "#2d2d2d" : "#1e1e1e"
+                color: parent.hovered ? themeManager.colors["toggle_hover_bg"] : themeManager.colors["toggle_hover_border"]
                 radius: 6
-                border.color: parent.hovered ? "#4CAF50" : "transparent"
+                border.color: parent.hovered ? themeManager.colors["accent"] : "transparent"
                 border.width: 1
                 Behavior on color { ColorAnimation { duration: 200 } }
             }
@@ -71,7 +71,7 @@ Rectangle {
             contentItem: Text {
                 text: "☰"
                 font.pixelSize: 24
-                color: "#4CAF50"
+                color: themeManager.colors["accent"]
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }

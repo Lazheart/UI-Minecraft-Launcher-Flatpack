@@ -5,9 +5,9 @@ import QtQuick.Dialogs 1.3
 
 Rectangle {
     id: debugCard
-    color: "#2d2d2d"
+    color: themeManager.colors["surface_card"]
     radius: 8
-    border.color: "#3d3d3d"
+    border.color: themeManager.colors["border"]
     border.width: 1
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -24,7 +24,7 @@ Rectangle {
 
         Text {
             text: "DEBUG - Console Output"
-            color: "#ffffff"
+            color: themeManager.colors["text_primary"]
             font.pixelSize: 14
             font.bold: true
             font.capitalization: Font.AllUppercase
@@ -33,9 +33,9 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#0d0d0d"
+            color: themeManager.colors["debug_console_bg"]
             radius: 4
-            border.color: "#3d3d3d"
+            border.color: themeManager.colors["border"]
             clip: true
 
             ListView {
@@ -93,12 +93,12 @@ Rectangle {
                 Layout.maximumWidth: 160
                 Layout.preferredHeight: 35 
                 background: Rectangle {
-                    color: parent.pressed ? "#505050" : "#3d3d3d"
+                    color: parent.pressed ? themeManager.colors["border_muted"] : themeManager.colors["border"]
                     radius: 3
                 }
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -116,12 +116,12 @@ Rectangle {
                 Layout.maximumWidth: 160
                 Layout.preferredHeight: 35
                 background: Rectangle {
-                    color: parent.pressed ? "#505050" : "#3d3d3d"
+                    color: parent.pressed ? themeManager.colors["border_muted"] : themeManager.colors["border"]
                     radius: 3
                 }
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -139,12 +139,12 @@ Rectangle {
                 Layout.maximumWidth: 160
                 Layout.preferredHeight: 35
                 background: Rectangle {
-                    color: parent.pressed ? "#505050" : "#3d3d3d"
+                    color: parent.pressed ? themeManager.colors["border_muted"] : themeManager.colors["border"]
                     radius: 3
                 }
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -172,8 +172,8 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     x: autoScrollCheck.leftPadding
                     radius: 3
-                    color: "#3d3d3d"
-                    border.color: autoScrollCheck.checked ? "#4CAF50" : "#505050"
+                    color: themeManager.colors["border"]
+                    border.color: autoScrollCheck.checked ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                     border.width: 1
 
                     Rectangle {
@@ -181,14 +181,14 @@ Rectangle {
                         height: 10
                         anchors.centerIn: parent
                         radius: 2
-                        color: "#4CAF50"
+                        color: themeManager.colors["accent"]
                         visible: autoScrollCheck.checked
                     }
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     font.pixelSize: 12
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter

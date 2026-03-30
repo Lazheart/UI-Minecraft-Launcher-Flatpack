@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 import "cards"
 
 Rectangle {
-    color: "#1e1e1e"
+    color: themeManager.colors["background_primary"]
     
     ScrollView {
         id: scrollView
@@ -32,7 +32,7 @@ Rectangle {
                     text: "About This Launcher"
                     font.pixelSize: 36
                     font.bold: true
-                    color: "#ffffff"
+                    color: themeManager.colors["text_primary"]
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 }

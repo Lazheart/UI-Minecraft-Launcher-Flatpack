@@ -56,7 +56,8 @@ void ProfileManager::addProfile(const QString &name, const QString &version)
     newProfile["name"] = name;
     newProfile["version"] = version.isEmpty() ? "latest" : version;
     newProfile["created"] = QDateTime::currentDateTime().toString(Qt::ISODate);
-    
+    newProfile["customThemePath"] = QString();
+
     m_profiles.append(newProfile);
     emit profilesChanged();
     
@@ -86,7 +87,8 @@ void ProfileManager::addProfileWithSettings(const QString &name, const QString &
     newProfile["theme"] = theme;
     newProfile["scale"] = scale;
     newProfile["created"] = QDateTime::currentDateTime().toString(Qt::ISODate);
-    
+    newProfile["customThemePath"] = QString();
+
     m_profiles.append(newProfile);
     emit profilesChanged();
     
@@ -165,6 +167,8 @@ void ProfileManager::loadProfiles()
         profile["language"] = m_settings->value("language", m_settings->value(langKey, "EN")).toString();
         profile["theme"] = m_settings->value("theme", m_settings->value(themeKey, "DARK")).toString();
         profile["scale"] = m_settings->value("scale", m_settings->value(scaleKey, 1.0)).toDouble();
+        profile["customThemePath"] =
+            m_settings->value("customThemePath", "").toString();
         
         m_profiles.append(profile);
         
@@ -209,6 +213,8 @@ void ProfileManager::saveProfiles()
         m_settings->setValue("language", profile.value("language", "EN"));
         m_settings->setValue("theme", profile.value("theme", "DARK"));
         m_settings->setValue("scale", profile.value("scale", 1.0));
+        m_settings->setValue("customThemePath",
+                              profile.value("customThemePath", ""));
     }
     m_settings->endArray();
     
