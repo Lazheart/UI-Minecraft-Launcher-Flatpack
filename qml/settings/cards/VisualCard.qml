@@ -37,12 +37,16 @@ Rectangle {
 
     FileDialog {
         id: saveTemplateDialog
-        title: qsTr("Guardar plantilla del tema oscuro")
-        selectExisting: false
-        defaultSuffix: "css"
-        nameFilters: [ qsTr("CSS (*.css)") ]
+        title: qsTr("Seleccionar carpeta para guardar style.css")
+        folder: shortcuts.home
+        selectFolder: true
+        selectExisting: true
         onAccepted: {
-            themeManager.saveBundledDarkTemplateTo(saveTemplateDialog.fileUrl.toString())
+            var targetPath = saveTemplateDialog.fileUrl.toString()
+            if (!targetPath.endsWith("/"))
+                targetPath += "/"
+            targetPath += "style.css"
+            themeManager.saveBundledDarkTemplateTo(targetPath)
         }
     }
 
@@ -284,7 +288,9 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-                    onClicked: saveTemplateDialog.open()
+                    onClicked: {
+                        saveTemplateDialog.open()
+                    }
                 }
             }
 
