@@ -324,202 +324,204 @@ Rectangle {
                 font.bold: true
             }
 
-            // Fila principal de tema
-            RowLayout {
-                id: themeButtonsRow
+            Item {
                 Layout.fillWidth: true
-                spacing: 10
+                Layout.preferredHeight: 54
                 Layout.topMargin: 4
 
-                Button {
-                    id: darkBtn
-                    text: "DARK"
-                    Layout.preferredWidth: 108
-                    Layout.preferredHeight: 45
-                    Layout.minimumHeight: 45
-                    Layout.minimumWidth: 88
-                    Layout.alignment: Qt.AlignVCenter
+                Flickable {
+                    id: themeButtonsFlick
+                    anchors.fill: parent
+                    clip: true
+                    contentWidth: themeButtonsRow.width
+                    contentHeight: height
+                    interactive: contentWidth > width
 
-                    background: Rectangle {
-                        color: visualCard.currentTheme === "DARK" ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
-                        radius: 6
-                        border.color: visualCard.currentTheme === "DARK" ? themeManager.colors["accent"] : themeManager.colors["border"]
-                        border.width: 2
-                        Behavior on color { ColorAnimation { duration: 150 } }
+                    ScrollBar.horizontal: ScrollBar {
+                        policy: themeButtonsFlick.contentWidth > themeButtonsFlick.width ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
                     }
-                    contentItem: Text {
-                        text: parent.text
-                        color: visualCard.currentTheme === "DARK" ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
-                        font.bold: true
-                        font.pixelSize: 13
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onClicked: {
-                        visualCard.currentTheme = "DARK"
-                        profileManager.updateProfile(profileManager.currentProfile, {
-                            theme: "DARK",
-                            customThemePath: ""
-                        })
-                        themeManager.loadBundledTheme("DARK")
-                        visualCard.themeChanged("DARK")
-                        profileManager.saveProfiles()
-                    }
-                }
 
-                Button {
-                    id: lightBtn
-                    text: "LIGHT"
-                    Layout.preferredWidth: 108
-                    Layout.preferredHeight: 45
-                    Layout.minimumHeight: 45
-                    Layout.minimumWidth: 88
-                    Layout.alignment: Qt.AlignVCenter
+                    Row {
+                        id: themeButtonsRow
+                        spacing: 10
+                        height: parent.height
 
-                    background: Rectangle {
-                        color: visualCard.currentTheme === "LIGHT" ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
-                        radius: 6
-                        border.color: visualCard.currentTheme === "LIGHT" ? themeManager.colors["accent"] : themeManager.colors["border"]
-                        border.width: 2
-                        Behavior on color { ColorAnimation { duration: 150 } }
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        color: visualCard.currentTheme === "LIGHT" ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
-                        font.bold: true
-                        font.pixelSize: 13
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onClicked: {
-                        visualCard.currentTheme = "LIGHT"
-                        profileManager.updateProfile(profileManager.currentProfile, {
-                            theme: "LIGHT",
-                            customThemePath: ""
-                        })
-                        themeManager.loadBundledTheme("LIGHT")
-                        visualCard.themeChanged("LIGHT")
-                        profileManager.saveProfiles()
-                    }
-                }
+                        Button {
+                            id: darkBtn
+                            text: "DARK"
+                            width: 108
+                            height: 45
+                            anchors.verticalCenter: parent.verticalCenter
 
-                Button {
-                    id: addThemeBtn
-                    hoverEnabled: true
-                    Layout.preferredWidth: 122
-                    Layout.minimumWidth: 98
-                    Layout.preferredHeight: 45
-                    Layout.minimumHeight: 45
-                    Layout.alignment: Qt.AlignVCenter
-                    ToolTip.visible: addThemeBtn.hovered
-                    ToolTip.delay: 400
-                    ToolTip.text: qsTr("Agregar tema personalizado")
-
-                    background: Item {
-                        Rectangle {
-                            anchors.fill: parent
-                            color: addThemeBtn.pressed ? themeManager.colors["background_primary"] : themeManager.colors["surface"]
-                            radius: 6
-                        }
-                        Canvas {
-                            anchors.fill: parent
-                            onPaint: {
-                                var ctx = getContext("2d")
-                                ctx.clearRect(0, 0, width, height)
-                                ctx.strokeStyle = themeManager.colors["border"]
-                                ctx.lineWidth = 1
-                                ctx.setLineDash([6, 4])
-                                ctx.strokeRect(1, 1, width - 2, height - 2)
+                            background: Rectangle {
+                                color: visualCard.currentTheme === "DARK" ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
+                                radius: 6
+                                border.color: visualCard.currentTheme === "DARK" ? themeManager.colors["accent"] : themeManager.colors["border"]
+                                border.width: 2
+                                Behavior on color { ColorAnimation { duration: 150 } }
                             }
-                            onWidthChanged: requestPaint()
-                            onHeightChanged: requestPaint()
-                        }
-                    }
-                    contentItem: Text {
-                        text: qsTr("Add Theme")
-                        color: themeManager.colors["text_muted"]
-                        font.pixelSize: 12
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onClicked: addThemeDialog.open()
-                }
-
-                Button {
-                    id: templateBtn
-                    hoverEnabled: true
-                    Layout.preferredWidth: 44
-                    Layout.minimumWidth: 38
-                    Layout.maximumWidth: 46
-                    Layout.preferredHeight: 44
-                    Layout.minimumHeight: 38
-                    Layout.maximumHeight: 46
-                    Layout.alignment: Qt.AlignVCenter
-                    ToolTip.visible: templateBtn.hovered
-                    ToolTip.delay: 400
-                    ToolTip.text: qsTr("Guardar la plantilla del tema oscuro (dark.css)")
-
-                    background: Rectangle {
-                        color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["surface"]
-                        radius: 6
-                        border.color: themeManager.colors["border"]
-                        border.width: 1
-                    }
-                    contentItem: Text {
-                        text: "\u2193"
-                        color: themeManager.colors["text_primary"]
-                        font.pixelSize: 17
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onClicked: {
-                        saveTemplateDialog.open()
-                    }
-                }
-            }
-
-            Flow {
-                id: customThemesFlow
-                Layout.fillWidth: true
-                spacing: 8
-                visible: visualCard.customThemes.length > 0
-
-                Repeater {
-                    model: visualCard.customThemes
-
-                    delegate: Button {
-                        width: 108
-                        height: 45
-                        text: modelData.name
-
-                        background: Rectangle {
-                            color: (visualCard.currentTheme === String(modelData.name))
-                                   ? themeManager.colors["accent"]
-                                   : themeManager.colors["background_primary"]
-                            radius: 6
-                            border.color: (visualCard.currentTheme === String(modelData.name))
-                                          ? themeManager.colors["accent"]
-                                          : themeManager.colors["border"]
-                            border.width: 2
-                            Behavior on color { ColorAnimation { duration: 150 } }
+                            contentItem: Text {
+                                text: parent.text
+                                color: visualCard.currentTheme === "DARK" ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
+                                font.bold: true
+                                font.pixelSize: 13
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                visualCard.currentTheme = "DARK"
+                                profileManager.updateProfile(profileManager.currentProfile, {
+                                    theme: "DARK",
+                                    customThemePath: ""
+                                })
+                                themeManager.loadBundledTheme("DARK")
+                                visualCard.themeChanged("DARK")
+                                profileManager.saveProfiles()
+                            }
                         }
 
-                        contentItem: Text {
-                            text: parent.text
-                            color: (visualCard.currentTheme === String(modelData.name))
-                                   ? themeManager.colors["text_on_accent"]
-                                   : themeManager.colors["text_primary"]
-                            font.pixelSize: 13
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            elide: Text.ElideRight
+                        Button {
+                            id: lightBtn
+                            text: "LIGHT"
+                            width: 108
+                            height: 45
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            background: Rectangle {
+                                color: visualCard.currentTheme === "LIGHT" ? themeManager.colors["accent"] : themeManager.colors["background_primary"]
+                                radius: 6
+                                border.color: visualCard.currentTheme === "LIGHT" ? themeManager.colors["accent"] : themeManager.colors["border"]
+                                border.width: 2
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                            }
+                            contentItem: Text {
+                                text: parent.text
+                                color: visualCard.currentTheme === "LIGHT" ? themeManager.colors["text_on_accent"] : themeManager.colors["text_primary"]
+                                font.bold: true
+                                font.pixelSize: 13
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                visualCard.currentTheme = "LIGHT"
+                                profileManager.updateProfile(profileManager.currentProfile, {
+                                    theme: "LIGHT",
+                                    customThemePath: ""
+                                })
+                                themeManager.loadBundledTheme("LIGHT")
+                                visualCard.themeChanged("LIGHT")
+                                profileManager.saveProfiles()
+                            }
                         }
 
-                        onClicked: {
-                            visualCard.activateCustomTheme(String(modelData.name), String(modelData.path))
+                        Repeater {
+                            model: visualCard.customThemes
+
+                            delegate: Button {
+                                width: 108
+                                height: 45
+                                text: modelData.name
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                background: Rectangle {
+                                    color: (visualCard.currentTheme === String(modelData.name))
+                                           ? themeManager.colors["accent"]
+                                           : themeManager.colors["background_primary"]
+                                    radius: 6
+                                    border.color: (visualCard.currentTheme === String(modelData.name))
+                                                  ? themeManager.colors["accent"]
+                                                  : themeManager.colors["border"]
+                                    border.width: 2
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                }
+
+                                contentItem: Text {
+                                    text: parent.text
+                                    color: (visualCard.currentTheme === String(modelData.name))
+                                           ? themeManager.colors["text_on_accent"]
+                                           : themeManager.colors["text_primary"]
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    elide: Text.ElideRight
+                                }
+
+                                onClicked: {
+                                    visualCard.activateCustomTheme(String(modelData.name), String(modelData.path))
+                                }
+                            }
+                        }
+
+                        Button {
+                            id: addThemeBtn
+                            hoverEnabled: true
+                            width: 122
+                            height: 45
+                            anchors.verticalCenter: parent.verticalCenter
+                            ToolTip.visible: addThemeBtn.hovered
+                            ToolTip.delay: 400
+                            ToolTip.text: qsTr("Agregar tema personalizado")
+
+                            background: Item {
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: addThemeBtn.pressed ? themeManager.colors["background_primary"] : themeManager.colors["surface"]
+                                    radius: 6
+                                }
+                                Canvas {
+                                    anchors.fill: parent
+                                    onPaint: {
+                                        var ctx = getContext("2d")
+                                        ctx.clearRect(0, 0, width, height)
+                                        ctx.strokeStyle = themeManager.colors["border"]
+                                        ctx.lineWidth = 1
+                                        ctx.setLineDash([6, 4])
+                                        ctx.strokeRect(1, 1, width - 2, height - 2)
+                                    }
+                                    onWidthChanged: requestPaint()
+                                    onHeightChanged: requestPaint()
+                                }
+                            }
+
+                            contentItem: Text {
+                                text: qsTr("Add Theme")
+                                color: themeManager.colors["text_muted"]
+                                font.pixelSize: 12
+                                font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: addThemeDialog.open()
+                        }
+
+                        Button {
+                            id: templateBtn
+                            hoverEnabled: true
+                            width: 44
+                            height: 44
+                            anchors.verticalCenter: parent.verticalCenter
+                            ToolTip.visible: templateBtn.hovered
+                            ToolTip.delay: 400
+                            ToolTip.text: qsTr("Guardar la plantilla del tema oscuro (dark.css)")
+
+                            background: Rectangle {
+                                color: parent.pressed ? themeManager.colors["border"] : themeManager.colors["surface"]
+                                radius: 6
+                                border.color: themeManager.colors["border"]
+                                border.width: 1
+                            }
+                            contentItem: Text {
+                                text: "\u2193"
+                                color: themeManager.colors["text_primary"]
+                                font.pixelSize: 17
+                                font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                saveTemplateDialog.open()
+                            }
                         }
                     }
                 }
