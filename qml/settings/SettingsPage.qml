@@ -107,6 +107,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignTop
                         onLanguageChanged: (language) => {
                             settingsPage.currentLanguage = language
+                            translator.setLanguage(language)
                             // Persist to profile manager for current profile
                             profileManager.updateProfile(profileManager.currentProfile, { language: language })
                         }

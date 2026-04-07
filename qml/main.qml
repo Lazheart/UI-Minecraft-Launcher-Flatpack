@@ -292,10 +292,12 @@ ApplicationWindow {
         function onCurrentProfileChanged(profile) {
             updateGlobalScale(profile)
             applyThemeFromProfile()
+            applyLanguageFromProfile()
         }
         function onProfilesChanged() {
             updateGlobalScale(profileManager.currentProfile)
             applyThemeFromProfile()
+            applyLanguageFromProfile()
         }
     }
 
@@ -310,12 +312,19 @@ ApplicationWindow {
         }
     }
 
+    function applyLanguageFromProfile() {
+        var p = profileManager.getProfile(profileManager.currentProfile)
+        var lang = (p && p.language) ? String(p.language) : "EN"
+        translator.setLanguage(lang)
+    }
+
     Component.onCompleted: {
         console.log("[QML] Launcher iniciado")
         console.log("[QML] Versión:", minecraftManager.getLauncherVersion())
         minecraftManager.checkInstallation()
         updateGlobalScale(profileManager.currentProfile)
         applyThemeFromProfile()
+        applyLanguageFromProfile()
     }
 
     function updateGlobalScale(profileName) {

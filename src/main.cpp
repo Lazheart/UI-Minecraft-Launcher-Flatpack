@@ -10,6 +10,7 @@
 #include "../include/versionsapihandler.h"
 #include "../include/loghandler.h"
 #include "../include/thememanager.h"
+#include "../include/translator.h"
 
 int main(int argc, char **argv) {
   QGuiApplication app(argc, argv);
@@ -26,6 +27,7 @@ int main(int argc, char **argv) {
   ProfileManager profileManager;
   VersionsApiHandler versionsApiHandler;
   ThemeManager themeManager;
+  Translator translator(&engine);
 
   engine.rootContext()->setContextProperty("pathManager", &pathManager);
   engine.rootContext()->setContextProperty("minecraftManager",
@@ -34,6 +36,7 @@ int main(int argc, char **argv) {
   engine.rootContext()->setContextProperty("versionsApiHandler", &versionsApiHandler);
   engine.rootContext()->setContextProperty("logHandler", &logHandler);
   engine.rootContext()->setContextProperty("themeManager", &themeManager);
+  engine.rootContext()->setContextProperty("translator", &translator);
 
   qDebug() << "[main] Exposed pathManager and minecraftManager to QML";
   qDebug() << "[main] pathManager.versionsDir=" << pathManager.versionsDir();
