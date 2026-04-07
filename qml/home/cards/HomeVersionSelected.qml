@@ -183,14 +183,14 @@ Item {
                 z: 1
 
                 Text {
-                    text: "Welcome to Kon Launcher"
+                    text: qsTr("Welcome to Kon Launcher")
                     font.pixelSize: 32
                     font.bold: true
                     color: themeManager.colors["text_primary"]
                 }
 
                 Text {
-                    text: "Hola " + (profileManager ? profileManager.currentProfile : "Usuario")
+                    text: qsTr("Hola ") + (profileManager ? profileManager.currentProfile : qsTr("Usuario"))
                     font.pixelSize: 24
                     color: themeManager.colors["accent"]
                     font.bold: true
@@ -210,7 +210,7 @@ Item {
                         spacing: 10
 
                         Text {
-                            text: "Version Information"
+                            text: qsTr("Version Information")
                             font.pixelSize: 16
                             font.bold: true
                             color: themeManager.colors["text_primary"]
@@ -223,7 +223,7 @@ Item {
                             Layout.fillWidth: true
 
                             Text {
-                                text: "Selected:"
+                                text: qsTr("Selected:")
                                 color: themeManager.colors["text_secondary"]
                             }
                             Text {
@@ -233,7 +233,7 @@ Item {
                             }
 
                             Text {
-                                text: "Tag:"
+                                text: qsTr("Tag:")
                                 color: themeManager.colors["text_secondary"]
                             }
                             Text {
@@ -242,7 +242,7 @@ Item {
                             }
 
                             Text {
-                                text: "Created:"
+                                text: qsTr("Created:")
                                 color: themeManager.colors["text_secondary"]
                             }
                             Text {
@@ -271,7 +271,7 @@ Item {
 
                 property bool isGameRunning: minecraftManager.isRunning
 
-                text: isGameRunning ? "STOP" : "PLAY"
+                text: isGameRunning ? qsTr("STOP") : qsTr("PLAY")
 
                 background: Rectangle {
                     color: parent.isGameRunning ?

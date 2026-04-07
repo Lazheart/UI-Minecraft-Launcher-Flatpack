@@ -67,7 +67,7 @@ Dialog {
 
             // Title
             Text {
-                text: "Import Worlds / Addons"
+                text: qsTr("Import Worlds / Addons")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true
@@ -84,7 +84,7 @@ Dialog {
                 }
 
                 Text {
-                    text: "Type:"
+                    text: qsTr("Type:")
                     color: themeManager.colors["text_secondary"]
                     font.pixelSize: 14
                     font.bold: true
@@ -138,7 +138,7 @@ Dialog {
                         }
 
                         Text {
-                            text: "World"
+                            text:   qsTr("World")
                             color: themeManager.colors["text_primary"]
                             font.pixelSize: 14
 
@@ -194,7 +194,7 @@ Dialog {
                         }
 
                         Text {
-                            text: "Addon"
+                            text: qsTr("Addon")
                             color: themeManager.colors["text_primary"]
                             font.pixelSize: 14
 
@@ -221,7 +221,7 @@ Dialog {
                 TextField {
                     id: filePathInput
                     Layout.fillWidth: true
-                    placeholderText: "Select a file..."
+                    placeholderText:qsTr("Select a file...")
                     readOnly: true
                     
                     background: Rectangle {
@@ -245,7 +245,7 @@ Dialog {
 
                 Button {
                     id: browseButton
-                    text: "Browse"
+                    text: qsTr("Browse")
                     Layout.preferredWidth: 100
 
                     Layout.preferredHeight: 40
@@ -276,7 +276,7 @@ Dialog {
                     Layout.fillWidth: true
                     spacing: 10
                     Text {
-                        text: "Target Version"
+                        text: qsTr("Target Version")
                         color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
@@ -360,7 +360,7 @@ Dialog {
                 spacing: 10
 
                 Button {
-                    text: "Cancel"
+                    text: qsTr("Cancel")
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
 
@@ -389,7 +389,7 @@ Dialog {
 
                 Button {
                     id: importButton
-                    text: "Import"
+                    text: qsTr("Import")
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
                     enabled: selectedVersionPath !== ""
@@ -412,11 +412,11 @@ Dialog {
                         importError = ""
                         var fp = filePathInput.text.trim()
                         if (fp === "") {
-                            importError = "Please select a file to import."
+                            importError = qsTr("Please select a file to import.")
                             return
                         }
                         if (selectedVersionPath === "") {
-                            importError = "Please select a target version."
+                            importError = qsTr("Please select a target version.")
                             return
                         }
 
@@ -437,13 +437,13 @@ Dialog {
 
     QtDialogs.FileDialog {
         id: fileDialog
-        title: "Select " + importCard.selectedType + " File"
+        title: qsTr("Select ") + importCard.selectedType + qsTr(" File")
         selectExisting: true
         nameFilters: {
             if (importCard.selectedType === "World") {
-                return ["Minecraft World (*.mcworld)", "All files (*)"]
+                return [qsTr("Minecraft World (*.mcworld)"), qsTr("All files (*)")]
             } else {
-                return ["Minecraft Addon (*.mcpack)", "All files (*)"]
+                return [qsTr("Minecraft Addon (*.mcpack)"), qsTr("All files (*)")]
             }
         }
         onAccepted: {

@@ -10,6 +10,7 @@ Rectangle {
     
     // Signal para cambiar de página
     signal navigate(string page)
+    
     signal toggleSidebar()
     
     property string currentPage: "Home"

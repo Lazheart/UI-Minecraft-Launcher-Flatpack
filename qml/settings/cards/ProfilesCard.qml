@@ -21,7 +21,7 @@ Rectangle {
         spacing: 15
 
         Text {
-            text: "PROFILES"
+            text: qsTr("PROFILES")
             color: themeManager.colors["text_primary"]
             font.pixelSize: 16
             font.bold: true
@@ -145,7 +145,7 @@ Rectangle {
                 TextField {
                     id: newProfileInput
                     Layout.fillWidth: true
-                    placeholderText: "New profile"
+                    placeholderText: qsTr("New profile")
 
                     background: Rectangle {
                         color: themeManager.colors["background_primary"]

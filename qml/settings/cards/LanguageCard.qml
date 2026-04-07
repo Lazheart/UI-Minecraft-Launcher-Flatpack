@@ -22,7 +22,7 @@ Rectangle {
         spacing: 20
 
         Text {
-            text: "LANGUAGE"
+            text: qsTr("LANGUAGE")
             color: themeManager.colors["text_primary"]
             font.pixelSize: 16
             font.bold: true
@@ -35,7 +35,7 @@ Rectangle {
             Layout.fillHeight: true
 
             Button {
-                text: "ENGLISH"
+                text: qsTr("ENGLISH")
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 
@@ -62,7 +62,7 @@ Rectangle {
             }
 
             Button {
-                text: "ESPAÑOL"
+                text: qsTr("ESPAÑOL")
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 

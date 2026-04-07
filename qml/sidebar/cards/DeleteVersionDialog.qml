@@ -51,7 +51,7 @@ Dialog {
 
             // Título
             Text {
-                text: "Delete Versions"
+                text: qsTr("Delete Versions")   
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true

@@ -61,11 +61,11 @@ Rectangle {
         var name = themeNameField.text.trim()
 
         if (name.length === 0) {
-            addThemeError.text = qsTr("Debes ingresar un nombre para el tema")
+            addThemeError.text = qsTr("Should enter name for the theme")
             return
         }
         if (source.length === 0) {
-            addThemeError.text = qsTr("Debes seleccionar un archivo CSS")
+            addThemeError.text = qsTr("Should select a CSS file as source")
             return
         }
 
@@ -163,7 +163,7 @@ Rectangle {
         id: importThemeDialog
         title: qsTr("Seleccionar archivo de tema CSS")
         selectExisting: true
-        nameFilters: [ qsTr("CSS (*.css)"), qsTr("Todos los archivos (*)") ]
+        nameFilters: [ qsTr("CSS (*.css)"), qsTr("All Files (*)") ]
         onAccepted: {
             sourcePathField.text = importThemeDialog.fileUrl.toString()
             addThemeError.text = ""
@@ -197,7 +197,7 @@ Rectangle {
             spacing: 10
 
             Text {
-                text: qsTr("Nombre del estilo")
+                text: qsTr("Theme Name")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 12
                 font.bold: true
@@ -206,11 +206,11 @@ Rectangle {
             TextField {
                 id: themeNameField
                 Layout.fillWidth: true
-                placeholderText: qsTr("Ejemplo: Gray Steel")
+                placeholderText: qsTr("Example: Gray Steel")
             }
 
             Text {
-                text: qsTr("Archivo source (.css)")
+                text: qsTr("Source File (.css)")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 12
                 font.bold: true
@@ -223,7 +223,7 @@ Rectangle {
                 TextField {
                     id: sourcePathField
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Selecciona un archivo CSS")
+                    placeholderText: qsTr("Select a CSS file")
                     readOnly: true
                 }
 
@@ -249,7 +249,7 @@ Rectangle {
                 Item { Layout.fillWidth: true }
 
                 Button {
-                    text: qsTr("Cancelar")
+                    text: qsTr("Cancel")
                     onClicked: addThemeDialog.close()
                 }
 
@@ -263,7 +263,7 @@ Rectangle {
 
     QtDialogs.FileDialog {
         id: saveTemplateDialog
-        title: qsTr("Seleccionar carpeta para guardar style.css")
+        title: qsTr("Select folder to save style.css")
         folder: shortcuts.home
         selectFolder: true
         selectExisting: true
@@ -544,7 +544,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             ToolTip.visible: addThemeBtn.hovered
                             ToolTip.delay: 400
-                            ToolTip.text: qsTr("Agregar tema personalizado")
+                            ToolTip.text: qsTr("Add a new custom theme")
 
                             background: Item {
                                 Rectangle {
@@ -586,7 +586,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             ToolTip.visible: themeOptionsBtn.hovered
                             ToolTip.delay: 400
-                            ToolTip.text: qsTr("Opciones de tema")
+                            ToolTip.text: qsTr("Theme Options")
 
                             background: Rectangle {
                                 color: (deleteMode || parent.pressed) ? themeManager.colors["border"] : themeManager.colors["surface"]
@@ -621,7 +621,7 @@ Rectangle {
 
             Text {
                 visible: deleteMode
-                text: qsTr("Modo eliminación: selecciona un tema en la fila y luego usa 'Delete Selected Theme' en el menú de 3 puntos.")
+                text: qsTr("Delete Mode: select a theme in the row and then use 'Delete Selected Theme' in the 3-dot menu.")
                 color: themeManager.colors["text_muted"]
                 font.pixelSize: 11
                 wrapMode: Text.WordWrap

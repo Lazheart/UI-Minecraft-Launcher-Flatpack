@@ -23,7 +23,7 @@ Rectangle {
         spacing: 15
 
         Text {
-            text: "DEBUG - Console Output"
+            text: qsTr("DEBUG - Console Output")    
             color: themeManager.colors["text_primary"]
             font.pixelSize: 14
             font.bold: true

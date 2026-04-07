@@ -27,14 +27,14 @@ Item {
             spacing: 8
 
             Text {
-                text: "Hello, " + (profileManager ? profileManager.currentProfile : "User")
+                text: qsTr("Hello, ") + (profileManager ? profileManager.currentProfile : "User")
                 font.pixelSize: 32
                 font.bold: true
                 color: themeManager.colors["text_primary"]
             }
 
             Text {
-                text: "Welcome back to Kon Launcher. What do you want to play today?"
+                text: qsTr("Welcome back to Kon Launcher. What do you want to play today?")
                 font.pixelSize: 16
                 color: themeManager.colors["text_secondary"]
             }
@@ -72,7 +72,7 @@ Item {
                             Layout.fillWidth: true
                             spacing: 5
                             Text {
-                                text: "READY TO PLAY"
+                                text: qsTr("READY TO PLAY")
                                 font.pixelSize: 12
                                 font.bold: true
                                 color: themeManager.colors["accent"]
@@ -118,7 +118,7 @@ Item {
                             id: actionButtonHome
                             Layout.fillWidth: true
                             Layout.preferredHeight: 50
-                            text: "START GAME"
+                            text: qsTr("START GAME")
                             enabled: !minecraftManager.isRunning
 
                             background: Rectangle {
@@ -206,7 +206,7 @@ Item {
                     }
 
                     Text {
-                        text: "Versions loaded"
+                        text: qsTr("Versions loaded")
                         font.pixelSize: 14
                         color: themeManager.colors["text_muted"]
                     }
@@ -220,7 +220,7 @@ Item {
             spacing: 20
 
             Text {
-                text: "Your Versions"
+                text: qsTr("Your Versions")
                 font.pixelSize: 20
                 font.bold: true
                 color: themeManager.colors["text_primary"]

@@ -27,7 +27,7 @@ Rectangle {
                 }
                 
                 label: Text {
-                    text: "Perfiles"
+                    text: qsTr("Profiles")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 16
                     font.bold: true
@@ -45,7 +45,7 @@ Rectangle {
                         TextField {
                             id: newProfileName
                             Layout.fillWidth: true
-                            placeholderText: "Nombre del nuevo perfil"
+                            placeholderText: qsTr("Name of new profile")
                             
                             background: Rectangle {
                                 color: themeManager.colors["surface"]
@@ -57,7 +57,7 @@ Rectangle {
                         }
                         
                         Button {
-                            text: "Agregar Perfil"
+                            text: qsTr("Add Profile")
                             
                             background: Rectangle {
                                 color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]
@@ -112,14 +112,14 @@ Rectangle {
                                     }
                                     
                                     Text {
-                                        text: "Versión: " + (modelData.version || "latest")
+                                        text: qsTr("Version: ") + (modelData.version || qsTr("latest"))
                                         color: themeManager.colors["text_secondary"]
                                         font.pixelSize: 11
                                     }
                                 }
                                 
                                 Button {
-                                    text: "Eliminar"
+                                    text: qsTr("Delete")
                                     visible: modelData.name !== "Default"
                                     
                                     background: Rectangle {
@@ -156,7 +156,7 @@ Rectangle {
                 }
                 
                 label: Text {
-                    text: "Gráficos"
+                    text: qsTr("Graphics")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 16
                     font.bold: true
@@ -171,7 +171,7 @@ Rectangle {
                         Layout.fillWidth: true
                         
                         Text {
-                            text: "Resolución de ventana:"
+                            text: qsTr("Window Resolution   :")
                             color: themeManager.colors["text_secondary"]
                             font.pixelSize: 13
                         }
@@ -200,7 +200,7 @@ Rectangle {
                         Layout.fillWidth: true
                         
                         Text {
-                            text: "Pantalla completa:"
+                            text: qsTr("Fullscreen:")
                             color: themeManager.colors["text_secondary"]
                             font.pixelSize: 13
                         }
@@ -225,7 +225,7 @@ Rectangle {
                 }
                 
                 label: Text {
-                    text: "Información"
+                    text: qsTr("Information")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 16
                     font.bold: true
@@ -239,7 +239,7 @@ Rectangle {
                     rowSpacing: 10
                     
                     Text {
-                        text: "Versión del Launcher:"
+                        text: qsTr("Version of the Launcher:")
                         color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
@@ -250,7 +250,7 @@ Rectangle {
                     }
                     
                     Text {
-                        text: "Directorio de datos:"
+                        text: qsTr("Data Directory:")
                         color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }
@@ -263,7 +263,7 @@ Rectangle {
                     }
                     
                     Text {
-                        text: "Directorio de aplicación:"
+                        text: qsTr("Application Directory:")
                         color: themeManager.colors["text_secondary"]
                         font.pixelSize: 13
                     }

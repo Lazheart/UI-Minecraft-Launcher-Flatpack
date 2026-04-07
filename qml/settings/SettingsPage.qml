@@ -152,7 +152,7 @@ Rectangle {
                     Layout.topMargin: 20
 
                     Button {
-                        text: "SAVE"
+                        text: qsTr("SAVE")
                         Layout.preferredWidth: 150
                         Layout.preferredHeight: 45
 
@@ -184,7 +184,7 @@ Rectangle {
                     }
 
                     Button {
-                        text: "RESET TO DEFAULT"
+                        text: qsTr("RESET TO DEFAULT") 
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 45
 
