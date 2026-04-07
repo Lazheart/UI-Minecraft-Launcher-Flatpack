@@ -34,7 +34,7 @@ Item {
             }
 
             Text {
-                text: qsTr("Welcome back to Kon Launcher. What do you want to play today?")
+                text: qsTr("Welcome back to Kon Launcher.")
                 font.pixelSize: 16
                 color: themeManager.colors["text_secondary"]
             }

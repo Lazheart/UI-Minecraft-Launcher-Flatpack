@@ -74,7 +74,7 @@ Rectangle {
                     name,
                     source)
         if (!savedPath || String(savedPath).length === 0) {
-            addThemeError.text = qsTr("No se pudo copiar el archivo al perfil")
+            addThemeError.text = qsTr("Can not copy the theme file to profile folder")
             return
         }
 
@@ -161,7 +161,7 @@ Rectangle {
 
     QtDialogs.FileDialog {
         id: importThemeDialog
-        title: qsTr("Seleccionar archivo de tema CSS")
+        title: qsTr("Select CSS file for the theme")
         selectExisting: true
         nameFilters: [ qsTr("CSS (*.css)"), qsTr("All Files (*)") ]
         onAccepted: {
