@@ -62,7 +62,7 @@ Rectangle {
             }
 
             Button {
-                text: qsTr("ESPAÑOL")
+                text: qsTr("SPANISH")
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 

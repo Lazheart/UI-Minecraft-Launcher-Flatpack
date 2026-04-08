@@ -13,7 +13,7 @@ Rectangle {
     Layout.preferredHeight: 420
 
     property real scaleValue: 1.0
-    property string currentTheme: "DARK"
+    property string currentTheme: qsTr("DARK")
     property var customThemes: []
     property bool deleteMode: false
     property string selectedDeleteThemePath: ""
@@ -124,8 +124,8 @@ Rectangle {
         var removedCurrent = (profile && profile.customThemePath)
                            ? (String(profile.customThemePath) === targetPath)
                            : false
-        var nextTheme = removedCurrent ? "DARK"
-                                       : ((profile && profile.theme) ? String(profile.theme) : "DARK")
+        var nextTheme = removedCurrent ? qsTr("DARK")
+                                       : ((profile && profile.theme) ? String(profile.theme) : qsTr("DARK"))
         var nextCustomThemePath = removedCurrent ? ""
                                                  : ((profile && profile.customThemePath) ? String(profile.customThemePath) : "")
 
@@ -320,7 +320,7 @@ Rectangle {
             spacing: 12
 
             Text {
-                text: "Interface Scale"
+                text: qsTr("Interface Scale")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 13
                 font.bold: true
@@ -394,7 +394,7 @@ Rectangle {
             Layout.topMargin: 6
 
             Text {
-                text: "THEME"
+                text: qsTr("THEME")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 13
                 font.bold: true
@@ -424,7 +424,7 @@ Rectangle {
 
                         Button {
                             id: darkBtn
-                            text: "DARK"
+                            text: qsTr("DARK")
                             width: 108
                             height: 45
                             anchors.verticalCenter: parent.verticalCenter
@@ -458,7 +458,7 @@ Rectangle {
 
                         Button {
                             id: lightBtn
-                            text: "LIGHT"
+                            text: qsTr("LIGHT")
                             width: 108
                             height: 45
                             anchors.verticalCenter: parent.verticalCenter
@@ -479,13 +479,13 @@ Rectangle {
                                 verticalAlignment: Text.AlignVCenter
                             }
                             onClicked: {
-                                visualCard.currentTheme = "LIGHT"
+                                visualCard.currentTheme = qsTr("LIGHT")
                                 profileManager.updateProfile(profileManager.currentProfile, {
-                                    theme: "LIGHT",
+                                    theme: qsTr("LIGHT"),
                                     customThemePath: ""
                                 })
-                                themeManager.loadBundledTheme("LIGHT")
-                                visualCard.themeChanged("LIGHT")
+                                themeManager.loadBundledTheme(qsTr("LIGHT"))
+                                visualCard.themeChanged(qsTr("LIGHT"))
                                 profileManager.saveProfiles()
                             }
                         }

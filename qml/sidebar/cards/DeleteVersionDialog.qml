@@ -60,7 +60,7 @@ Dialog {
 
             // Descripción
             Text {
-                text: "Select the versions you want to delete:"
+                text: qsTr("Select the versions you want to delete:")
                 font.pixelSize: 13
                 color: themeManager.colors["text_secondary"]
                 Layout.fillWidth: true
@@ -109,7 +109,7 @@ Dialog {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "No versions installed"
+                                text: qsTr("No versions installed")
                                 color: secondaryTextColor
                                 font.pixelSize: 13
                             }
@@ -228,7 +228,7 @@ Dialog {
                 spacing: 10
 
                 Button {
-                    text: "Cancel"
+                    text: qsTr("Cancel")
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
 
@@ -254,7 +254,7 @@ Dialog {
                 }
 
                 Button {
-                    text: "Delete Selected"
+                    text: qsTr("Delete Selected")
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
                     enabled: deleteDialog.selectedVersions.length > 0

@@ -165,7 +165,11 @@ Rectangle {
                 }
 
                 Repeater {
-                    model: ["date", "name", "tag"]
+                    model: [
+                        qsTr("date"),
+                        qsTr("name"),
+                        qsTr("tag")
+                    ]
                     delegate: Rectangle {
                         width: 45
                         height: 18

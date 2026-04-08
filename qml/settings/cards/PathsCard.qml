@@ -110,7 +110,7 @@ Rectangle {
                 spacing: 10
 
                 Text {
-                    text: "Installed Backgrounds"
+                    text: qsTr("Installed Backgrounds")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 12
                     Layout.preferredWidth: 160

@@ -126,7 +126,7 @@ Dialog {
             spacing: 20
 
             Text {
-                text: "Install Version"
+                text: qsTr("Install Version")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true
@@ -139,7 +139,7 @@ Dialog {
                 spacing: 6
 
                 Text {
-                    text: "NAME"
+                    text: qsTr("NAME")
                     color: textColor
                     font.pixelSize: 16
                     font.bold: true
@@ -148,7 +148,7 @@ Dialog {
                 TextField {
                     id: nameField
                     Layout.fillWidth: true
-                    placeholderText: "Enter version name"
+                    placeholderText:qsTr("Enter version name")
                     enabled: !installDialog.installing
                     color: themeManager.colors["text_primary"]
                     selectByMouse: true
@@ -473,7 +473,7 @@ Dialog {
                     id: cancelButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: "Cancel"
+                    text: qsTr("Cancel")
 
                     background: Rectangle {
                         color: installDialog.installing

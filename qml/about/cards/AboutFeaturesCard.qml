@@ -39,7 +39,7 @@ Rectangle {
 
             Text {
                 Layout.fillWidth: true
-                text: "Información y Características"
+                text: qsTr("Información y Características")
                 font.pixelSize: 20
                 font.bold: true
                 color: themeManager.colors["text_primary"]
@@ -50,7 +50,7 @@ Rectangle {
 
         Text {
             Layout.fillWidth: true
-            text: "• Interfaz diseñada con Qt para usabilidad\n• Gestión completa de perfiles y lenguaje \n• Registro en tiempo real para depuración y soporte\n• Integración seamless con Flatpak y app sandbox de Linux"
+            text: qsTr("• Interfaz diseñada con Qt para usabilidad\n• Gestión completa de perfiles y lenguaje \n• Registro en tiempo real para depuración y soporte\n• Integración seamless con Flatpak y app sandbox de Linux")    
             color: themeManager.colors["text_secondary"]
             font.pixelSize: 13
             lineHeight: 1.6

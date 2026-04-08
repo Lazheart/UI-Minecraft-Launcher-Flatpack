@@ -284,7 +284,7 @@ Dialog {
                         id: noVersionsLabel
                         visible: versionsListModel.count === 0
                         color: themeManager.colors["error_bright"]
-                        text: "No versions installed. Install a version first."
+                        text: qsTr("No versions installed. Install a version first.")
                         font.pixelSize: 12
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignRight
