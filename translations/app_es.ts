@@ -2,6 +2,70 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es_ES">
 <context>
+    <name>AboutAuthorCard</name>
+    <message>
+        <location filename="../qml/about/cards/AboutAuthorCard.qml" line="37"/>
+        <source>Creado por Lazheart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/about/cards/AboutAuthorCard.qml" line="59"/>
+        <source>Desarrollo abierto, comunidad activa y soporte continuo para disfrutar de Minecraft Bedrock en Linux.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AboutDisclaimerCard</name>
+    <message>
+        <location filename="../qml/about/cards/AboutDisclaimerCard.qml" line="19"/>
+        <source>DISCLAIMER</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/about/cards/AboutDisclaimerCard.qml" line="29"/>
+        <source>Este launcher de Minecraft Bedrock no incluye ni proporciona archivos del juego, ni sirve como método para obtener copias no autorizadas. Su función es permitir que los usuarios ejecuten contenido que ya poseen legítimamente, incluyendo betas y builds obtenidas oficialmente de Mojang/Microsoft.
+
+A diferencia de otros lanzadores que dependen exclusivamente de Google Play, este proyecto no impone un método de distribución específico, permitiendo a los compradores del juego acceder a las versiones a las que tienen derecho.
+
+El uso de este software requiere ser propietario legal de Minecraft Bedrock Edition. Cualquier uso con archivos obtenidos por medios no autorizados está estrictamente prohibido y no es apoyado por este proyecto.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AboutFeaturesCard</name>
+    <message>
+        <location filename="../qml/about/cards/AboutFeaturesCard.qml" line="42"/>
+        <source>Información y Características</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/about/cards/AboutFeaturesCard.qml" line="53"/>
+        <source>• Interfaz diseñada con Qt para usabilidad
+• Gestión completa de perfiles y lenguaje 
+• Registro en tiempo real para depuración y soporte
+• Integración seamless con Flatpak y app sandbox de Linux</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AboutHeroCard</name>
+    <message>
+        <location filename="../qml/about/cards/AboutHeroCard.qml" line="72"/>
+        <source>Minecraft Bedrock Launcher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/about/cards/AboutHeroCard.qml" line="79"/>
+        <source>Versión: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/about/cards/AboutHeroCard.qml" line="86"/>
+        <source>Launcher de Minecraft Bedrock Edition en Linux mediante flatpak con integración de perfiles, customización y registros en tiempo real.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AboutPage</name>
     <message>
         <location filename="../qml/about/AboutPage.qml" line="32"/>
@@ -16,6 +80,21 @@
         <source>DEBUG - Console Output</source>
         <translation type="unfinished">DEBUG - Salida de Consola</translation>
     </message>
+    <message>
+        <location filename="../qml/settings/cards/DebugCard.qml" line="90"/>
+        <source>Clear Console</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/DebugCard.qml" line="113"/>
+        <source>Copy Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/DebugCard.qml" line="136"/>
+        <source>Export Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DeleteVersionDialog</name>
@@ -23,6 +102,26 @@
         <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="54"/>
         <source>Delete Versions</source>
         <translation type="unfinished">Eliminar Versiones</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="63"/>
+        <source>Select the versions you want to delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="112"/>
+        <source>No versions installed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="231"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="257"/>
+        <source>Delete Selected</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -162,6 +261,11 @@
         <translation type="unfinished">Versión de Destino</translation>
     </message>
     <message>
+        <location filename="../qml/sidebar/cards/ImportWorldsAddonsCard.qml" line="287"/>
+        <source>No versions installed. Install a version first.</source>
+        <translation type="unfinished">No se encontraron versiones. Instala una primero.</translation>
+    </message>
+    <message>
         <location filename="../qml/sidebar/cards/ImportWorldsAddonsCard.qml" line="363"/>
         <source>Cancel</source>
         <translation type="unfinished">Cancelar</translation>
@@ -236,6 +340,21 @@
         <translation type="unfinished">[InstallVersionDialog] cleanup error:</translation>
     </message>
     <message>
+        <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="129"/>
+        <source>Install Version</source>
+        <translation type="unfinished">Instalar Versión</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="142"/>
+        <source>NAME</source>
+        <translation type="unfinished">NOMBRE</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="151"/>
+        <source>Enter version name</source>
+        <translation type="unfinished">Ingrese el nombre de la versión</translation>
+    </message>
+    <message>
         <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="186"/>
         <source>Select APK file...</source>
         <translation type="unfinished">Seleccionar archivo APK...</translation>
@@ -264,6 +383,11 @@
         <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="390"/>
         <source>BACKGROUND</source>
         <translation type="unfinished">Fondo</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="476"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancelar</translation>
     </message>
     <message>
         <location filename="../qml/sidebar/cards/InstallVersionDialog.qml" line="534"/>
@@ -320,8 +444,12 @@
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="65"/>
-        <source>ESPAÑOL</source>
+        <source>SPANISH</source>
         <translation type="unfinished">ESPAÑOL</translation>
+    </message>
+    <message>
+        <source>ESPAÑOL</source>
+        <translation type="obsolete">ESPAÑOL</translation>
     </message>
 </context>
 <context>
@@ -343,6 +471,30 @@
     </message>
 </context>
 <context>
+    <name>NavBar</name>
+    <message>
+        <location filename="../qml/navbar/NavBar.qml" line="16"/>
+        <location filename="../qml/navbar/NavBar.qml" line="93"/>
+        <source>Home</source>
+        <translation type="unfinished">Inicio</translation>
+    </message>
+    <message>
+        <location filename="../qml/navbar/NavBar.qml" line="42"/>
+        <source>Logo</source>
+        <translation type="unfinished">Logo</translation>
+    </message>
+    <message>
+        <location filename="../qml/navbar/NavBar.qml" line="102"/>
+        <source>Settings</source>
+        <translation type="unfinished">Configuración</translation>
+    </message>
+    <message>
+        <location filename="../qml/navbar/NavBar.qml" line="110"/>
+        <source>About</source>
+        <translation type="unfinished">Información</translation>
+    </message>
+</context>
+<context>
     <name>PathsCard</name>
     <message>
         <location filename="../qml/settings/cards/PathsCard.qml" line="24"/>
@@ -361,6 +513,11 @@
         <location filename="../qml/settings/cards/PathsCard.qml" line="296"/>
         <source>Browse</source>
         <translation type="unfinished">Navegar</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/PathsCard.qml" line="113"/>
+        <source>Installed Backgrounds</source>
+        <translation type="unfinished">Fondos Instalados</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/PathsCard.qml" line="185"/>
@@ -389,12 +546,12 @@
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../qml/settings/SettingsPage.qml" line="155"/>
+        <location filename="../qml/settings/SettingsPage.qml" line="156"/>
         <source>SAVE</source>
         <translation type="unfinished">GUARDAR </translation>
     </message>
     <message>
-        <location filename="../qml/settings/SettingsPage.qml" line="187"/>
+        <location filename="../qml/settings/SettingsPage.qml" line="188"/>
         <source>RESET TO DEFAULT</source>
         <translation type="unfinished">REINICIAR VALORES</translation>
     </message>
@@ -480,22 +637,37 @@
         <translation type="unfinished">Ordenar por:</translation>
     </message>
     <message>
-        <location filename="../qml/sidebar/SideBar.qml" line="214"/>
+        <location filename="../qml/sidebar/SideBar.qml" line="169"/>
+        <source>date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/SideBar.qml" line="170"/>
+        <source>name</source>
+        <translation type="unfinished">nombre</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/SideBar.qml" line="171"/>
+        <source>tag</source>
+        <translation type="unfinished">version</translation>
+    </message>
+    <message>
+        <location filename="../qml/sidebar/SideBar.qml" line="218"/>
         <source>Not versions Installed</source>
         <translation type="unfinished">No hay versiones instaladas</translation>
     </message>
     <message>
-        <location filename="../qml/sidebar/SideBar.qml" line="359"/>
+        <location filename="../qml/sidebar/SideBar.qml" line="363"/>
         <source>Add versions</source>
         <translation type="unfinished">Agregar versiones</translation>
     </message>
     <message>
-        <location filename="../qml/sidebar/SideBar.qml" line="416"/>
+        <location filename="../qml/sidebar/SideBar.qml" line="420"/>
         <source>Delete versions</source>
         <translation type="unfinished">Eliminar versiones</translation>
     </message>
     <message>
-        <location filename="../qml/sidebar/SideBar.qml" line="477"/>
+        <location filename="../qml/sidebar/SideBar.qml" line="481"/>
         <source>Import Worlds
 and mods</source>
         <translation type="unfinished">Importar Mundos
@@ -504,6 +676,14 @@ y Mods</translation>
 </context>
 <context>
     <name>VisualCard</name>
+    <message>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="16"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="127"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="128"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="427"/>
+        <source>DARK</source>
+        <translation type="unfinished">OSCURO</translation>
+    </message>
     <message>
         <location filename="../qml/settings/cards/VisualCard.qml" line="64"/>
         <source>Should enter name for the theme</source>
@@ -599,6 +779,25 @@ y Mods</translation>
         <location filename="../qml/settings/cards/VisualCard.qml" line="297"/>
         <source>Delete Selected Theme</source>
         <translation type="unfinished">Eliminar tema seleccionado</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="323"/>
+        <source>Interface Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="397"/>
+        <source>THEME</source>
+        <translation type="unfinished">TEMA</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="461"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="482"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="484"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="487"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="488"/>
+        <source>LIGHT</source>
+        <translation type="unfinished">CLARO</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/VisualCard.qml" line="547"/>
