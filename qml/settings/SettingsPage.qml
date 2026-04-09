@@ -11,6 +11,7 @@ Rectangle {
     property string currentLanguage: "EN"
     property string currentTheme: "DARK"
     property real currentScale: 1.0
+    property bool languageSelectionRollbackInProgress: false
 
     function normalizeBundledTheme(themeValue) {
         var raw = String(themeValue || "").trim()
@@ -129,8 +130,27 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         onLanguageChanged: (language) => {
+                            if (settingsPage.languageSelectionRollbackInProgress) {
+                                settingsPage.languageSelectionRollbackInProgress = false
+                                return
+                            }
+
+                            var previousLanguage = settingsPage.currentLanguage
+                            if (language === previousLanguage)
+                                return
+
+                            var languageApplied = translator.setLanguage(language)
+                            if (!languageApplied) {
+                                var errorMessage = translator.lastError ? String(translator.lastError) : qsTr("Unknown translation error")
+                                console.error("[Settings] Failed to apply language", language, "error:", errorMessage)
+
+                                settingsPage.languageSelectionRollbackInProgress = true
+                                languageCard.currentLanguage = previousLanguage
+                                settingsPage.currentLanguage = previousLanguage
+                                return
+                            }
+
                             settingsPage.currentLanguage = language
-                            translator.setLanguage(language)
                             // Persist to profile manager for current profile
                             profileManager.updateProfile(profileManager.currentProfile, { language: language })
                         }
