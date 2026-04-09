@@ -12,12 +12,25 @@
 #include <QtGlobal>
 #include <QFileInfo>
 #include <QFileInfoList>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QUrl>
 
 namespace {
 
+bool isSafeLanguageInput(const QString& lang) {
+    // Allow only language codes like: en, eng, en_US, pt-BR.
+    static const QRegularExpression kLanguagePattern(
+        QStringLiteral("^[A-Za-z]{2,3}([_-][A-Za-z]{2})?$")
+    );
+    return kLanguagePattern.match(lang.trimmed()).hasMatch();
+}
+
 QString normalizedLanguageCode(const QString& lang) {
+    if (!isSafeLanguageInput(lang)) {
+        return QString();
+    }
+
     QString cleaned = lang.trimmed().toLower();
     if (cleaned.contains('_')) {
         cleaned = cleaned.section('_', 0, 0);
@@ -25,6 +38,14 @@ QString normalizedLanguageCode(const QString& lang) {
     if (cleaned.contains('-')) {
         cleaned = cleaned.section('-', 0, 0);
     }
+
+    static const QRegularExpression kNormalizedLanguagePattern(
+        QStringLiteral("^[a-z]{2,3}$")
+    );
+    if (!kNormalizedLanguagePattern.match(cleaned).hasMatch()) {
+        return QString();
+    }
+
     return cleaned;
 }
 
