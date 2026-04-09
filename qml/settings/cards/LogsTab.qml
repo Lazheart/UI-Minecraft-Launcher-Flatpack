@@ -17,7 +17,7 @@ Rectangle {
             spacing: 10
             
             Text {
-                text: "Registro de eventos"
+                text: qsTr("Event Log")
                 font.pixelSize: 16
                 font.bold: true
                 color: themeManager.colors["text_primary"]
@@ -26,7 +26,7 @@ Rectangle {
             Item { Layout.fillWidth: true }
             
             Button {
-                text: "Limpiar"
+                text: qsTr("Clear")
                 
                 background: Rectangle {
                     color: parent.pressed ? themeManager.colors["logs_button_neutral_pressed"] : themeManager.colors["logs_button_neutral"]
@@ -46,7 +46,7 @@ Rectangle {
             }
             
             Button {
-                text: "Exportar"
+                text: qsTr("Export")
                 
                 background: Rectangle {
                     color: parent.pressed ? themeManager.colors["accent_pressed"] : themeManager.colors["accent"]

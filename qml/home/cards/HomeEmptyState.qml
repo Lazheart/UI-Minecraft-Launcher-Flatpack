@@ -25,7 +25,7 @@ Item {
         anchors.topMargin: Math.max(40, (parent.height - implicitHeight) / 2)
 
         Text {
-            text: "Welcome to Kon Launcher"
+            text: qsTr("Welcome to Kon Launcher")
             font.pixelSize: 32
             font.bold: true
             color: themeManager.colors["text_primary"]
@@ -38,7 +38,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
-                text: "Install new version clicking on icon of"
+                text: qsTr("Install new version clicking on icon of")
                 font.pixelSize: 16
                 color: themeManager.colors["text_secondary"]
                 horizontalAlignment: Text.AlignHCenter
@@ -86,7 +86,7 @@ Item {
             }
 
             Text {
-                text: "Install new version"
+                text: qsTr("Install new version")
                 font.pixelSize: 14
                 color: themeManager.colors["text_primary"]
                 horizontalAlignment: Text.AlignHCenter

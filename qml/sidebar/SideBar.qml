@@ -106,7 +106,7 @@ Rectangle {
                         spacing: 2
                         
                         Text {
-                            text: "Installed Versions"
+                            text: qsTr("Installed Versions")
                             font.pixelSize: 14
                             font.bold: true
                             color: themeManager.colors["text_primary"]
@@ -158,14 +158,18 @@ Rectangle {
                 visible: versionsMenu.height > 20
 
                 Text {
-                    text: "Sort by:"
+                    text: qsTr("Sort by:")
                     color: themeManager.colors["text_muted"]
                     font.pixelSize: 10
                     Layout.margins: 4
                 }
 
                 Repeater {
-                    model: ["date", "name", "tag"]
+                    model: [
+                        qsTr("date"),
+                        qsTr("name"),
+                        qsTr("tag")
+                    ]
                     delegate: Rectangle {
                         width: 45
                         height: 18
@@ -211,7 +215,7 @@ Rectangle {
 
                         Text {
                             anchors.centerIn: parent
-                            text: "Not versions Installed"
+                            text: qsTr("Not versions Installed")
                             color: themeManager.colors["text_muted"]
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignHCenter
@@ -356,7 +360,7 @@ Rectangle {
                     }
                     
                     Text {
-                        text: "Add versions"
+                        text: qsTr("Add versions")
                         color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                         Layout.fillWidth: true
@@ -413,7 +417,7 @@ Rectangle {
                     }
                     
                     Text {
-                        text: "Delete versions"
+                        text: qsTr("Delete versions")
                         color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                         Layout.fillWidth: true
@@ -474,7 +478,7 @@ Rectangle {
                     }
                     
                     Text {
-                        text: "Import Worlds\nand mods"
+                        text: qsTr("Import Worlds\nand mods")
                         color: themeManager.colors["text_primary"]
                         font.pixelSize: 13
                         Layout.fillWidth: true

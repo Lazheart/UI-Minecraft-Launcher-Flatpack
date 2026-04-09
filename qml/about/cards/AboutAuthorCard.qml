@@ -34,7 +34,7 @@ Rectangle {
                 spacing: 8
 
                 Text {
-                    text: "Creado por Lazheart"
+                    text: qsTr("Created by Lazheart")
                     font.pixelSize: 18
                     font.bold: true
                     color: themeManager.colors["text_primary"]
@@ -56,7 +56,7 @@ Rectangle {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Desarrollo abierto, comunidad activa y soporte continuo para disfrutar tu biblioteca de Minecraft Bedrock en Linux."
+                    text: qsTr("Open source development, active and continuous support to enjoy Minecraft Bedrock on Linux.")
                     wrapMode: Text.WordWrap
                     color: themeManager.colors["text_secondary"]
                     font.pixelSize: 13

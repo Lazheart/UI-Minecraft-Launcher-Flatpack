@@ -11,6 +11,23 @@ Rectangle {
     property string currentLanguage: "EN"
     property string currentTheme: "DARK"
     property real currentScale: 1.0
+    property bool languageSelectionRollbackInProgress: false
+    property string languageErrorMessage: ""
+
+    function normalizeBundledTheme(themeValue) {
+        var raw = String(themeValue || "").trim()
+        var upper = raw.toUpperCase()
+
+        if (upper === "LIGTH")
+            upper = "LIGHT"
+
+        if (upper === "LIGHT" || upper === "CLARO")
+            return "LIGHT"
+        if (upper === "DARK" || upper === "OSCURO")
+            return "DARK"
+
+        return raw
+    }
 
     // Timer para actualizar componentes después de recarga de perfiles
     Timer {
@@ -22,7 +39,11 @@ Rectangle {
             if (profileData && profileData.name) {
                 var language = profileData.language || "EN"
                 var theme = profileData.theme || "DARK"
+                var customThemePath = profileData.customThemePath ? String(profileData.customThemePath) : ""
                 var scale = profileData.scale || 1.0
+
+                if (customThemePath.length === 0)
+                    theme = normalizeBundledTheme(theme)
                 
                 languageCard.currentLanguage = language
                 visualCard.currentTheme = theme
@@ -45,7 +66,11 @@ Rectangle {
                 // Actualizar los componentes visuales con los valores del perfil
                 var language = profileData.language || "EN"
                 var theme = profileData.theme || "DARK"
+                var customThemePath = profileData.customThemePath ? String(profileData.customThemePath) : ""
                 var scale = profileData.scale || 1.0
+
+                if (customThemePath.length === 0)
+                    theme = normalizeBundledTheme(theme)
                 
                 languageCard.currentLanguage = language
                 visualCard.currentTheme = theme
@@ -86,7 +111,7 @@ Rectangle {
 
                 // Título
                 Text {
-                    text: "Settings"
+                    text: qsTr("Settings")
                     font.pixelSize: 36
                     font.bold: true
                     color: themeManager.colors["text_primary"]
@@ -106,6 +131,28 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         onLanguageChanged: (language) => {
+                            if (settingsPage.languageSelectionRollbackInProgress) {
+                                settingsPage.languageSelectionRollbackInProgress = false
+                                return
+                            }
+
+                            var previousLanguage = settingsPage.currentLanguage
+                            if (language === previousLanguage)
+                                return
+
+                            var languageApplied = translator.setLanguage(language)
+                            if (!languageApplied) {
+                                var errorMessage = translator.lastError ? String(translator.lastError) : qsTr("Unknown translation error")
+                                console.error("[Settings] Failed to apply language", language, "error:", errorMessage)
+                                settingsPage.languageErrorMessage = errorMessage
+
+                                settingsPage.languageSelectionRollbackInProgress = true
+                                languageCard.currentLanguage = previousLanguage
+                                settingsPage.currentLanguage = previousLanguage
+                                return
+                            }
+
+                            settingsPage.languageErrorMessage = ""
                             settingsPage.currentLanguage = language
                             // Persist to profile manager for current profile
                             profileManager.updateProfile(profileManager.currentProfile, { language: language })
@@ -119,6 +166,14 @@ Rectangle {
                         Layout.alignment: Qt.AlignTop
                         settingsPageRef: settingsPage
                     }
+                }
+
+                Text {
+                    visible: settingsPage.languageErrorMessage.length > 0
+                    text: settingsPage.languageErrorMessage
+                    color: themeManager.colors["error_bright"]
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
 
                 // Paths Card
@@ -152,7 +207,7 @@ Rectangle {
                     Layout.topMargin: 20
 
                     Button {
-                        text: "SAVE"
+                        text: qsTr("SAVE")
                         Layout.preferredWidth: 150
                         Layout.preferredHeight: 45
 
@@ -184,7 +239,7 @@ Rectangle {
                     }
 
                     Button {
-                        text: "RESET TO DEFAULT"
+                        text: qsTr("RESET TO DEFAULT") 
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 45
 

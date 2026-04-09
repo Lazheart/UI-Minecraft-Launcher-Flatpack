@@ -20,10 +20,13 @@ find_package(Qt5 REQUIRED COMPONENTS
     Quick
     Qml
     Widgets
+    Xml
     Network
     DBus
     Concurrent
 )
+
+find_package(Qt5LinguistTools QUIET)
 
 # Buscar libzip
 find_package(PkgConfig REQUIRED)
@@ -48,6 +51,7 @@ set(SOURCES
     src/minecraftextract.cpp
     src/profilemanager.cpp
     src/versionsapihandler.cpp
+    src/translator.cpp
 )
 
 # Archivos de cabecera
@@ -60,7 +64,24 @@ set(HEADERS
     include/minecraftextract.h
     include/versionsapihandler.h
     include/loghandler.h
+    include/translator.h
 )
+
+set(TS_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/app_en.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/app_es.ts
+)
+
+option(GENERATE_QM_TRANSLATIONS "Generar archivos .qm con Qt LinguistTools si está disponible" ON)
+
+set(QM_FILES)
+if(GENERATE_QM_TRANSLATIONS AND Qt5LinguistTools_FOUND)
+    qt5_add_translation(QM_FILES ${TS_FILES})
+elseif(GENERATE_QM_TRANSLATIONS)
+    message(STATUS "Qt5LinguistTools no encontrado: se instalarán solo archivos .ts.")
+else()
+    message(STATUS "Generación de .qm desactivada: se instalarán solo archivos .ts.")
+endif()
 
 # Archivos QML y recursos
 set(QML_RESOURCES
@@ -72,6 +93,7 @@ add_executable(${PROJECT_NAME}
     ${SOURCES}
     ${HEADERS}
     ${QML_RESOURCES}
+    ${QM_FILES}
 )
 
 # Enlazar con Qt5
@@ -80,6 +102,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::Quick
     Qt5::Qml
     Qt5::Widgets
+    Qt5::Xml
     Qt5::Network
     Qt5::DBus
     Qt5::Concurrent
@@ -98,6 +121,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE APP_VERSION=\"${PROJECT_VERSI
 # Instalar el ejecutable en /app/bin (Flatpak)
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
+)
+
+install(FILES ${TS_FILES} ${QM_FILES}
+    DESTINATION share/${PROJECT_NAME}/translations
 )
 
 # Definir rutas para los archivos de instalación

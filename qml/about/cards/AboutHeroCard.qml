@@ -69,21 +69,21 @@ Rectangle {
             spacing: 10
 
             Text {
-                text: "Minecraft Bedrock Launcher"
+                text: qsTr("Minecraft Launcher")
                 font.pixelSize: 24
                 font.bold: true
                 color: themeManager.colors["text_primary"]
             }
 
             Text {
-                text: "Versión: " + minecraftManager.getLauncherVersion()
+                text: qsTr("Version: ") + minecraftManager.getLauncherVersion()
                 color: themeManager.colors["text_secondary"]
                 font.pixelSize: 14
             }
 
             Text {
                 Layout.fillWidth: true
-                text: "Launcher de Minecraft Bedrock Edition en Linux mediante flatpak con integración de perfiles, customización y registros en tiempo real."
+                text: qsTr("Minecraft Bedrock Edition launcher for Linux with profile management, customization, and real-time logging.")
                 color: themeManager.colors["text_muted"]
                 font.pixelSize: 13
                 wrapMode: Text.WordWrap

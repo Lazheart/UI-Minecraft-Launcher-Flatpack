@@ -38,7 +38,7 @@ Dialog {
                             string tag)
 
     function resetForm() {
-        console.log("[InstallVersionDialog] resetForm() called")
+        console.log(qsTr("[InstallVersionDialog] resetForm() called"))
         nameField.text = ""
         apkField.text = ""
         refreshModels()
@@ -52,7 +52,7 @@ Dialog {
         tagComboBox.currentIndex = -1
         errorLabel.text = ""
         installDialog.installing = false
-        console.log("[InstallVersionDialog] resetForm() done. installing=", installDialog.installing)
+        console.log(qsTr("[InstallVersionDialog] resetForm() done. installing=") + installDialog.installing)
     }
 
     function stripExtension(filename) {
@@ -73,7 +73,7 @@ Dialog {
     property var pendingInstallRequest: null
 
     onInstallingChanged: {
-        console.log("[InstallVersionDialog] installing changed ->", installing)
+        console.log(qsTr("[InstallVersionDialog] installing changed ->") + installing)
     }
 
     function cleanFileUrl(url) {
@@ -96,7 +96,7 @@ Dialog {
                 var apk = apkField.text && apkField.text.length ? apkField.text : ""
                 if (apk && apk.indexOf(pathManager.dataDir + "/imports/") === 0) {
                     pathManager.removeStagedFile(apk)
-                    console.log("[InstallVersionDialog] removed staged apk on close:", apk)
+                    console.log(qsTr("[InstallVersionDialog] removed staged apk on close:") + apk)
                 }
                 // icons/backgrounds may also be staged separately; attempt removal similarly
                 if (installDialog.iconPath && installDialog.iconPath.indexOf(pathManager.dataDir + "/imports/") === 0) {
@@ -106,7 +106,7 @@ Dialog {
                     pathManager.removeStagedFile(installDialog.backgroundPath)
                 }
             } catch (e) {
-                console.log("[InstallVersionDialog] cleanup error:", e)
+                console.log(qsTr("[InstallVersionDialog] cleanup error:"), e)
             }
         }
     }
@@ -126,7 +126,7 @@ Dialog {
             spacing: 20
 
             Text {
-                text: "Install Version"
+                text: qsTr("Install Version")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 20
                 font.bold: true
@@ -139,7 +139,7 @@ Dialog {
                 spacing: 6
 
                 Text {
-                    text: "NAME"
+                    text: qsTr("NAME")
                     color: textColor
                     font.pixelSize: 16
                     font.bold: true
@@ -148,7 +148,7 @@ Dialog {
                 TextField {
                     id: nameField
                     Layout.fillWidth: true
-                    placeholderText: "Enter version name"
+                    placeholderText:qsTr("Enter version name")
                     enabled: !installDialog.installing
                     color: themeManager.colors["text_primary"]
                     selectByMouse: true
@@ -183,7 +183,7 @@ Dialog {
                         id: apkField
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
-                        placeholderText: "Select APK file..."
+                        placeholderText: qsTr("Select APK file...")
                         color: themeManager.colors["text_primary"]
                         readOnly: true
                         padding: 12
@@ -206,7 +206,7 @@ Dialog {
 
                     Button {
                         id: apkButton
-                        text: "Browse"
+                        text: qsTr("Browse")
                         enabled: !installDialog.installing
                         Layout.preferredWidth: 100
                         Layout.preferredHeight: 40
@@ -235,7 +235,7 @@ Dialog {
                 RowLayout {
                     spacing: 8
                     Text {
-                        text: "TAG"
+                        text: qsTr("TAG")
                         color: tagCheckBox.checked ? textColor : secondaryTextColor
                         font.pixelSize: 16
                         font.bold: true
@@ -282,7 +282,7 @@ Dialog {
                     model: (typeof versionsApiHandler !== 'undefined' && versionsApiHandler) ? versionsApiHandler.versions : []
                     currentIndex: -1
                     enabled: tagCheckBox.checked && !installDialog.installing
-                    displayText: currentIndex === -1 ? "Select a version" : currentText
+                    displayText: currentIndex === -1 ? qsTr("Select a version") : currentText
                     
                     background: Rectangle {
                         radius: 6
@@ -313,7 +313,7 @@ Dialog {
                 spacing: 6
 
                 Text {
-                    text: "ICON"
+                    text: qsTr("ICON")
                     color: textColor
                     font.pixelSize: 16
                     font.bold: true
@@ -387,7 +387,7 @@ Dialog {
                 spacing: 6
 
                 Text {
-                    text: "BACKGROUND"
+                    text: qsTr("BACKGROUND")
                     color: textColor
                     font.pixelSize: 16
                     font.bold: true
@@ -473,7 +473,7 @@ Dialog {
                     id: cancelButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: "Cancel"
+                    text: qsTr("Cancel")
 
                     background: Rectangle {
                         color: installDialog.installing
@@ -531,7 +531,7 @@ Dialog {
                     id: installButton
                     Layout.fillWidth: true
                     Layout.preferredHeight: 45
-                    text: installDialog.installing ? "Installing..." : "Install"
+                    text: installDialog.installing ? qsTr ("Installing...") : qsTr("Install")
                     enabled: !installDialog.installing && nameField.text.trim().length > 0 && apkField.text.trim().length > 0 && (!tagCheckBox.checked || tagComboBox.currentIndex !== -1)
                     
                     background: Rectangle {
@@ -665,7 +665,7 @@ Dialog {
 
     QtDialogs.FileDialog {
         id: apkDialog
-        title: "Select APK file"
+        title: qsTr ("Select APK file")
         selectExisting: true
         nameFilters: ["Android Package (*.apk)", "All files (*)"]
         onAccepted: {
@@ -680,7 +680,7 @@ Dialog {
 
     QtDialogs.FileDialog {
         id: iconDialog
-        title: "Select Icon"
+        title: qsTr("Select Icon")
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg *.svg)", "All files (*)"]
         onAccepted: {
@@ -695,7 +695,7 @@ Dialog {
 
     QtDialogs.FileDialog {
         id: backgroundDialog
-        title: "Select Background"
+        title: qsTr("Select Background")
         selectExisting: true
         nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
         onAccepted: {
@@ -710,7 +710,7 @@ Dialog {
 
     Dialog {
         id: saveAssetDialog
-        title: "Save Asset?"
+        title: qsTr("Save Asset?")
         standardButtons: Dialog.Yes | Dialog.No
         modal: true
         x: (parent.width - width) / 2
@@ -719,7 +719,7 @@ Dialog {
         property string sourcePath: ""
 
         Text {
-            text: "Do you want to save this " + saveAssetDialog.targetType + " for future versions?"
+            text: qsTr("Do you want to save this ") + saveAssetDialog.targetType + qsTr(" for future versions?")
             color: textColor
         }
 

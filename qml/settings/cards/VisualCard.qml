@@ -21,6 +21,36 @@ Rectangle {
     signal scaleChanged(real scale)
     signal themeChanged(string theme)
 
+    function normalizeBundledThemeKey(themeValue) {
+        var raw = String(themeValue || "").trim()
+        var upper = raw.toUpperCase()
+
+        if (upper === "LIGTH")
+            upper = "LIGHT"
+
+        if (upper === "LIGHT" || upper === "CLARO")
+            return "LIGHT"
+        if (upper === "DARK" || upper === "OSCURO")
+            return "DARK"
+
+        return raw
+    }
+
+    function applyBundledTheme(themeValue) {
+        var normalized = normalizeBundledThemeKey(themeValue)
+        if (normalized !== "LIGHT" && normalized !== "DARK")
+            normalized = "DARK"
+
+        visualCard.currentTheme = normalized
+        profileManager.updateProfile(profileManager.currentProfile, {
+            theme: normalized,
+            customThemePath: ""
+        })
+        themeManager.loadBundledTheme(normalized)
+        visualCard.themeChanged(normalized)
+        profileManager.saveProfiles()
+    }
+
     function refreshCustomThemes() {
         var profile = profileManager.getProfile(profileManager.currentProfile)
         if (profile && profile.customThemes)
@@ -61,11 +91,11 @@ Rectangle {
         var name = themeNameField.text.trim()
 
         if (name.length === 0) {
-            addThemeError.text = qsTr("Debes ingresar un nombre para el tema")
+            addThemeError.text = qsTr("Should enter name for the theme")
             return
         }
         if (source.length === 0) {
-            addThemeError.text = qsTr("Debes seleccionar un archivo CSS")
+            addThemeError.text = qsTr("Should select a CSS file as source")
             return
         }
 
@@ -74,7 +104,7 @@ Rectangle {
                     name,
                     source)
         if (!savedPath || String(savedPath).length === 0) {
-            addThemeError.text = qsTr("No se pudo copiar el archivo al perfil")
+            addThemeError.text = qsTr("Can not copy the theme file to profile folder")
             return
         }
 
@@ -125,7 +155,7 @@ Rectangle {
                            ? (String(profile.customThemePath) === targetPath)
                            : false
         var nextTheme = removedCurrent ? "DARK"
-                                       : ((profile && profile.theme) ? String(profile.theme) : "DARK")
+                           : ((profile && profile.theme) ? String(profile.theme) : "DARK")
         var nextCustomThemePath = removedCurrent ? ""
                                                  : ((profile && profile.customThemePath) ? String(profile.customThemePath) : "")
 
@@ -161,9 +191,9 @@ Rectangle {
 
     QtDialogs.FileDialog {
         id: importThemeDialog
-        title: qsTr("Seleccionar archivo de tema CSS")
+        title: qsTr("Select CSS file for the theme")
         selectExisting: true
-        nameFilters: [ qsTr("CSS (*.css)"), qsTr("Todos los archivos (*)") ]
+        nameFilters: [ qsTr("CSS (*.css)"), qsTr("All Files (*)") ]
         onAccepted: {
             sourcePathField.text = importThemeDialog.fileUrl.toString()
             addThemeError.text = ""
@@ -197,7 +227,7 @@ Rectangle {
             spacing: 10
 
             Text {
-                text: qsTr("Nombre del estilo")
+                text: qsTr("Theme Name")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 12
                 font.bold: true
@@ -206,11 +236,11 @@ Rectangle {
             TextField {
                 id: themeNameField
                 Layout.fillWidth: true
-                placeholderText: qsTr("Ejemplo: Gray Steel")
+                placeholderText: qsTr("Example: Gray Steel")
             }
 
             Text {
-                text: qsTr("Archivo source (.css)")
+                text: qsTr("Source File (.css)")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 12
                 font.bold: true
@@ -223,7 +253,7 @@ Rectangle {
                 TextField {
                     id: sourcePathField
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Selecciona un archivo CSS")
+                    placeholderText: qsTr("Select a CSS file")
                     readOnly: true
                 }
 
@@ -249,7 +279,7 @@ Rectangle {
                 Item { Layout.fillWidth: true }
 
                 Button {
-                    text: qsTr("Cancelar")
+                    text: qsTr("Cancel")
                     onClicked: addThemeDialog.close()
                 }
 
@@ -263,7 +293,7 @@ Rectangle {
 
     QtDialogs.FileDialog {
         id: saveTemplateDialog
-        title: qsTr("Seleccionar carpeta para guardar style.css")
+        title: qsTr("Select folder to save style.css")
         folder: shortcuts.home
         selectFolder: true
         selectExisting: true
@@ -320,7 +350,7 @@ Rectangle {
             spacing: 12
 
             Text {
-                text: "Interface Scale"
+                text: qsTr("Interface Scale")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 13
                 font.bold: true
@@ -394,7 +424,7 @@ Rectangle {
             Layout.topMargin: 6
 
             Text {
-                text: "THEME"
+                text: qsTr("THEME")
                 color: themeManager.colors["text_primary"]
                 font.pixelSize: 13
                 font.bold: true
@@ -424,7 +454,7 @@ Rectangle {
 
                         Button {
                             id: darkBtn
-                            text: "DARK"
+                            text: qsTr("DARK")
                             width: 108
                             height: 45
                             anchors.verticalCenter: parent.verticalCenter
@@ -445,20 +475,13 @@ Rectangle {
                                 verticalAlignment: Text.AlignVCenter
                             }
                             onClicked: {
-                                visualCard.currentTheme = "DARK"
-                                profileManager.updateProfile(profileManager.currentProfile, {
-                                    theme: "DARK",
-                                    customThemePath: ""
-                                })
-                                themeManager.loadBundledTheme("DARK")
-                                visualCard.themeChanged("DARK")
-                                profileManager.saveProfiles()
+                                visualCard.applyBundledTheme("DARK")
                             }
                         }
 
                         Button {
                             id: lightBtn
-                            text: "LIGHT"
+                            text: qsTr("LIGHT")
                             width: 108
                             height: 45
                             anchors.verticalCenter: parent.verticalCenter
@@ -479,14 +502,7 @@ Rectangle {
                                 verticalAlignment: Text.AlignVCenter
                             }
                             onClicked: {
-                                visualCard.currentTheme = "LIGHT"
-                                profileManager.updateProfile(profileManager.currentProfile, {
-                                    theme: "LIGHT",
-                                    customThemePath: ""
-                                })
-                                themeManager.loadBundledTheme("LIGHT")
-                                visualCard.themeChanged("LIGHT")
-                                profileManager.saveProfiles()
+                                visualCard.applyBundledTheme("LIGHT")
                             }
                         }
 
@@ -544,7 +560,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             ToolTip.visible: addThemeBtn.hovered
                             ToolTip.delay: 400
-                            ToolTip.text: qsTr("Agregar tema personalizado")
+                            ToolTip.text: qsTr("Add a new custom theme")
 
                             background: Item {
                                 Rectangle {
@@ -586,7 +602,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             ToolTip.visible: themeOptionsBtn.hovered
                             ToolTip.delay: 400
-                            ToolTip.text: qsTr("Opciones de tema")
+                            ToolTip.text: qsTr("Theme Options")
 
                             background: Rectangle {
                                 color: (deleteMode || parent.pressed) ? themeManager.colors["border"] : themeManager.colors["surface"]
@@ -621,7 +637,7 @@ Rectangle {
 
             Text {
                 visible: deleteMode
-                text: qsTr("Modo eliminación: selecciona un tema en la fila y luego usa 'Delete Selected Theme' en el menú de 3 puntos.")
+                text: qsTr("Delete Mode: select a theme in the row and then use 'Delete Selected Theme' in the 3-dot menu.")
                 color: themeManager.colors["text_muted"]
                 font.pixelSize: 11
                 wrapMode: Text.WordWrap

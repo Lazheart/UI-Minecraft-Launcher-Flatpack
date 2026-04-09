@@ -16,7 +16,7 @@ Rectangle {
         spacing: 12
 
         Text {
-            text: "DISCLAIMER"
+            text: qsTr("DISCLAIMER")
             font.pixelSize: 18
             font.bold: true
             color: themeManager.colors["text_primary"]
@@ -26,7 +26,7 @@ Rectangle {
 
         Text {
             Layout.fillWidth: true
-            text: "Este launcher de Minecraft Bedrock no incluye ni proporciona archivos del juego, ni sirve como método para obtener copias no autorizadas. Su función es permitir que los usuarios ejecuten contenido que ya poseen legítimamente, incluyendo betas y builds obtenidas oficialmente de Mojang/Microsoft.\n\nA diferencia de otros lanzadores que dependen exclusivamente de Google Play, este proyecto no impone un método de distribución específico, permitiendo a los compradores del juego acceder a las versiones a las que tienen derecho.\n\nEl uso de este software requiere ser propietario legal de Minecraft Bedrock Edition. Cualquier uso con archivos obtenidos por medios no autorizados está estrictamente prohibido y no es apoyado por este proyecto."
+            text: qsTr("This launcher of Minecraft Bedrock does not include or provide game files, nor does it serve as a method to obtain unauthorized copies. Its function is to allow users to run content they legitimately own, including betas and builds obtained officially from Mojang/Microsoft.\n\nUnlike other launchers that depend exclusively on Google Play, this project does not impose a specific distribution method, allowing game buyers to access the versions they are entitled to.\n\nUsing this software requires being a legal owner of Minecraft Bedrock Edition. Any use with files obtained through unauthorized means is strictly prohibited and not supported by this project.")
             color: themeManager.colors["text_secondary"]
             font.pixelSize: 13
             lineHeight: 1.6

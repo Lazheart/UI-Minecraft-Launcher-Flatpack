@@ -21,7 +21,7 @@ Rectangle {
         spacing: 15
 
         Text {
-            text: "PATHS"
+            text: qsTr("PATHS")
             color: themeManager.colors["text_primary"]
             font.pixelSize: 14
             font.bold: true
@@ -38,7 +38,7 @@ Rectangle {
                 spacing: 10
 
                 Text {
-                    text: "Installed Versions"
+                    text: qsTr("Installed Versions")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 12
                     Layout.preferredWidth: 160
@@ -77,7 +77,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Browse"
+                    text: qsTr("Browse")
                     Layout.preferredWidth: 80
                     Layout.preferredHeight: 35
 
@@ -110,7 +110,7 @@ Rectangle {
                 spacing: 10
 
                 Text {
-                    text: "Installed Backgrounds"
+                    text: qsTr("Installed Backgrounds")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 12
                     Layout.preferredWidth: 160
@@ -149,7 +149,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Browse"
+                    text: qsTr("Browse")
                     Layout.preferredWidth: 80
                     Layout.preferredHeight: 35
 
@@ -182,7 +182,7 @@ Rectangle {
                 spacing: 10
 
                 Text {
-                    text: "Installed Icons"
+                    text: qsTr("Installed Icons")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 12
                     Layout.preferredWidth: 160
@@ -221,7 +221,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Browse"
+                    text: qsTr("Browse")
                     Layout.preferredWidth: 80
                     Layout.preferredHeight: 35
 
@@ -254,7 +254,7 @@ Rectangle {
                 spacing: 10
 
                 Text {
-                    text: "Profile Config"
+                    text: qsTr("Profile Config")
                     color: themeManager.colors["text_primary"]
                     font.pixelSize: 12
                     Layout.preferredWidth: 160
@@ -293,7 +293,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "Browse"
+                    text: qsTr("Browse")
                     Layout.preferredWidth: 80
                     Layout.preferredHeight: 35
 

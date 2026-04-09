@@ -10,9 +10,10 @@ Rectangle {
     
     // Signal para cambiar de página
     signal navigate(string page)
+    
     signal toggleSidebar()
     
-    property string currentPage: "Home"
+    property string currentPage: qsTr("Home")
     
     RowLayout {
         anchors.fill: parent
@@ -38,7 +39,7 @@ Rectangle {
                     
                     Text {
                         anchors.centerIn: parent
-                        text: "EL"
+                        text: qsTr("Logo")
                         font.pixelSize: 24
                         font.bold: true
                         color: themeManager.colors["text_primary"]
@@ -89,7 +90,7 @@ Rectangle {
             spacing: 10
             
             NavBarButton {
-                text: "Home"
+                text: qsTr("Home")
                 isActive: navBar.currentPage === "Home"
                 onClicked: {
                         navBar.navigate("Home")
@@ -98,7 +99,7 @@ Rectangle {
             
             
             NavBarButton {
-                text: "Settings"
+                text: qsTr("Settings")  
                 isActive: navBar.currentPage === "Settings"
                 onClicked: {
                     navBar.navigate("Settings")
@@ -106,7 +107,7 @@ Rectangle {
             }
             
             NavBarButton {
-                text: "About"
+                text: qsTr("About")
                 isActive: navBar.currentPage === "About"
                 onClicked: {
                     navBar.navigate("About")

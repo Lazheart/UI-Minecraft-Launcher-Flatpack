@@ -2,3 +2,4 @@
 build/
 testListVersion.sh
 testDeleteVersion.sh
+/translations/app_*.qm

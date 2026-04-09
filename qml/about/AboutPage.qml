@@ -29,7 +29,7 @@ Rectangle {
 
                 // TÍTULO
                 Text {
-                    text: "About This Launcher"
+                    text: qsTr("About This Launcher")
                     font.pixelSize: 36
                     font.bold: true
                     color: themeManager.colors["text_primary"]

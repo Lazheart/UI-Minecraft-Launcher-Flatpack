@@ -23,7 +23,7 @@ Rectangle {
         spacing: 15
 
         Text {
-            text: "DEBUG - Console Output"
+            text: qsTr("DEBUG - Console Output")    
             color: themeManager.colors["text_primary"]
             font.pixelSize: 14
             font.bold: true
@@ -87,7 +87,7 @@ Rectangle {
             spacing: 10
 
             Button {
-                text: "Clear Console"
+                text: qsTr("Clear Console")
                 Layout.fillWidth: true
                 Layout.minimumWidth: 80
                 Layout.maximumWidth: 160
@@ -110,7 +110,7 @@ Rectangle {
             }
 
             Button {
-                text: "Copy Logs"
+                text: qsTr("Copy Logs")
                 Layout.fillWidth: true
                 Layout.minimumWidth: 60
                 Layout.maximumWidth: 160
@@ -133,7 +133,7 @@ Rectangle {
             }
 
             Button {
-                text: "Export Logs"
+                text: qsTr("Export Logs")
                 Layout.fillWidth: true
                 Layout.minimumWidth: 80
                 Layout.maximumWidth: 160
