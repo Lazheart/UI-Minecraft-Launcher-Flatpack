@@ -72,11 +72,15 @@ set(TS_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/app_es.ts
 )
 
+option(GENERATE_QM_TRANSLATIONS "Generar archivos .qm con Qt LinguistTools si está disponible" ON)
+
 set(QM_FILES)
-if(Qt5LinguistTools_FOUND)
+if(GENERATE_QM_TRANSLATIONS AND Qt5LinguistTools_FOUND)
     qt5_add_translation(QM_FILES ${TS_FILES})
+elseif(GENERATE_QM_TRANSLATIONS)
+    message(STATUS "Qt5LinguistTools no encontrado: se instalarán solo archivos .ts.")
 else()
-    message(WARNING "Qt5LinguistTools no encontrado: se instalarán solo archivos .ts.")
+    message(STATUS "Generación de .qm desactivada: se instalarán solo archivos .ts.")
 endif()
 
 # Archivos QML y recursos
