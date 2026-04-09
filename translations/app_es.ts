@@ -2,6 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es_ES">
 <context>
+    <name>AboutAuthorCard</name>
+    <message>
+        <location filename="../qml/about/cards/AboutAuthorCard.qml" line="37"/>
+        <source>Created by Lazheart</source>
+        <translation type="unfinished">Creado por Lazheart</translation>
+    </message>
+    <message>
+        <location filename="../qml/about/cards/AboutAuthorCard.qml" line="59"/>
+        <source>Open source development, active and continuous support to enjoy Minecraft Bedrock on Linux.</source>
+        <translation type="unfinished">Desarrollo de código abierto, soporte activo y continuo para disfrutar de Minecraft Bedrock en Linux.</translation>
+    </message>
+</context>
+<context>
     <name>AboutDisclaimerCard</name>
     <message>
         <location filename="../qml/about/cards/AboutDisclaimerCard.qml" line="19"/>
@@ -15,7 +28,11 @@
 Unlike other launchers that depend exclusively on Google Play, this project does not impose a specific distribution method, allowing game buyers to access the versions they are entitled to.
 
 Using this software requires being a legal owner of Minecraft Bedrock Edition. Any use with files obtained through unauthorized means is strictly prohibited and not supported by this project.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">
+Este Launcher no proporciona archivos del juego ni sirve como método para obtener copias no autorizadas. Su función es permitir a los usuarios ejecutar contenido que poseen legalmente, incluyendo betas y compilaciones obtenidas oficialmente de Mojang/Microsoft.
+A diferencia de otros launchers que dependen exclusivamente de Google Play, este proyecto no impone un método específico de distribución, permitiendo a los compradores de juegos acceder a las versiones a las que tienen derecho.
+Al usar este software se requiere ser un propietario legal de Minecraft Bedrock Edition. Cualquier uso con archivos obtenidos por medios no autorizados está estrictamente prohibido y no es respaldado por este proyecto.
+</translation>
     </message>
 </context>
 <context>
@@ -29,8 +46,16 @@ Using this software requires being a legal owner of Minecraft Bedrock Edition. A
         <location filename="../qml/about/cards/AboutFeaturesCard.qml" line="53"/>
         <source>• Complete profile management and language support
 • Real-time logging for debugging and support
+• Seamless integration with Flatpak</source>
+        <translation type="unfinished">• Gestión completa de perfiles y soporte de idioma
+• Registro en tiempo real para depuración y soporte
+• Integración sin problemas con Flatpak</translation>
+    </message>
+    <message>
+        <source>• Complete profile management and language support
+• Real-time logging for debugging and support
 • Seamless integration with Flatpak and Linux app sandbox</source>
-        <translation type="unfinished">• Gestión completa de perfiles y soporte de idioma • Registro en tiempo real para depuración y soporte
+        <translation type="obsolete">• Gestión completa de perfiles y soporte de idioma • Registro en tiempo real para depuración y soporte
 • Integracion con Flatpak
 </translation>
     </message>
@@ -44,8 +69,12 @@ Using this software requires being a legal owner of Minecraft Bedrock Edition. A
     </message>
     <message>
         <location filename="../qml/about/cards/AboutHeroCard.qml" line="79"/>
+        <source>Version: </source>
+        <translation type="unfinished">Versión: </translation>
+    </message>
+    <message>
         <source>Versión: </source>
-        <translation type="unfinished">Version: </translation>
+        <translation type="obsolete">Version: </translation>
     </message>
     <message>
         <location filename="../qml/about/cards/AboutHeroCard.qml" line="86"/>
@@ -423,43 +452,43 @@ Using this software requires being a legal owner of Minecraft Bedrock Edition. A
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="87"/>
         <source>Should enter language code</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ingresa un idioma</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="91"/>
         <source>Should select a JSON file as source</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Se necesita un archivo JSON como fuente</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="98"/>
         <source>Can not import language from JSON</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">No se puede importar el idioma desde JSON</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="106"/>
         <source>Language imported successfully</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Idioma importado correctamente</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="119"/>
         <source>Can not delete selected language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">No se puede eliminar el idioma seleccionado</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="127"/>
         <source>Language deleted successfully</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Idioma eliminado correctamente</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="153"/>
         <source>Select JSON file for the language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Seleccionar archivo JSON para el idioma</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="155"/>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="168"/>
         <source>JSON (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">JSON (*.json)</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="155"/>
@@ -469,48 +498,48 @@ Using this software requires being a legal owner of Minecraft Bedrock Edition. A
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="164"/>
         <source>Save translation template</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Guardar plantilla de traducción</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="180"/>
         <source>Can not export language template</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">No se puede exportar la plantilla de idioma</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="183"/>
         <source>Template exported successfully</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plantilla exportada correctamente</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="194"/>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="430"/>
         <source>Add Language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Añadir Idioma</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="214"/>
         <source>Language Code</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Código del Idioma</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="223"/>
         <source>Example: FR</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ejemplo: FR</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="227"/>
         <source>Source File (.json)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Archivo de Origen (.json)</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="240"/>
         <source>Select a JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Seleccionar un archivo JSON</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="245"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Examinar</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/LanguageCard.qml" line="266"/>
