@@ -2,32 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es_ES">
 <context>
-    <name>AboutAuthorCard</name>
-    <message>
-        <location filename="../qml/about/cards/AboutAuthorCard.qml" line="37"/>
-        <source>Creado por Lazheart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/about/cards/AboutAuthorCard.qml" line="59"/>
-        <source>Desarrollo abierto, comunidad activa y soporte continuo para disfrutar de Minecraft Bedrock en Linux.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>AboutDisclaimerCard</name>
     <message>
         <location filename="../qml/about/cards/AboutDisclaimerCard.qml" line="19"/>
         <source>DISCLAIMER</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">DISCLAIMER</translation>
     </message>
     <message>
         <location filename="../qml/about/cards/AboutDisclaimerCard.qml" line="29"/>
-        <source>Este launcher de Minecraft Bedrock no incluye ni proporciona archivos del juego, ni sirve como método para obtener copias no autorizadas. Su función es permitir que los usuarios ejecuten contenido que ya poseen legítimamente, incluyendo betas y builds obtenidas oficialmente de Mojang/Microsoft.
+        <source>This launcher of Minecraft Bedrock does not include or provide game files, nor does it serve as a method to obtain unauthorized copies. Its function is to allow users to run content they legitimately own, including betas and builds obtained officially from Mojang/Microsoft.
 
-A diferencia de otros lanzadores que dependen exclusivamente de Google Play, este proyecto no impone un método de distribución específico, permitiendo a los compradores del juego acceder a las versiones a las que tienen derecho.
+Unlike other launchers that depend exclusively on Google Play, this project does not impose a specific distribution method, allowing game buyers to access the versions they are entitled to.
 
-El uso de este software requiere ser propietario legal de Minecraft Bedrock Edition. Cualquier uso con archivos obtenidos por medios no autorizados está estrictamente prohibido y no es apoyado por este proyecto.</source>
+Using this software requires being a legal owner of Minecraft Bedrock Edition. Any use with files obtained through unauthorized means is strictly prohibited and not supported by this project.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -35,34 +22,35 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
     <name>AboutFeaturesCard</name>
     <message>
         <location filename="../qml/about/cards/AboutFeaturesCard.qml" line="42"/>
-        <source>Información y Características</source>
-        <translation type="unfinished"></translation>
+        <source>Information and Features</source>
+        <translation type="unfinished">Información y Características</translation>
     </message>
     <message>
         <location filename="../qml/about/cards/AboutFeaturesCard.qml" line="53"/>
-        <source>• Interfaz diseñada con Qt para usabilidad
-• Gestión completa de perfiles y lenguaje 
-• Registro en tiempo real para depuración y soporte
-• Integración seamless con Flatpak y app sandbox de Linux</source>
-        <translation type="unfinished"></translation>
+        <source>• Complete profile management and language support
+• Real-time logging for debugging and support
+• Seamless integration with Flatpak and Linux app sandbox</source>
+        <translation type="unfinished">• Gestión completa de perfiles y soporte de idioma • Registro en tiempo real para depuración y soporte
+• Integracion con Flatpak
+</translation>
     </message>
 </context>
 <context>
     <name>AboutHeroCard</name>
     <message>
         <location filename="../qml/about/cards/AboutHeroCard.qml" line="72"/>
-        <source>Minecraft Bedrock Launcher</source>
-        <translation type="unfinished"></translation>
+        <source>Minecraft Launcher</source>
+        <translation type="unfinished">Minecraft Launcher</translation>
     </message>
     <message>
         <location filename="../qml/about/cards/AboutHeroCard.qml" line="79"/>
         <source>Versión: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Version: </translation>
     </message>
     <message>
         <location filename="../qml/about/cards/AboutHeroCard.qml" line="86"/>
-        <source>Launcher de Minecraft Bedrock Edition en Linux mediante flatpak con integración de perfiles, customización y registros en tiempo real.</source>
-        <translation type="unfinished"></translation>
+        <source>Minecraft Bedrock Edition launcher for Linux with profile management, customization, and real-time logging.</source>
+        <translation type="unfinished">Launcher de Minecraft Bedrock Edition para Linux con gestión de perfiles, personalización y registro en tiempo real.</translation>
     </message>
 </context>
 <context>
@@ -83,17 +71,17 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
     <message>
         <location filename="../qml/settings/cards/DebugCard.qml" line="90"/>
         <source>Clear Console</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Limpiar Consola</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/DebugCard.qml" line="113"/>
         <source>Copy Logs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Copiar Logs</translation>
     </message>
     <message>
         <location filename="../qml/settings/cards/DebugCard.qml" line="136"/>
         <source>Export Logs</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Exportar Logs</translation>
     </message>
 </context>
 <context>
@@ -106,12 +94,12 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
     <message>
         <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="63"/>
         <source>Select the versions you want to delete:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Selecciona las versiones que deseas eliminar:</translation>
     </message>
     <message>
         <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="112"/>
         <source>No versions installed</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">No hay versiones instaladas</translation>
     </message>
     <message>
         <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="231"/>
@@ -121,7 +109,7 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
     <message>
         <location filename="../qml/sidebar/cards/DeleteVersionDialog.qml" line="257"/>
         <source>Delete Selected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eliminar Seleccionadas</translation>
     </message>
 </context>
 <context>
@@ -433,19 +421,159 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
 <context>
     <name>LanguageCard</name>
     <message>
-        <location filename="../qml/settings/cards/LanguageCard.qml" line="25"/>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="87"/>
+        <source>Should enter language code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="91"/>
+        <source>Should select a JSON file as source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="98"/>
+        <source>Can not import language from JSON</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="106"/>
+        <source>Language imported successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="119"/>
+        <source>Can not delete selected language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="127"/>
+        <source>Language deleted successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="153"/>
+        <source>Select JSON file for the language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="155"/>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="168"/>
+        <source>JSON (*.json)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="155"/>
+        <source>All Files (*)</source>
+        <translation type="unfinished">Todos los archivos (*)</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="164"/>
+        <source>Save translation template</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="180"/>
+        <source>Can not export language template</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="183"/>
+        <source>Template exported successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="194"/>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="430"/>
+        <source>Add Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="214"/>
+        <source>Language Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="223"/>
+        <source>Example: FR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="227"/>
+        <source>Source File (.json)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="240"/>
+        <source>Select a JSON file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="245"/>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="266"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="271"/>
+        <source>Add</source>
+        <translation type="unfinished">Añadir</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="282"/>
+        <source>Get Template</source>
+        <translation type="unfinished">Obtener Plantilla</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="287"/>
+        <source>Cancel Delete Mode</source>
+        <translation type="unfinished">Detener Modo de Eliminación</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="287"/>
+        <source>Select Language to Delete</source>
+        <translation type="unfinished">Seleccionar Idioma para Eliminar</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="296"/>
+        <source>Delete Selected Language</source>
+        <translation type="unfinished">Eliminar Idioma Seleccionado</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="310"/>
         <source>LANGUAGE</source>
         <translation type="unfinished">IDIOMA</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/LanguageCard.qml" line="38"/>
-        <source>ENGLISH</source>
-        <translation type="unfinished">INGLES</translation>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="385"/>
+        <source>Default languages can not be deleted</source>
+        <translation type="unfinished">No se puede Eliminar las Opciones por defecto</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/LanguageCard.qml" line="65"/>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="406"/>
+        <source>Add a new language</source>
+        <translation type="unfinished">Añadir un nuevo idioma</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="449"/>
+        <source>Language Options</source>
+        <translation type="unfinished">Opciones de Idioma</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/cards/LanguageCard.qml" line="484"/>
+        <source>Delete Mode: select a custom language in the row and then use &apos;Delete Selected Language&apos; in the 3-dot menu.</source>
+        <translation type="unfinished">Modo de Eliminación: selecciona un idioma personalizado en la fila y luego usa &apos;Eliminar Idioma Seleccionado&apos; en el menú de 3 puntos.</translation>
+    </message>
+    <message>
+        <source>ENGLISH</source>
+        <translation type="obsolete">INGLES</translation>
+    </message>
+    <message>
         <source>SPANISH</source>
-        <translation type="unfinished">ESPAÑOL</translation>
+        <translation type="obsolete">ESPAÑOL</translation>
     </message>
     <message>
         <source>ESPAÑOL</source>
@@ -546,12 +674,17 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../qml/settings/SettingsPage.qml" line="156"/>
+        <location filename="../qml/settings/SettingsPage.qml" line="112"/>
+        <source>Settings</source>
+        <translation type="unfinished">Configuración</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/SettingsPage.qml" line="179"/>
         <source>SAVE</source>
         <translation type="unfinished">GUARDAR </translation>
     </message>
     <message>
-        <location filename="../qml/settings/SettingsPage.qml" line="188"/>
+        <location filename="../qml/settings/SettingsPage.qml" line="211"/>
         <source>RESET TO DEFAULT</source>
         <translation type="unfinished">REINICIAR VALORES</translation>
     </message>
@@ -639,7 +772,7 @@ El uso de este software requiere ser propietario legal de Minecraft Bedrock Edit
     <message>
         <location filename="../qml/sidebar/SideBar.qml" line="169"/>
         <source>date</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">fecha</translation>
     </message>
     <message>
         <location filename="../qml/sidebar/SideBar.qml" line="170"/>
@@ -677,140 +810,133 @@ y Mods</translation>
 <context>
     <name>VisualCard</name>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="16"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="127"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="128"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="427"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="457"/>
         <source>DARK</source>
         <translation type="unfinished">OSCURO</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="64"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="94"/>
         <source>Should enter name for the theme</source>
         <translation type="unfinished">Debe ingresar un nombre para el tema</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="68"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="98"/>
         <source>Should select a CSS file as source</source>
         <translation type="unfinished">Debe seleccionar un archivo CSS </translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="77"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="107"/>
         <source>Can not copy the theme file to profile folder</source>
         <translation type="unfinished">No se puede copiar el archivo de tema a la carpeta del perfil</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="164"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="194"/>
         <source>Select CSS file for the theme</source>
         <translation type="unfinished">Seleccionar archivo de tema CSS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="166"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="196"/>
         <source>CSS (*.css)</source>
         <translation type="unfinished">CSS (*.css)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="166"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="196"/>
         <source>All Files (*)</source>
         <translation type="unfinished">Todos los archivos (*)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="180"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="571"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="210"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="587"/>
         <source>Add Theme</source>
         <translation type="unfinished">Añadir Tema</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="200"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="230"/>
         <source>Theme Name</source>
         <translation type="unfinished">Nombre del Tema</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="209"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="239"/>
         <source>Example: Gray Steel</source>
         <translation type="unfinished">Ejm: Gris Acero</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="213"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="243"/>
         <source>Source File (.css)</source>
         <translation type="unfinished">Archivo de Origen (.css)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="226"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="256"/>
         <source>Select a CSS file</source>
         <translation type="unfinished">Seleccionar un archivo CSS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="231"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="261"/>
         <source>Browse</source>
         <translation type="unfinished">Navegar</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="252"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="282"/>
         <source>Cancel</source>
         <translation type="unfinished">Cancelar</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="257"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="287"/>
         <source>Add</source>
         <translation type="unfinished">Añadir</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="266"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="296"/>
         <source>Select folder to save style.css</source>
         <translation type="unfinished">Seleccionar carpeta para guardar style.css</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="283"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="313"/>
         <source>Get Template</source>
         <translation type="unfinished">Obtener Plantilla</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="288"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="318"/>
         <source>Cancel Delete Mode</source>
         <translation type="unfinished">Detener Modo de Eliminación</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="288"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="318"/>
         <source>Select Theme to Delete</source>
         <translation type="unfinished">Seleccionar Tema a Eliminar</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="297"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="327"/>
         <source>Delete Selected Theme</source>
         <translation type="unfinished">Eliminar tema seleccionado</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="323"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="353"/>
         <source>Interface Scale</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Escala de Interfaz</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="397"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="427"/>
         <source>THEME</source>
         <translation type="unfinished">TEMA</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="461"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="482"/>
         <location filename="../qml/settings/cards/VisualCard.qml" line="484"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="487"/>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="488"/>
         <source>LIGHT</source>
         <translation type="unfinished">CLARO</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="547"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="563"/>
         <source>Add a new custom theme</source>
         <translation type="unfinished">Añadir nuevo tema personalizado</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="589"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="605"/>
         <source>Theme Options</source>
         <translation type="unfinished">Opciones del Tema</translation>
     </message>
     <message>
-        <location filename="../qml/settings/cards/VisualCard.qml" line="624"/>
+        <location filename="../qml/settings/cards/VisualCard.qml" line="640"/>
         <source>Delete Mode: select a theme in the row and then use &apos;Delete Selected Theme&apos; in the 3-dot menu.</source>
         <translation type="unfinished">Modo de Eliminación: selecciona un tema en la fila y luego usa &apos;Eliminar tema seleccionado&apos; en el menú de 3 puntos.</translation>
     </message>

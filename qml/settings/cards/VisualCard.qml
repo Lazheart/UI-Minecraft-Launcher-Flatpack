@@ -13,13 +13,43 @@ Rectangle {
     Layout.preferredHeight: 420
 
     property real scaleValue: 1.0
-    property string currentTheme: qsTr("DARK")
+    property string currentTheme: "DARK"
     property var customThemes: []
     property bool deleteMode: false
     property string selectedDeleteThemePath: ""
 
     signal scaleChanged(real scale)
     signal themeChanged(string theme)
+
+    function normalizeBundledThemeKey(themeValue) {
+        var raw = String(themeValue || "").trim()
+        var upper = raw.toUpperCase()
+
+        if (upper === "LIGTH")
+            upper = "LIGHT"
+
+        if (upper === "LIGHT" || upper === "CLARO")
+            return "LIGHT"
+        if (upper === "DARK" || upper === "OSCURO")
+            return "DARK"
+
+        return raw
+    }
+
+    function applyBundledTheme(themeValue) {
+        var normalized = normalizeBundledThemeKey(themeValue)
+        if (normalized !== "LIGHT" && normalized !== "DARK")
+            normalized = "DARK"
+
+        visualCard.currentTheme = normalized
+        profileManager.updateProfile(profileManager.currentProfile, {
+            theme: normalized,
+            customThemePath: ""
+        })
+        themeManager.loadBundledTheme(normalized)
+        visualCard.themeChanged(normalized)
+        profileManager.saveProfiles()
+    }
 
     function refreshCustomThemes() {
         var profile = profileManager.getProfile(profileManager.currentProfile)
@@ -124,8 +154,8 @@ Rectangle {
         var removedCurrent = (profile && profile.customThemePath)
                            ? (String(profile.customThemePath) === targetPath)
                            : false
-        var nextTheme = removedCurrent ? qsTr("DARK")
-                                       : ((profile && profile.theme) ? String(profile.theme) : qsTr("DARK"))
+        var nextTheme = removedCurrent ? "DARK"
+                           : ((profile && profile.theme) ? String(profile.theme) : "DARK")
         var nextCustomThemePath = removedCurrent ? ""
                                                  : ((profile && profile.customThemePath) ? String(profile.customThemePath) : "")
 
@@ -445,14 +475,7 @@ Rectangle {
                                 verticalAlignment: Text.AlignVCenter
                             }
                             onClicked: {
-                                visualCard.currentTheme = "DARK"
-                                profileManager.updateProfile(profileManager.currentProfile, {
-                                    theme: "DARK",
-                                    customThemePath: ""
-                                })
-                                themeManager.loadBundledTheme("DARK")
-                                visualCard.themeChanged("DARK")
-                                profileManager.saveProfiles()
+                                visualCard.applyBundledTheme("DARK")
                             }
                         }
 
@@ -479,14 +502,7 @@ Rectangle {
                                 verticalAlignment: Text.AlignVCenter
                             }
                             onClicked: {
-                                visualCard.currentTheme = qsTr("LIGHT")
-                                profileManager.updateProfile(profileManager.currentProfile, {
-                                    theme: qsTr("LIGHT"),
-                                    customThemePath: ""
-                                })
-                                themeManager.loadBundledTheme(qsTr("LIGHT"))
-                                visualCard.themeChanged(qsTr("LIGHT"))
-                                profileManager.saveProfiles()
+                                visualCard.applyBundledTheme("LIGHT")
                             }
                         }
 

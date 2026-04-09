@@ -12,6 +12,21 @@ Rectangle {
     property string currentTheme: "DARK"
     property real currentScale: 1.0
 
+    function normalizeBundledTheme(themeValue) {
+        var raw = String(themeValue || "").trim()
+        var upper = raw.toUpperCase()
+
+        if (upper === "LIGTH")
+            upper = "LIGHT"
+
+        if (upper === "LIGHT" || upper === "CLARO")
+            return "LIGHT"
+        if (upper === "DARK" || upper === "OSCURO")
+            return "DARK"
+
+        return raw
+    }
+
     // Timer para actualizar componentes después de recarga de perfiles
     Timer {
         id: updateComponentsTimer
@@ -22,7 +37,11 @@ Rectangle {
             if (profileData && profileData.name) {
                 var language = profileData.language || "EN"
                 var theme = profileData.theme || "DARK"
+                var customThemePath = profileData.customThemePath ? String(profileData.customThemePath) : ""
                 var scale = profileData.scale || 1.0
+
+                if (customThemePath.length === 0)
+                    theme = normalizeBundledTheme(theme)
                 
                 languageCard.currentLanguage = language
                 visualCard.currentTheme = theme
@@ -45,7 +64,11 @@ Rectangle {
                 // Actualizar los componentes visuales con los valores del perfil
                 var language = profileData.language || "EN"
                 var theme = profileData.theme || "DARK"
+                var customThemePath = profileData.customThemePath ? String(profileData.customThemePath) : ""
                 var scale = profileData.scale || 1.0
+
+                if (customThemePath.length === 0)
+                    theme = normalizeBundledTheme(theme)
                 
                 languageCard.currentLanguage = language
                 visualCard.currentTheme = theme
@@ -86,7 +109,7 @@ Rectangle {
 
                 // Título
                 Text {
-                    text: "Settings"
+                    text: qsTr("Settings")
                     font.pixelSize: 36
                     font.bold: true
                     color: themeManager.colors["text_primary"]
