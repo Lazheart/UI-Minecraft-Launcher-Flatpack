@@ -16,6 +16,17 @@ QVariantMap readBundled(const QString &resourcePath) {
   return ThemeManager::parseCssVariables(QString::fromUtf8(f.readAll()));
 }
 
+QString normalizeBundledThemeName(const QString &themeName) {
+  QString key = themeName.trimmed().toUpper();
+  if (key == QLatin1String("LIGTH"))
+    key = QStringLiteral("LIGHT");
+  if (key == QLatin1String("CLARO"))
+    return QStringLiteral("LIGHT");
+  if (key == QLatin1String("OSCURO"))
+    return QStringLiteral("DARK");
+  return key;
+}
+
 } // namespace
 
 ThemeManager::ThemeManager(QObject *parent) : QObject(parent) {
@@ -105,8 +116,8 @@ bool ThemeManager::loadFromResourcePath(const QString &resourcePath,
 }
 
 bool ThemeManager::loadBundledTheme(const QString &themeName) {
-  const QString upper = themeName.toUpper();
-  if (upper == QLatin1String("LIGHT"))
+  const QString normalized = normalizeBundledThemeName(themeName);
+  if (normalized == QLatin1String("LIGHT"))
     return loadFromResourcePath(QStringLiteral(":/themes/light.css"),
                                 QStringLiteral("bundled:LIGHT"));
   return loadFromResourcePath(QStringLiteral(":/themes/dark.css"),

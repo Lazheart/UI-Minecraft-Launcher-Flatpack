@@ -11,7 +11,9 @@
 #include <QTextStream>
 #include <QtGlobal>
 #include <QFileInfo>
+#include <QFileInfoList>
 #include <QStandardPaths>
+#include <QUrl>
 
 namespace {
 
@@ -91,10 +93,24 @@ QString Translator::currentLanguage() const {
     return m_currentLanguage;
 }
 
+QString Translator::lastError() const {
+    return m_lastError;
+}
+
+void Translator::setError(const QString& errorText) {
+    if (m_lastError == errorText)
+        return;
+    m_lastError = errorText;
+    emit lastErrorChanged();
+}
+
 bool Translator::setLanguage(const QString& lang) {
+    setError(QString());
     const QString normalizedLang = normalizedLanguageCode(lang);
     if (normalizedLang.isEmpty()) {
-        qWarning() << "Código de idioma inválido:" << lang;
+        const QString msg = QStringLiteral("Código de idioma inválido: ") + lang;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
@@ -107,17 +123,23 @@ bool Translator::setLanguage(const QString& lang) {
 
     if (!QFile::exists(qmPath)) {
         if (!QFile::exists(tsPath)) {
-            qWarning() << "No existe ni TS ni QM para idioma" << normalizedLang << "en" << m_translationsPath;
+            const QString msg = QStringLiteral("No existe ni TS ni QM para idioma ") + normalizedLang;
+            qWarning() << msg << "en" << m_translationsPath;
+            setError(msg);
             return false;
         }
         if (!compileTsToQm(tsPath, qmPath)) {
-            qWarning() << "No se pudo generar QM para idioma" << normalizedLang;
+            const QString msg = QStringLiteral("No se pudo generar QM para idioma ") + normalizedLang;
+            qWarning() << msg;
+            setError(msg);
             return false;
         }
     }
 
     if (!QFile::exists(qmPath)) {
-        qWarning() << "Archivo .qm no encontrado en:" << qmPath;
+        const QString msg = QStringLiteral("Archivo .qm no encontrado: ") + qmPath;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
@@ -138,17 +160,27 @@ bool Translator::setLanguage(const QString& lang) {
         }
         return true;
     } else {
-        qWarning() << "Fallo al inyectar QTranslator con archivo:" << qmPath;
+        const QString msg = QStringLiteral("Fallo al cargar traducción: ") + qmPath;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 }
 
 bool Translator::exportToJson(const QString& outputFile) {
+    setError(QString());
+    QString localOutputFile = outputFile;
+    const QUrl outputUrl(outputFile);
+    if (outputUrl.isLocalFile())
+        localOutputFile = outputUrl.toLocalFile();
+
     QString baseTsPath = QDir(m_translationsPath).filePath("app_en.ts");
     QFile tsFile(baseTsPath);
     
     if (!tsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "No se puedo abrir la fuente base de traducción:" << baseTsPath;
+        const QString msg = QStringLiteral("No se pudo abrir la fuente base de traducción: ") + baseTsPath;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
@@ -157,7 +189,9 @@ bool Translator::exportToJson(const QString& outputFile) {
     int errorLine, errorColumn;
     if (!doc.setContent(&tsFile, &errorMsg, &errorLine, &errorColumn)) {
         tsFile.close();
-        qWarning() << "XML Malformado en:" << baseTsPath << errorMsg << "Línea:" << errorLine;
+        const QString msg = QStringLiteral("XML malformado en ") + baseTsPath;
+        qWarning() << msg << errorMsg << "Línea:" << errorLine;
+        setError(msg);
         return false;
     }
     tsFile.close();
@@ -188,35 +222,49 @@ bool Translator::exportToJson(const QString& outputFile) {
     }
 
     QJsonDocument jsonDoc(jsonObj);
-    const QFileInfo outputInfo(outputFile);
+    const QFileInfo outputInfo(localOutputFile);
     const QString outputDir = outputInfo.absolutePath();
     if (!outputDir.isEmpty() && outputDir != "." && !QDir().mkpath(outputDir)) {
-        qWarning() << "No se pudo crear el directorio destino para JSON:" << outputDir;
+        const QString msg = QStringLiteral("No se pudo crear el directorio destino para JSON: ") + outputDir;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
-    QFile jsonFile(outputFile);
+    QFile jsonFile(localOutputFile);
     if (!jsonFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "No se pudo crear en disco el JSON:" << outputFile;
+        const QString msg = QStringLiteral("No se pudo crear el JSON: ") + localOutputFile;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
     
     jsonFile.write(jsonDoc.toJson(QJsonDocument::Indented));
     jsonFile.close();
-    qInfo() << "Exportación completada:" << outputFile;
+    qInfo() << "Exportación completada:" << localOutputFile;
     return true;
 }
 
 bool Translator::importFromJson(const QString& lang, const QString& jsonFilePath) {
+    setError(QString());
+    QString localJsonPath = jsonFilePath;
+    const QUrl jsonUrl(jsonFilePath);
+    if (jsonUrl.isLocalFile())
+        localJsonPath = jsonUrl.toLocalFile();
+
     const QString normalizedLang = normalizedLanguageCode(lang);
     if (normalizedLang.isEmpty()) {
-        qWarning() << "Código de idioma inválido para importación:" << lang;
+        const QString msg = QStringLiteral("Código de idioma inválido para importación: ") + lang;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
-    QFile jsonFile(jsonFilePath);
+    QFile jsonFile(localJsonPath);
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Imposible abrir el JSON:" << jsonFilePath;
+        const QString msg = QStringLiteral("No se pudo abrir el JSON: ") + localJsonPath;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
     QByteArray jsonData = jsonFile.readAll();
@@ -225,7 +273,9 @@ bool Translator::importFromJson(const QString& lang, const QString& jsonFilePath
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
     if (parseError.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
-        qWarning() << "Error de Sintaxis JSON:" << parseError.errorString();
+        const QString msg = QStringLiteral("Error de sintaxis JSON: ") + parseError.errorString();
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
@@ -238,7 +288,9 @@ bool Translator::importFromJson(const QString& lang, const QString& jsonFilePath
     if (!targetTsFile.exists()) {
         QString baseTsPath = QDir(m_translationsPath).filePath("app_en.ts");
         if (!QFile::copy(baseTsPath, targetTsPath)) {
-            qWarning() << "Falla al copiar idioma default" << baseTsPath << "a" << targetTsPath;
+            const QString msg = QStringLiteral("No se pudo copiar plantilla base a: ") + targetTsPath;
+            qWarning() << msg << "desde" << baseTsPath;
+            setError(msg);
             return false;
         }
         // Aplicamos permisos seguros sobre la creación.
@@ -246,7 +298,9 @@ bool Translator::importFromJson(const QString& lang, const QString& jsonFilePath
     }
 
     if (!targetTsFile.open(QIODevice::ReadWrite | QIODevice::Text)) {
-        qWarning() << "No se pudo editar el TS:" << targetTsPath;
+        const QString msg = QStringLiteral("No se pudo editar el TS: ") + targetTsPath;
+        qWarning() << msg;
+        setError(msg);
         return false;
     }
 
@@ -255,7 +309,9 @@ bool Translator::importFromJson(const QString& lang, const QString& jsonFilePath
     int errorLine, errorColumn;
     if (!doc.setContent(&targetTsFile, &errorMsg, &errorLine, &errorColumn)) {
         targetTsFile.close();
-        qWarning() << "Fallo parseo XML de Qt:" << targetTsPath << errorMsg << "Línea:" << errorLine;
+        const QString msg = QStringLiteral("Fallo parseo XML de Qt en: ") + targetTsPath;
+        qWarning() << msg << errorMsg << "Línea:" << errorLine;
+        setError(msg);
         return false;
     }
 
@@ -317,6 +373,76 @@ bool Translator::importFromJson(const QString& lang, const QString& jsonFilePath
     doc.save(out, 4, QDomNode::EncodingFromDocument);
     targetTsFile.close();
     qInfo() << "Importación consolidada en TS:" << targetTsPath;
+
+    return true;
+}
+
+QStringList Translator::availableLanguages() const {
+    QDir dir(m_translationsPath);
+    QStringList out;
+
+    const QFileInfoList files =
+        dir.entryInfoList(QStringList() << "app_*.ts" << "app_*.qm", QDir::Files);
+
+    for (const QFileInfo& fi : files) {
+        const QString base = fi.completeBaseName();
+        if (!base.startsWith("app_"))
+            continue;
+        const QString code = normalizedLanguageCode(base.mid(4));
+        if (code.isEmpty())
+            continue;
+        const QString upper = code.toUpper();
+        if (!out.contains(upper))
+            out.append(upper);
+    }
+
+    if (!out.contains(QStringLiteral("EN")))
+        out.append(QStringLiteral("EN"));
+    if (!out.contains(QStringLiteral("ES")))
+        out.append(QStringLiteral("ES"));
+
+    out.sort();
+    return out;
+}
+
+bool Translator::deleteLanguage(const QString& lang) {
+    setError(QString());
+    const QString normalizedLang = normalizedLanguageCode(lang);
+    if (normalizedLang.isEmpty()) {
+        setError(QStringLiteral("Código de idioma inválido"));
+        return false;
+    }
+
+    const QString upper = normalizedLang.toUpper();
+    if (upper == QLatin1String("EN") || upper == QLatin1String("ES")) {
+        setError(QStringLiteral("No se puede eliminar un idioma por defecto"));
+        return false;
+    }
+
+    QDir dir(m_translationsPath);
+    const QString tsPath = dir.filePath(QStringLiteral("app_%1.ts").arg(normalizedLang));
+    const QString qmPath = dir.filePath(QStringLiteral("app_%1.qm").arg(normalizedLang));
+
+    bool changed = false;
+    if (QFile::exists(tsPath)) {
+        if (!QFile::remove(tsPath)) {
+            setError(QStringLiteral("No se pudo eliminar: ") + tsPath);
+            return false;
+        }
+        changed = true;
+    }
+    if (QFile::exists(qmPath)) {
+        if (!QFile::remove(qmPath)) {
+            setError(QStringLiteral("No se pudo eliminar: ") + qmPath);
+            return false;
+        }
+        changed = true;
+    }
+
+    if (!changed) {
+        setError(QStringLiteral("No se encontraron archivos del idioma: ") + upper);
+        return false;
+    }
 
     return true;
 }
