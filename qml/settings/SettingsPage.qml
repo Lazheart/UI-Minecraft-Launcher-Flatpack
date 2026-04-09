@@ -12,6 +12,7 @@ Rectangle {
     property string currentTheme: "DARK"
     property real currentScale: 1.0
     property bool languageSelectionRollbackInProgress: false
+    property string languageErrorMessage: ""
 
     function normalizeBundledTheme(themeValue) {
         var raw = String(themeValue || "").trim()
@@ -143,6 +144,7 @@ Rectangle {
                             if (!languageApplied) {
                                 var errorMessage = translator.lastError ? String(translator.lastError) : qsTr("Unknown translation error")
                                 console.error("[Settings] Failed to apply language", language, "error:", errorMessage)
+                                settingsPage.languageErrorMessage = errorMessage
 
                                 settingsPage.languageSelectionRollbackInProgress = true
                                 languageCard.currentLanguage = previousLanguage
@@ -150,6 +152,7 @@ Rectangle {
                                 return
                             }
 
+                            settingsPage.languageErrorMessage = ""
                             settingsPage.currentLanguage = language
                             // Persist to profile manager for current profile
                             profileManager.updateProfile(profileManager.currentProfile, { language: language })
@@ -163,6 +166,14 @@ Rectangle {
                         Layout.alignment: Qt.AlignTop
                         settingsPageRef: settingsPage
                     }
+                }
+
+                Text {
+                    visible: settingsPage.languageErrorMessage.length > 0
+                    text: settingsPage.languageErrorMessage
+                    color: themeManager.colors["error_bright"]
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
 
                 // Paths Card
