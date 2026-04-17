@@ -1,5 +1,5 @@
 // Centralized assets references
-var LogoImage = "qrc:/assets/media/logo.svg"
+var LogoImage = "qrc:/assets/media/bedrockLogo.png"
 var BedrockLogo = "qrc:/assets/media/bedrockLogo.png"
 var TrashIcon = "qrc:/assets/icons/trash.ico"
 // Default icon used next to installed versions (located in `assets/media/directAccess.png`)

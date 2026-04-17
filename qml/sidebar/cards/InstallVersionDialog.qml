@@ -644,7 +644,7 @@ Dialog {
         iconModel.clear()
         iconModel.append({ "name": "Default", "path": Media.DefaultVersionIcon })
         iconModel.append({ "name": "Bedrock", "path": Media.BedrockLogo })
-        iconModel.append({ "name": "Java", "path": "qrc:/assets/media/logo.svg" })
+        iconModel.append({ "name": "Java", "path": "qrc:/assets/media/bedrockLogo.png" })
         
         var customIcons = pathManager.listCustomIcons()
         for (var i = 0; i < customIcons.length; i++) {
