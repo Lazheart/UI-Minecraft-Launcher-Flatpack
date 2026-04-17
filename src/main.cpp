@@ -13,7 +13,37 @@
 #include "../include/thememanager.h"
 #include "../include/translator.h"
 
+namespace {
+
+QtMessageHandler g_previousQtHandler = nullptr;
+
+void earlyQtMessageFilter(QtMsgType type,
+                          const QMessageLogContext &context,
+                          const QString &msg) {
+  Q_UNUSED(context);
+
+  if (msg ==
+      QLatin1String(
+          "QSocketNotifier: Can only be used with threads started with QThread")) {
+    return;
+  }
+
+  if (g_previousQtHandler) {
+    g_previousQtHandler(type, context, msg);
+    return;
+  }
+
+  const QByteArray localMsg = msg.toLocal8Bit();
+  FILE *out = (type == QtDebugMsg || type == QtInfoMsg) ? stdout : stderr;
+  fprintf(out, "%s\n", localMsg.constData());
+  fflush(out);
+}
+
+} // namespace
+
 int main(int argc, char **argv) {
+  g_previousQtHandler = qInstallMessageHandler(earlyQtMessageFilter);
+
   QGuiApplication app(argc, argv);
   app.setApplicationName("minecraft");
   app.setOrganizationName("Lazheart");

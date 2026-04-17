@@ -148,39 +148,76 @@ Rectangle {
         }
     }
 
-    QtDialogs.FileDialog {
-        id: importLanguageDialog
-        title: qsTr("Select JSON file for the language")
-        selectExisting: true
-        nameFilters: [ qsTr("JSON (*.json)"), qsTr("All Files (*)") ]
-        onAccepted: {
-            sourceJsonPathField.text = importLanguageDialog.fileUrl.toString()
-            addLanguageError.text = ""
+    function openImportLanguageDialog() {
+        importLanguageDialogLoader.active = true
+        if (importLanguageDialogLoader.item)
+            importLanguageDialogLoader.item.open()
+    }
+
+    function openSaveTemplateDialog() {
+        saveTemplateDialogLoader.active = true
+        if (saveTemplateDialogLoader.item)
+            saveTemplateDialogLoader.item.open()
+    }
+
+    Loader {
+        id: importLanguageDialogLoader
+        active: false
+        sourceComponent: importLanguageDialogComponent
+    }
+
+    Component {
+        id: importLanguageDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Select JSON file for the language")
+            selectExisting: true
+            nameFilters: [ qsTr("JSON (*.json)"), qsTr("All Files (*)") ]
+            onAccepted: {
+                sourceJsonPathField.text = fileUrl.toString()
+                addLanguageError.text = ""
+                importLanguageDialogLoader.active = false
+            }
+            onRejected: {
+                importLanguageDialogLoader.active = false
+            }
         }
     }
 
-    QtDialogs.FileDialog {
-        id: saveTemplateDialog
-        title: qsTr("Save translation template")
-        folder: shortcuts.home
-        selectFolder: false
-        selectExisting: false
-        nameFilters: [ qsTr("JSON (*.json)") ]
-        onAccepted: {
-            var targetPath = saveTemplateDialog.fileUrl.toString()
-            if (!targetPath || targetPath.length === 0)
-                targetPath = "file://" + shortcuts.home + "/translation_template.json"
+    Loader {
+        id: saveTemplateDialogLoader
+        active: false
+        sourceComponent: saveTemplateDialogComponent
+    }
 
-            if (!targetPath.toLowerCase().endsWith(".json"))
-                targetPath += ".json"
+    Component {
+        id: saveTemplateDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Save translation template")
+            folder: shortcuts.home
+            selectFolder: false
+            selectExisting: false
+            nameFilters: [ qsTr("JSON (*.json)") ]
+            onAccepted: {
+                var targetPath = fileUrl.toString()
+                if (!targetPath || targetPath.length === 0)
+                    targetPath = "file://" + shortcuts.home + "/translation_template.json"
 
-            if (!translator.exportToJson(targetPath)) {
-                statusText = translator.lastError.length > 0
-                           ? translator.lastError
-                           : qsTr("Can not export language template")
-                return
+                if (!targetPath.toLowerCase().endsWith(".json"))
+                    targetPath += ".json"
+
+                if (!translator.exportToJson(targetPath)) {
+                    statusText = translator.lastError.length > 0
+                               ? translator.lastError
+                               : qsTr("Can not export language template")
+                    saveTemplateDialogLoader.active = false
+                    return
+                }
+                statusText = qsTr("Template exported successfully")
+                saveTemplateDialogLoader.active = false
             }
-            statusText = qsTr("Template exported successfully")
+            onRejected: {
+                saveTemplateDialogLoader.active = false
+            }
         }
     }
 
@@ -244,7 +281,7 @@ Rectangle {
                 Button {
                     text: qsTr("Browse")
                     Layout.preferredWidth: 90
-                    onClicked: importLanguageDialog.open()
+                    onClicked: openImportLanguageDialog()
                 }
             }
 
@@ -280,7 +317,7 @@ Rectangle {
 
         MenuItem {
             text: qsTr("Get Template")
-            onTriggered: saveTemplateDialog.open()
+            onTriggered: openSaveTemplateDialog()
         }
 
         MenuItem {

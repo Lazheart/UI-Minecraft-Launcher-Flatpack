@@ -32,6 +32,12 @@ Dialog {
     property string selectedVersionPath: ""
     property string importError: ""
 
+    function openImportFileDialog() {
+        fileDialogLoader.active = true
+        if (fileDialogLoader.item)
+            fileDialogLoader.item.open()
+    }
+
     anchors.centerIn: parent
 
     function rebuildVersions() {
@@ -234,7 +240,7 @@ Dialog {
                             id: filePathInputMouse
                             anchors.fill: parent
                             hoverEnabled: true
-                            onClicked: fileDialog.open()
+                            onClicked: openImportFileDialog()
                         }
                     }
 
@@ -263,7 +269,7 @@ Dialog {
                         font.bold: true
                     }
 
-                    onClicked: fileDialog.open()
+                    onClicked: openImportFileDialog()
                 }
             }
 
@@ -435,19 +441,30 @@ Dialog {
         }
     }
 
-    QtDialogs.FileDialog {
-        id: fileDialog
-        title: qsTr("Select ") + importCard.selectedType + qsTr(" File")
-        selectExisting: true
-        nameFilters: {
-            if (importCard.selectedType === "World") {
-                return [qsTr("Minecraft World (*.mcworld)"), qsTr("All files (*)")]
-            } else {
+    Loader {
+        id: fileDialogLoader
+        active: false
+        sourceComponent: fileDialogComponent
+    }
+
+    Component {
+        id: fileDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Select ") + importCard.selectedType + qsTr(" File")
+            selectExisting: true
+            nameFilters: {
+                if (importCard.selectedType === "World") {
+                    return [qsTr("Minecraft World (*.mcworld)"), qsTr("All files (*)")]
+                }
                 return [qsTr("Minecraft Addon (*.mcpack)"), qsTr("All files (*)")]
             }
-        }
-        onAccepted: {
-            filePathInput.text = fileDialog.fileUrl.toString().replace("file://", "")
+            onAccepted: {
+                filePathInput.text = fileUrl.toString().replace("file://", "")
+                fileDialogLoader.active = false
+            }
+            onRejected: {
+                fileDialogLoader.active = false
+            }
         }
     }
 

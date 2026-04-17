@@ -189,14 +189,38 @@ Rectangle {
         }
     }
 
-    QtDialogs.FileDialog {
-        id: importThemeDialog
-        title: qsTr("Select CSS file for the theme")
-        selectExisting: true
-        nameFilters: [ qsTr("CSS (*.css)"), qsTr("All Files (*)") ]
-        onAccepted: {
-            sourcePathField.text = importThemeDialog.fileUrl.toString()
-            addThemeError.text = ""
+    function openImportThemeDialog() {
+        importThemeDialogLoader.active = true
+        if (importThemeDialogLoader.item)
+            importThemeDialogLoader.item.open()
+    }
+
+    function openSaveTemplateDialog() {
+        saveTemplateDialogLoader.active = true
+        if (saveTemplateDialogLoader.item)
+            saveTemplateDialogLoader.item.open()
+    }
+
+    Loader {
+        id: importThemeDialogLoader
+        active: false
+        sourceComponent: importThemeDialogComponent
+    }
+
+    Component {
+        id: importThemeDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Select CSS file for the theme")
+            selectExisting: true
+            nameFilters: [ qsTr("CSS (*.css)"), qsTr("All Files (*)") ]
+            onAccepted: {
+                sourcePathField.text = fileUrl.toString()
+                addThemeError.text = ""
+                importThemeDialogLoader.active = false
+            }
+            onRejected: {
+                importThemeDialogLoader.active = false
+            }
         }
     }
 
@@ -260,7 +284,7 @@ Rectangle {
                 Button {
                     text: qsTr("Browse")
                     Layout.preferredWidth: 90
-                    onClicked: importThemeDialog.open()
+                    onClicked: openImportThemeDialog()
                 }
             }
 
@@ -291,18 +315,30 @@ Rectangle {
         }
     }
 
-    QtDialogs.FileDialog {
-        id: saveTemplateDialog
-        title: qsTr("Select folder to save style.css")
-        folder: shortcuts.home
-        selectFolder: true
-        selectExisting: true
-        onAccepted: {
-            var targetPath = saveTemplateDialog.fileUrl.toString()
-            if (!targetPath.endsWith("/"))
-                targetPath += "/"
-            targetPath += "style.css"
-            themeManager.saveBundledDarkTemplateTo(targetPath)
+    Loader {
+        id: saveTemplateDialogLoader
+        active: false
+        sourceComponent: saveTemplateDialogComponent
+    }
+
+    Component {
+        id: saveTemplateDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Select folder to save style.css")
+            folder: shortcuts.home
+            selectFolder: true
+            selectExisting: true
+            onAccepted: {
+                var targetPath = fileUrl.toString()
+                if (!targetPath.endsWith("/"))
+                    targetPath += "/"
+                targetPath += "style.css"
+                themeManager.saveBundledDarkTemplateTo(targetPath)
+                saveTemplateDialogLoader.active = false
+            }
+            onRejected: {
+                saveTemplateDialogLoader.active = false
+            }
         }
     }
 
@@ -311,7 +347,7 @@ Rectangle {
 
         MenuItem {
             text: qsTr("Get Template")
-            onTriggered: saveTemplateDialog.open()
+            onTriggered: openSaveTemplateDialog()
         }
 
         MenuItem {

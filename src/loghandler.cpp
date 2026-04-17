@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QGuiApplication>
 #include <QClipboard>
+#include <QMetaObject>
 #include <QUrl>
 
 LogHandler* LogHandler::m_instance = nullptr;
@@ -117,11 +118,25 @@ QString LogHandler::getLogs()
 void LogHandler::messageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     Q_UNUSED(context);
+
+    // Known Qt startup warning seen in some Linux/Flatpak environments.
+    // We keep other warnings intact and only suppress this exact noise.
+    if (msg == QLatin1String("QSocketNotifier: Can only be used with threads started with QThread")) {
+        return;
+    }
+
     if (m_instance) {
         m_instance->appendMessage(type, msg);
     }
     // Also print to original stdout/stderr
-    fprintf(type == QtInfoMsg || type == QtDebugMsg ? stdout : stderr, "%s\n", qPrintable(msg));
+    const int fd = (type == QtInfoMsg || type == QtDebugMsg) ? 1 : 2;
+    QFile streamDevice;
+    if (streamDevice.open(fd, QIODevice::WriteOnly, QFileDevice::DontCloseHandle)) {
+        QTextStream out(&streamDevice);
+        out << msg << "\n";
+        out.flush();
+        streamDevice.flush();
+    }
 }
 
 void LogHandler::appendMessage(QtMsgType type, const QString &msg)
@@ -136,22 +151,33 @@ void LogHandler::appendMessage(QtMsgType type, const QString &msg)
         default: color = "#ffffff"; break;
     }
 
+    // Ensure model updates happen on the owning thread even when logs arrive
+    // from worker threads.
+    QMetaObject::invokeMethod(this, "appendMessageOnMainThread",
+                              Qt::QueuedConnection,
+                              Q_ARG(int, static_cast<int>(type)),
+                              Q_ARG(QString, msg),
+                              Q_ARG(QString, color),
+                              Q_ARG(QDateTime, QDateTime::currentDateTime()));
+}
+
+void LogHandler::appendMessageOnMainThread(int type, const QString &msg,
+                                           const QString &color,
+                                           const QDateTime &timestamp)
+{
     LogMessage logMsg;
-    logMsg.timestamp = QDateTime::currentDateTime();
-    logMsg.type = type;
+    logMsg.timestamp = timestamp;
+    logMsg.type = static_cast<QtMsgType>(type);
     logMsg.message = msg;
     logMsg.color = color;
 
-    // Use QMetaObject::invokeMethod to ensure thread safety when updating UI from different threads
-    QMetaObject::invokeMethod(this, [this, logMsg]() {
-        if (m_messages.size() >= m_maxLines) {
-            beginRemoveRows(QModelIndex(), 0, 0);
-            m_messages.removeFirst();
-            endRemoveRows();
-        }
-        
-        beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
-        m_messages.append(logMsg);
-        endInsertRows();
-    });
+    if (m_messages.size() >= m_maxLines) {
+        beginRemoveRows(QModelIndex(), 0, 0);
+        m_messages.removeFirst();
+        endRemoveRows();
+    }
+
+    beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
+    m_messages.append(logMsg);
+    endInsertRows();
 }

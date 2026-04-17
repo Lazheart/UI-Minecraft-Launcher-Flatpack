@@ -15,6 +15,12 @@ Rectangle {
 
     property bool autoScroll: true
 
+    function openExportLogDialog() {
+        exportLogDialogLoader.active = true
+        if (exportLogDialogLoader.item)
+            exportLogDialogLoader.item.open()
+    }
+
     ColumnLayout {
         anchors {
             fill: parent
@@ -152,7 +158,7 @@ Rectangle {
                     minimumPixelSize: 8
                     elide: Text.ElideRight
                 }
-                onClicked: fileDialog.open()
+                onClicked: openExportLogDialog()
             }
 
             Item { Layout.fillWidth: true }
@@ -169,14 +175,26 @@ Rectangle {
         }
     }
 
-    FileDialog {
-        id: fileDialog
-        title: "Export Log File"
-        folder: shortcuts.home
-        selectExisting: false
-        nameFilters: ["Log files (*.log)", "All files (*)"]
-        onAccepted: {
-            logHandler.saveLog(fileUrl)
+    Loader {
+        id: exportLogDialogLoader
+        active: false
+        sourceComponent: exportLogDialogComponent
+    }
+
+    Component {
+        id: exportLogDialogComponent
+        FileDialog {
+            title: "Export Log File"
+            folder: shortcuts.home
+            selectExisting: false
+            nameFilters: ["Log files (*.log)", "All files (*)"]
+            onAccepted: {
+                logHandler.saveLog(fileUrl)
+                exportLogDialogLoader.active = false
+            }
+            onRejected: {
+                exportLogDialogLoader.active = false
+            }
         }
     }
 }

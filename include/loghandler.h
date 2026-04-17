@@ -4,9 +4,10 @@
 #include <QAbstractListModel>
 #include <QObject>
 #include <QString>
-#include <QVector>
+#include <QList>
 #include <QDateTime>
 #include <QMutex>
+#include <QtGlobal>
 
 struct LogMessage {
     QDateTime timestamp;
@@ -28,6 +29,7 @@ public:
     };
 
     explicit LogHandler(QObject *parent = nullptr);
+    ~LogHandler() Q_DECL_NOEXCEPT override = default;
     static LogHandler* instance();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -44,7 +46,14 @@ public:
 private:
     void appendMessage(QtMsgType type, const QString &msg);
 
-    QVector<LogMessage> m_messages;
+private slots:
+    void appendMessageOnMainThread(int type, const QString &msg,
+                                   const QString &color,
+                                   const QDateTime &timestamp);
+
+private:
+
+    QList<LogMessage> m_messages;
     static LogHandler* m_instance;
     QMutex m_mutex;
     const int m_maxLines = 2000;

@@ -55,8 +55,27 @@ Dialog {
         console.log(qsTr("[InstallVersionDialog] resetForm() done. installing=") + installDialog.installing)
     }
 
+    function openApkDialog() {
+        apkDialogLoader.active = true
+        if (apkDialogLoader.item)
+            apkDialogLoader.item.open()
+    }
+
+    function openIconDialog() {
+        iconDialogLoader.active = true
+        if (iconDialogLoader.item)
+            iconDialogLoader.item.open()
+    }
+
+    function openBackgroundDialog() {
+        backgroundDialogLoader.active = true
+        if (backgroundDialogLoader.item)
+            backgroundDialogLoader.item.open()
+    }
+
     function stripExtension(filename) {
-        if (!filename) return ""
+        if (!filename)
+            return ""
         var lastDot = filename.lastIndexOf('.')
         return (lastDot > 0) ? filename.substring(0, lastDot) : filename
     }
@@ -199,7 +218,7 @@ Dialog {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 enabled: !installDialog.installing
-                                onClicked: apkDialog.open()
+                                onClicked: openApkDialog()
                             }
                         }
                     }
@@ -222,7 +241,7 @@ Dialog {
                             font.pixelSize: 12
                             font.bold: true
                         }
-                        onClicked: apkDialog.open()
+                        onClicked: openApkDialog()
                     }
                 }
             }
@@ -335,7 +354,7 @@ Dialog {
                         
                         onActivated: {
                             if (currentText === "Other...") {
-                                iconDialog.open()
+                                openIconDialog()
                             } else {
                                 installDialog.iconPath = iconModel.get(currentIndex).path
                                 installDialog.useDefaultIcon = (currentText === "Default")
@@ -409,7 +428,7 @@ Dialog {
                         
                         onActivated: {
                             if (currentText === "Other...") {
-                                backgroundDialog.open()
+                                openBackgroundDialog()
                             } else {
                                 installDialog.backgroundPath = backgroundModel.get(currentIndex).path
                                 installDialog.useDefaultBackground = (currentText === "Default")
@@ -663,48 +682,84 @@ Dialog {
         backgroundModel.append({ "name": "Other...", "path": "" })
     }
 
-    QtDialogs.FileDialog {
-        id: apkDialog
-        title: qsTr ("Select APK file")
-        selectExisting: true
-        nameFilters: ["Android Package (*.apk)", "All files (*)"]
-        onAccepted: {
-            var picked = installDialog.cleanFileUrl(apkDialog.fileUrl.toString())
-            var staged = pathManager.stageFileForExtraction(picked)
-            console.log("[InstallVersionDialog] apkDialog accepted. picked=", picked,
-                        " staged=", staged)
-            apkField.text = staged && staged.length ? staged : picked
-            console.log("[InstallVersionDialog] apkField.text set to", apkField.text)
+    Loader {
+        id: apkDialogLoader
+        active: false
+        sourceComponent: apkDialogComponent
+    }
+
+    Component {
+        id: apkDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr ("Select APK file")
+            selectExisting: true
+            nameFilters: ["Android Package (*.apk)", "All files (*)"]
+            onAccepted: {
+                var picked = installDialog.cleanFileUrl(fileUrl.toString())
+                var staged = pathManager.stageFileForExtraction(picked)
+                console.log("[InstallVersionDialog] apkDialog accepted. picked=", picked,
+                            " staged=", staged)
+                apkField.text = staged && staged.length ? staged : picked
+                console.log("[InstallVersionDialog] apkField.text set to", apkField.text)
+                apkDialogLoader.active = false
+            }
+            onRejected: {
+                apkDialogLoader.active = false
+            }
         }
     }
 
-    QtDialogs.FileDialog {
-        id: iconDialog
-        title: qsTr("Select Icon")
-        selectExisting: true
-        nameFilters: ["Images (*.png *.jpg *.jpeg *.svg)", "All files (*)"]
-        onAccepted: {
-            var picked = installDialog.cleanFileUrl(iconDialog.fileUrl.toString())
-            installDialog.iconPath = picked
-            installDialog.useDefaultIcon = false
-            saveAssetDialog.targetType = "icon"
-            saveAssetDialog.sourcePath = picked
-            saveAssetDialog.open()
+    Loader {
+        id: iconDialogLoader
+        active: false
+        sourceComponent: iconDialogComponent
+    }
+
+    Component {
+        id: iconDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Select Icon")
+            selectExisting: true
+            nameFilters: ["Images (*.png *.jpg *.jpeg *.svg)", "All files (*)"]
+            onAccepted: {
+                var picked = installDialog.cleanFileUrl(fileUrl.toString())
+                installDialog.iconPath = picked
+                installDialog.useDefaultIcon = false
+                saveAssetDialog.targetType = "icon"
+                saveAssetDialog.sourcePath = picked
+                saveAssetDialog.open()
+                iconDialogLoader.active = false
+            }
+            onRejected: {
+                iconDialogLoader.active = false
+            }
         }
     }
 
-    QtDialogs.FileDialog {
-        id: backgroundDialog
-        title: qsTr("Select Background")
-        selectExisting: true
-        nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
-        onAccepted: {
-            var picked = installDialog.cleanFileUrl(backgroundDialog.fileUrl.toString())
-            installDialog.backgroundPath = picked
-            installDialog.useDefaultBackground = false
-            saveAssetDialog.targetType = "background"
-            saveAssetDialog.sourcePath = picked
-            saveAssetDialog.open()
+    Loader {
+        id: backgroundDialogLoader
+        active: false
+        sourceComponent: backgroundDialogComponent
+    }
+
+    Component {
+        id: backgroundDialogComponent
+        QtDialogs.FileDialog {
+            title: qsTr("Select Background")
+            selectExisting: true
+            nameFilters: ["Images (*.png *.jpg *.jpeg)", "All files (*)"]
+            onAccepted: {
+                var picked = installDialog.cleanFileUrl(fileUrl.toString())
+                installDialog.backgroundPath = picked
+                installDialog.useDefaultBackground = false
+                saveAssetDialog.targetType = "background"
+                saveAssetDialog.sourcePath = picked
+                saveAssetDialog.open()
+                backgroundDialogLoader.active = false
+            }
+            onRejected: {
+                backgroundDialogLoader.active = false
+            }
         }
     }
 
