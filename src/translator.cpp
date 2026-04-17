@@ -52,15 +52,41 @@ QString normalizedLanguageCode(const QString& lang) {
 QStringList translationDirCandidates() {
     const QString appDir = QCoreApplication::applicationDirPath();
     const QString appName = QCoreApplication::applicationName();
+    const QString fixedProjectName = QStringLiteral("minecraft-launcher-gui");
 
     QStringList candidates;
     candidates << QDir::currentPath() + "/translations";
     candidates << appDir + "/translations";
+    candidates << QDir(appDir).filePath("translations");
     candidates << QDir(appDir).filePath("../translations");
+    candidates << QDir(appDir).filePath("../share/" + fixedProjectName + "/translations");
     candidates << QDir(appDir).filePath("../share/minecraft-launcher-gui/translations");
+    candidates << QStringLiteral("/app/share/") + fixedProjectName + QStringLiteral("/translations");
+    candidates << QStringLiteral("/usr/share/") + fixedProjectName + QStringLiteral("/translations");
+
+    const QString locatedFixed = QStandardPaths::locate(
+        QStandardPaths::GenericDataLocation,
+        fixedProjectName + "/translations",
+        QStandardPaths::LocateDirectory
+    );
+    if (!locatedFixed.isEmpty()) {
+        candidates << locatedFixed;
+    }
+
     if (!appName.isEmpty()) {
         candidates << QDir(appDir).filePath("../share/" + appName + "/translations");
+
+        const QString locatedByAppName = QStandardPaths::locate(
+            QStandardPaths::GenericDataLocation,
+            appName + "/translations",
+            QStandardPaths::LocateDirectory
+        );
+        if (!locatedByAppName.isEmpty()) {
+            candidates << locatedByAppName;
+        }
     }
+
+    candidates.removeDuplicates();
     return candidates;
 }
 
@@ -70,6 +96,8 @@ QString resolveFirstExistingDir(const QStringList& candidates) {
             return QDir(path).absolutePath();
         }
     }
+
+    // Keep backward-compatible behavior in development if nothing matched.
     return QDir::currentPath() + "/translations";
 }
 
