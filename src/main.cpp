@@ -12,6 +12,7 @@
 #include "../include/loghandler.h"
 #include "../include/thememanager.h"
 #include "../include/translator.h"
+#include <cstdio>
 
 namespace {
 
