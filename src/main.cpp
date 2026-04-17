@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QFileInfo>
 #include <QUrl>
+#include <QLoggingCategory>
 
 #include "../include/minecraftmanager.h"
 #include "../include/pathmanager.h"
@@ -15,6 +16,14 @@
 int main(int argc, char **argv) {
   QGuiApplication app(argc, argv);
   app.setApplicationName("minecraft");
+  app.setOrganizationName("Lazheart");
+  app.setOrganizationDomain("lazheart.org");
+  QGuiApplication::setDesktopFileName("org.lazheart.minecraft-launcher");
+
+  // Reduce noisy platform-theme warnings on runtimes without qgnomeplatform
+  // color-scheme integration.
+  QLoggingCategory::setFilterRules(
+      QStringLiteral("qt.qpa.qgnomeplatform.warning=false"));
 
   // Initialize LogHandler
   LogHandler logHandler;

@@ -159,41 +159,12 @@ Rectangle {
             
             CheckBox {
                 id: autoScrollCheck
-                text: "Auto-scroll"
+                text: qsTr("Auto-scroll")
                 checked: debugCard.autoScroll
-                onCheckedChanged: debugCard.autoScroll = checked
+                onToggled: debugCard.autoScroll = checked
                 
                 Layout.preferredHeight: 35
                 Layout.alignment: Qt.AlignVCenter
-
-                indicator: Rectangle {
-                    implicitWidth: 18
-                    implicitHeight: 18
-                    anchors.verticalCenter: parent.verticalCenter
-                    x: autoScrollCheck.leftPadding
-                    radius: 3
-                    color: themeManager.colors["border"]
-                    border.color: autoScrollCheck.checked ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
-                    border.width: 1
-
-                    Rectangle {
-                        width: 10
-                        height: 10
-                        anchors.centerIn: parent
-                        radius: 2
-                        color: themeManager.colors["accent"]
-                        visible: autoScrollCheck.checked
-                    }
-                }
-
-                contentItem: Text {
-                    text: parent.text
-                    color: themeManager.colors["text_primary"]
-                    font.pixelSize: 12
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    leftPadding: parent.indicator.width + 10
-                }
             }
         }
     }

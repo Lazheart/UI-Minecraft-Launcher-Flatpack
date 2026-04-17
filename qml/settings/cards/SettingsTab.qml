@@ -186,13 +186,6 @@ Rectangle {
                                 radius: 4
                                 border.color: parent.activeFocus ? themeManager.colors["accent"] : themeManager.colors["border_muted"]
                             }
-                            
-                            contentItem: Text {
-                                text: parent.displayText
-                                color: themeManager.colors["text_primary"]
-                                verticalAlignment: Text.AlignVCenter
-                                leftPadding: 10
-                            }
                         }
                     }
                     

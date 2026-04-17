@@ -92,14 +92,13 @@ Rectangle {
         id: scrollView
         anchors.fill: parent
         clip: true
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        contentHeight: contentLayout.implicitHeight + 80
-        contentWidth: Math.max(scrollView.availableWidth, contentLayout.implicitWidth + 80)
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
         Item {
-            width: Math.max(scrollView.availableWidth, contentLayout.implicitWidth + 80)
-            height: Math.max(scrollView.height, contentLayout.implicitHeight + 80)
+            width: scrollView.availableWidth
+            implicitHeight: contentLayout.implicitHeight + 80
+            height: implicitHeight
 
             ColumnLayout {
                 id: contentLayout

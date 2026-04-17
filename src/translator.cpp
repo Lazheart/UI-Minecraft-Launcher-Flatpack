@@ -101,6 +101,34 @@ QString resolveFirstExistingDir(const QStringList& candidates) {
     return QDir::currentPath() + "/translations";
 }
 
+QString resolvePrecompiledQmPath(const QString& lang, const QString& translationsDir) {
+    const QString qmFile = QStringLiteral("app_%1.qm").arg(lang);
+    const QString appDir = QCoreApplication::applicationDirPath();
+
+    QStringList candidates;
+    // Installed and source-tree translation directories.
+    candidates << QDir(translationsDir).filePath(qmFile);
+    candidates << QDir(appDir).filePath(QStringLiteral("translations/") + qmFile);
+    candidates << QDir(appDir).filePath(QStringLiteral("../translations/") + qmFile);
+
+    // Build-tree or ad-hoc execution where .qm is next to the executable.
+    candidates << QDir(appDir).filePath(qmFile);
+    candidates << QDir(appDir).filePath(QStringLiteral("../") + qmFile);
+
+    // Flatpak/system install fallback.
+    candidates << QStringLiteral("/app/share/minecraft-launcher-gui/translations/") + qmFile;
+    candidates << QStringLiteral("/usr/share/minecraft-launcher-gui/translations/") + qmFile;
+
+    candidates.removeDuplicates();
+    for (const QString& path : candidates) {
+        if (QFile::exists(path)) {
+            return QFileInfo(path).absoluteFilePath();
+        }
+    }
+
+    return QString();
+}
+
 bool compileTsToQm(const QString& tsPath, const QString& qmPath) {
     const QString outputDir = QFileInfo(qmPath).absolutePath();
     if (!outputDir.isEmpty() && outputDir != "." && !QDir().mkpath(outputDir)) {
@@ -110,7 +138,7 @@ bool compileTsToQm(const QString& tsPath, const QString& qmPath) {
 
     const QString lrelease = QStandardPaths::findExecutable("lrelease");
     if (lrelease.isEmpty()) {
-        qWarning() << "No se encontró lrelease en PATH. Se intentará usar .qm precompilado:" << qmPath;
+        qInfo() << "No se encontró lrelease en PATH. Se intentará usar .qm precompilado:" << qmPath;
         return false;
     }
 
@@ -191,10 +219,9 @@ bool Translator::setLanguage(const QString& lang) {
     }
 
     const QString tsPath = QDir(m_translationsPath).filePath(QString("app_%1.ts").arg(normalizedLang));
-    const QString packagedQmPath = QDir(m_translationsPath).filePath(QString("app_%1.qm").arg(normalizedLang));
-    QString loadQmPath = packagedQmPath;
+    QString loadQmPath = resolvePrecompiledQmPath(normalizedLang, m_translationsPath);
 
-    if (!QFile::exists(packagedQmPath)) {
+    if (loadQmPath.isEmpty()) {
         if (!QFile::exists(tsPath)) {
             const QString msg = QStringLiteral("No existe ni TS ni QM para idioma ") + normalizedLang;
             qWarning() << msg << "en" << m_translationsPath;

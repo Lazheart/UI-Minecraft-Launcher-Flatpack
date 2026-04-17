@@ -8,6 +8,80 @@
 #include <QStandardPaths>
 #include <QUrl>
 
+namespace {
+
+QString resolveExecutableCandidate(const QString &configuredPath,
+                                   const QString &fallbackName) {
+  const QString appDirPath = QCoreApplication::applicationDirPath();
+  const QString appDirEnv = QString::fromUtf8(qgetenv("APPDIR")).trimmed();
+
+  auto existsExecutable = [](const QString &path) {
+    QFileInfo fi(path);
+    return fi.exists() && fi.isFile() && fi.isExecutable();
+  };
+
+  // Absolute path: keep it only if it exists.
+  if (!configuredPath.isEmpty() && QFileInfo(configuredPath).isAbsolute()) {
+    if (existsExecutable(configuredPath)) {
+      return QDir::cleanPath(configuredPath);
+    }
+
+    qWarning() << "[PathManager] Ignoring non-existing absolute executable path:"
+               << configuredPath;
+  }
+
+  // Relative path (contains slash): resolve against app dir and APPDIR.
+  if (!configuredPath.isEmpty() && configuredPath.contains('/')) {
+    QString fromAppDir = QDir(appDirPath).filePath(configuredPath);
+    if (existsExecutable(fromAppDir)) {
+      return QDir::cleanPath(fromAppDir);
+    }
+
+    if (!appDirEnv.isEmpty()) {
+      QString fromAppImageRoot = QDir(appDirEnv).filePath(configuredPath);
+      if (existsExecutable(fromAppImageRoot)) {
+        return QDir::cleanPath(fromAppImageRoot);
+      }
+    }
+  }
+
+  const QString nameToFind = !configuredPath.isEmpty()
+                                 ? QFileInfo(configuredPath).fileName()
+                                 : fallbackName;
+
+  if (nameToFind.isEmpty()) {
+    return configuredPath;
+  }
+
+  // AppImage candidate locations first.
+  QStringList candidates;
+  if (!appDirEnv.isEmpty()) {
+    candidates << QDir(appDirEnv).filePath("usr/bin/" + nameToFind);
+    candidates << QDir(appDirEnv).filePath("bin/" + nameToFind);
+    candidates << QDir(appDirEnv).filePath(nameToFind);
+  }
+  candidates << QDir(appDirPath).filePath(nameToFind);
+  candidates << QDir(appDirPath).filePath("../bin/" + nameToFind);
+  candidates << QDir(appDirPath).filePath("../" + nameToFind);
+
+  for (const QString &candidate : candidates) {
+    if (existsExecutable(candidate)) {
+      return QDir::cleanPath(candidate);
+    }
+  }
+
+  // Fall back to PATH lookup.
+  const QString fromPath = QStandardPaths::findExecutable(nameToFind);
+  if (!fromPath.isEmpty()) {
+    return fromPath;
+  }
+
+  // Last resort: return the executable name to let QProcess resolve it.
+  return nameToFind;
+}
+
+}
+
 PathManager::PathManager(QObject *parent) : QObject(parent) {
   computePaths();
   qDebug() << "[PathManager] computed paths:";
@@ -103,6 +177,20 @@ void PathManager::computePaths() {
     qDebug() << "[PathManager] MCPELAUNCHER_CLIENT override:"
              << m_mcpelauncherClient;
   }
+
+  // Normalize paths so AppImage and relative overrides don't depend on stale
+  // absolute mount paths.
+  m_mcpelauncherExtract =
+      resolveExecutableCandidate(m_mcpelauncherExtract,
+                                 QStringLiteral("mcpelauncher-extract"));
+  m_mcpelauncherClient =
+      resolveExecutableCandidate(m_mcpelauncherClient,
+                                 QStringLiteral("mcpelauncher-client"));
+
+  qDebug() << "[PathManager] Resolved extractor binary to:"
+           << m_mcpelauncherExtract;
+  qDebug() << "[PathManager] Resolved client binary to:"
+           << m_mcpelauncherClient;
 }
 
 bool PathManager::isFlatpak() const { return m_isFlatpak; }
