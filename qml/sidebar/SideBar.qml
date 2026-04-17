@@ -16,13 +16,8 @@ Rectangle {
     signal deleteVersionsRequested()
     signal importWorldsAddonsRequested()
     signal versionSelected(string version)
-    
-    // Keep an explicit list here and initialize on completion.
-    // Using a stable array for the Repeater model avoids intermittent UI desync.
-    // List of versions, bound to the manager's property for automatic updates
+
     property var versionsList: minecraftManager.availableVersions
-    
-    // Configuración de visualización y ordenado
     property string sortMode: "date" // "date" (default), "name", "tag"
     property bool isFullyExpanded: false
 
