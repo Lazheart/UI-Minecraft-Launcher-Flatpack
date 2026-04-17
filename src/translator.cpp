@@ -74,6 +74,12 @@ QString resolveFirstExistingDir(const QStringList& candidates) {
 }
 
 bool compileTsToQm(const QString& tsPath, const QString& qmPath) {
+    const QString outputDir = QFileInfo(qmPath).absolutePath();
+    if (!outputDir.isEmpty() && outputDir != "." && !QDir().mkpath(outputDir)) {
+        qWarning() << "No se pudo crear directorio para QM:" << outputDir;
+        return false;
+    }
+
     const QString lrelease = QStandardPaths::findExecutable("lrelease");
     if (lrelease.isEmpty()) {
         qWarning() << "No se encontró lrelease en PATH. Se intentará usar .qm precompilado:" << qmPath;
@@ -99,6 +105,23 @@ bool compileTsToQm(const QString& tsPath, const QString& qmPath) {
     }
 
     return QFile::exists(qmPath);
+}
+
+QString writableRuntimeTranslationsDir() {
+    QString base = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    if (base.isEmpty()) {
+        base = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    }
+    if (base.isEmpty()) {
+        base = QDir::tempPath() + "/minecraft-launcher-gui";
+    }
+
+    const QString dirPath = QDir(base).filePath("translations");
+    if (!QDir().mkpath(dirPath)) {
+        return QString();
+    }
+
+    return dirPath;
 }
 
 }
@@ -139,17 +162,36 @@ bool Translator::setLanguage(const QString& lang) {
         return true;
     }
 
-    QString tsPath = QDir(m_translationsPath).filePath(QString("app_%1.ts").arg(normalizedLang));
-    QString qmPath = QDir(m_translationsPath).filePath(QString("app_%1.qm").arg(normalizedLang));
+    const QString tsPath = QDir(m_translationsPath).filePath(QString("app_%1.ts").arg(normalizedLang));
+    const QString packagedQmPath = QDir(m_translationsPath).filePath(QString("app_%1.qm").arg(normalizedLang));
+    QString loadQmPath = packagedQmPath;
 
-    if (!QFile::exists(qmPath)) {
+    if (!QFile::exists(packagedQmPath)) {
         if (!QFile::exists(tsPath)) {
             const QString msg = QStringLiteral("No existe ni TS ni QM para idioma ") + normalizedLang;
             qWarning() << msg << "en" << m_translationsPath;
             setError(msg);
             return false;
         }
-        if (!compileTsToQm(tsPath, qmPath)) {
+
+        const QString runtimeTranslationsDir = writableRuntimeTranslationsDir();
+        if (runtimeTranslationsDir.isEmpty()) {
+            const QString msg = QStringLiteral("No se pudo resolver un directorio escribible para traducciones en runtime");
+            qWarning() << msg;
+            setError(msg);
+            return false;
+        }
+
+        loadQmPath = QDir(runtimeTranslationsDir).filePath(QString("app_%1.qm").arg(normalizedLang));
+
+        bool needsCompile = !QFile::exists(loadQmPath);
+        if (!needsCompile) {
+            const QFileInfo tsInfo(tsPath);
+            const QFileInfo qmInfo(loadQmPath);
+            needsCompile = tsInfo.exists() && tsInfo.lastModified() > qmInfo.lastModified();
+        }
+
+        if (needsCompile && !compileTsToQm(tsPath, loadQmPath)) {
             const QString msg = QStringLiteral("No se pudo generar QM para idioma ") + normalizedLang;
             qWarning() << msg;
             setError(msg);
@@ -157,8 +199,8 @@ bool Translator::setLanguage(const QString& lang) {
         }
     }
 
-    if (!QFile::exists(qmPath)) {
-        const QString msg = QStringLiteral("Archivo .qm no encontrado: ") + qmPath;
+    if (!QFile::exists(loadQmPath)) {
+        const QString msg = QStringLiteral("Archivo .qm no encontrado: ") + loadQmPath;
         qWarning() << msg;
         setError(msg);
         return false;
@@ -170,7 +212,7 @@ bool Translator::setLanguage(const QString& lang) {
     }
 
     // Instalamos la traducción en memoria.
-    if (m_translator.load(qmPath)) {
+    if (m_translator.load(loadQmPath)) {
         qApp->installTranslator(&m_translator);
         m_currentLanguage = normalizedLang;
         emit languageChanged();
@@ -181,7 +223,7 @@ bool Translator::setLanguage(const QString& lang) {
         }
         return true;
     } else {
-        const QString msg = QStringLiteral("Fallo al cargar traducción: ") + qmPath;
+        const QString msg = QStringLiteral("Fallo al cargar traducción: ") + loadQmPath;
         qWarning() << msg;
         setError(msg);
         return false;
